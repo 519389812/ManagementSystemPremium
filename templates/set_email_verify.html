@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>邮箱验证</title>
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">验证
+        <small>邮箱</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        <li class="breadcrumb-item active">邮箱验证</li>
+    </ol>
+
+    <!-- Contact Form -->
+    <!-- In order to set the email address and subject line for the contact form go to the bin/contact_me.php file. -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <h3>邮箱验证</h3>
+            <div>{{ msg }}</div>
+            <form name="loginForm" id="loginForm" action="{% url 'send_set_user_verify_email' %}" method="post">
+                {% csrf_token %}
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>邮箱地址:</label>
+                        <input type="email" class="form-control" id="email_address" name="email_address" placeholder="请输入邮箱地址"
+                               required data-validation-required-message="Please enter email address.">
+                        <p class="help-block" id="email_address_validate"></p>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="submit" onclick="submit()">发送验证邮件</button>
+            </form>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <h3>Tips</h3>
+            {% include "login_register_tips.html" %}
+        </div>
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+<script>
+$(document).ready(function(){
+    $(function(){
+        $("#submit").click(function(event){
+            var email_address = $('#email_address').val();
+            var email_address_validate = $('#email_address_validate').text();
+            if(email_address == ""){
+                event.preventDefault();
+                alert("输入不能为空！")
+            } else if(email_address_validate != ""){
+                event.preventDefault();
+                alert("输入有误，请检查！")
+            };
+        });
+    });
+});
+</script>
+</body>
+
+</html>

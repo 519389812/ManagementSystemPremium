@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>400</title>
+
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">400
+        <small>请求错误</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        <li class="breadcrumb-item active">400</li>
+    </ol>
+
+    <div class="jumbotron">
+        <h1 class="display-5">请求错误！</h1>
+        <br>
+        {% include "error_redirect.html" %}
+    </div>
+    <!-- /.jumbotron -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+</body>
+
+</html>

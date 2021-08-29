@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>登录</title>
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">登录
+        <small>管理系统</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        <li class="breadcrumb-item active">登录</li>
+    </ol>
+
+    <!-- Contact Form -->
+    <!-- In order to set the email address and subject line for the contact form go to the bin/contact_me.php file. -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            {{ msg }}
+            <h3>用户登录</h3>
+            <form name="loginForm" id="loginForm" action="{% url 'login' %}?next={{ next }}" method="post">
+                {% csrf_token %}
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>用户名:</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名"
+                               required data-validation-required-message="Please enter your username.">
+                        <p class="help-block" id="username_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>密码:</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码"
+                               required data-validation-required-message="Please enter your password.">
+                        <p class="help-block" id="password_validate"></p>
+                    </div>
+                </div>
+                <div>{{ msg }}</div>
+                <!-- For success/fail messages -->
+                <button type="submit" class="btn btn-primary" id="submit">登录</button>
+            </form>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <h3>Tips</h3>
+            <p>
+                <abbr title="还未注册?">还未注册</abbr>?
+                <br>
+                点击<a href="/register">此处</a>注册
+            </p>
+            {% include "login_register_tips.html" %}
+        </div>
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+<script>
+$(document).ready(function(){
+    $(function(){
+        $("#submit").click(function(event){
+            var username = $('#username').val();
+            var password = $('#password').val();
+            var username_validate = $('#username_validate').text();
+            var password_validate = $('#password_validate').text();
+            if(username == "" || password == ""){
+                event.preventDefault();
+                alert("输入不能为空！")
+            } else if(username_validate != "" || password_validate != ""){
+                event.preventDefault();
+                alert("输入有误，请检查！")
+            };
+        });
+    });
+});
+</script>
+
+</body>
+
+</html>

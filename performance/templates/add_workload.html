@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>新增工作量</title>
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">新增
+        <small>工作量</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        {% include "route_performance.html" %}
+        <li class="breadcrumb-item active">新增</li>
+    </ol>
+
+    <!-- Contact Form -->
+    <!-- In order to set the email address and subject line for the contact form go to the bin/contact_me.php file. -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            {{ msg }}
+            <h3>新增工作量记录</h3>
+            <form name="addWorkloadForm" id="addWorkloadForm" action="{% url 'add_workload' %}" method="post">
+                {% csrf_token %}
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>岗位:</label>
+                        <select class="form-control" id="position" name="position">
+                            {% for position in position_list %}
+                            {% if position.name == position_name %}
+                            <option selected value="{{ position.id }}">{{ position.name }}</option>
+                            {% else %}
+                            <option value="{{ position.id }}">{{ position.name }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <p class="help-block" id="position_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>岗位难度:</label>
+                        <select class="form-control" id="level" name="level">
+                            <option selected value="">无</option>
+                            {% for level in level_list %}
+                            <option value="{{ level.id }}">{{ level.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <p class="help-block" id="level_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>开始时间:</label>
+                        <input type="datetime-local" class="form-control" id="start_datetime" name="start_datetime"
+                               placeholder="请选择开始时间"
+                               required data-validation-required-message="Please enter start datetime.">
+                        <p class="help-block" id="start_datetime_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>结束时间:</label>
+                        <input type="datetime-local" class="form-control" id="end_datetime" name="end_datetime"
+                               placeholder="请选择结束时间"
+                               required data-validation-required-message="Please enter end datetime.">
+                        <p class="help-block" id="end_datetime_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>审核室:</label>
+                        <select class="form-control" id="assigned_team" name="assigned_team">
+                            {% for team in team_list %}
+                            {% if team.name == assigned_team_name %}
+                            <option selected value="{{ team.id }}">{{ team.name }}</option>
+                            {% else %}
+                            <option value="{{ team.id }}">{{ team.name }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <p class="help-block" id="assigned_team_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>备注(可选):</label>
+                        <textarea class="form-control" id="remark" name="remark" placeholder="请填写备注"
+                                  data-validation-required-message="Please enter remark."></textarea>
+                        <p class="help-block" id="remark_validate"></p>
+                    </div>
+                </div>
+                <!-- For success/fail messages -->
+                <button type="submit" class="btn btn-primary" id="submit">提交</button>
+            </form>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <h3>Tips</h3>
+            <p>
+                <abbr title="查询审核状态">查询审核状态</abbr>
+                <br>
+                请点击<a href="/performance/view_workload/">此处</a>
+            </p>
+        </div>
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+<script>
+$(document).ready(function(){
+    $('#level').change(function(){
+        var level = $('#level').val();
+        var position = $('#position').val();
+
+        if (level == '1' || level == '2' || level == '3')
+        {
+            if (position != '11' && position != '12')
+            {
+                $('#level').val('');
+                $('#level_validate').html('仅岗位为外航值机时才可选择此选项');
+            }
+            else
+            {
+                $('#level_validate').html('');
+            }
+        }
+    });
+
+    $('#position').change(function(){
+        var level = $('#level').val();
+        var position = $('#position').val();
+
+        if (level == '1' || level == '2' || level == '3')
+        {
+            if (position != '11' && position != '12')
+            {
+                $('#level').val('');
+                $('#level_validate').html('仅岗位为外航值机时才可选择此选项');
+            }
+            else
+            {
+                $('#level_validate').html('');
+            }
+        }
+    });
+})
+
+$.fn.setNow = function (onlyBlank) {
+  var now = new Date($.now())
+    , year
+    , month
+    , date
+    , hours
+    , minutes
+    , seconds
+    , formattedDateTime
+    ;
+
+  year = now.getFullYear();
+  month = now.getMonth().toString().length === 1 ? '0' + (now.getMonth() + 1).toString() : now.getMonth() + 1;
+  date = now.getDate().toString().length === 1 ? '0' + (now.getDate()).toString() : now.getDate();
+  hours = now.getHours().toString().length === 1 ? '0' + now.getHours().toString() : now.getHours();
+  minutes = now.getMinutes().toString().length === 1 ? '0' + now.getMinutes().toString() : now.getMinutes();
+  seconds = now.getSeconds().toString().length === 1 ? '0' + now.getSeconds().toString() : now.getSeconds();
+
+  formattedDateTime = year + '-' + month + '-' + date + 'T' + hours + ':' + minutes;
+
+  if ( onlyBlank === true && $(this).val() ) {
+    return this;
+  }
+
+  $(this).val(formattedDateTime);
+
+  return this;
+}
+
+$(function () {
+    // Handler for .ready() called.
+    $('input[type="datetime-local"]').setNow();
+
+});
+
+</script>
+
+</body>
+
+</html>

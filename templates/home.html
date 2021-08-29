@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>管理系统</title>
+</head>
+
+<body>
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Header -->
+{% include "header.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <h1 class="my-4">欢迎访问</h1>
+
+    <!-- Marketing Icons Section -->
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <h4 class="card-header">绩效管理</h4>
+                <div class="card-body">
+                    <p class="card-text">工作量登记、审核</p>
+                </div>
+                <div class="card-footer">
+                    <a href="performance/" class="btn btn-primary" style="btn btn-primary">进入</a>
+<!--                    <a href="javascript:return false" class="btn btn-primary" style="opacity: 0.2">敬请期待</a>-->
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <h4 class="card-header">电子签名</h4>
+                <div class="card-body">
+                    <p class="card-text">带电子签名的文档生成</p>
+                </div>
+                <div class="card-footer">
+                    <a href="document/" class="btn btn-primary" style="btn btn-primary">进入</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <h4 class="card-header">后台管理</h4>
+                <div class="card-body">
+                    <p class="card-text">登录后台管理数据</p>
+                </div>
+                <div class="card-footer">
+                    <a href="admin/" class="btn btn-primary" style="btn btn-primary">进入</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+
+    <!-- Features Section -->
+    <div class="row">
+        <div class="col-lg-6">
+            <h2>科室管理系统</h2>
+            <p>科室管理系统是由国际值机创新工作室自主研发的一套适用于科室的管理系统，目前有电子签名文档、绩效管理两个主要模块。</p>
+            <ul>
+                <li>
+                    <strong>主要技术</strong>
+                </li>
+                <li>语言:Python</li>
+                <li>框架:Django</li>
+            </ul>
+            <p></p>
+        </div>
+        <div class="col-lg-6">
+            <img class="img-fluid rounded" src="{% static 'images/home_4_700_450.jpg' %}" alt="">
+        </div>
+    </div>
+    <!-- /.row -->
+
+    <hr>
+
+    <!-- Call to Action Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <p>国际值机创新工作室</p>
+        </div>
+        <div class="col-md-4">
+            <a class="btn btn-lg btn-secondary btn-block" href="/contact">联系我们</a>
+        </div>
+    </div>
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+</body>
+
+</html>

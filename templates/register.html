@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>注册</title>
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">注册
+        <small>管理系统</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        <li class="breadcrumb-item active">注册</li>
+    </ol>
+
+    <!-- Contact Form -->
+    <!-- In order to set the email address and subject line for the contact form go to the bin/contact_me.php file. -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <h3>用户注册</h3>
+            <form name="loginForm" id="loginForm" action="{% url 'register' %}" method="post">
+                {% csrf_token %}
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>用户名:</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名"
+                               required data-validation-required-message="Please enter your username.">
+                        <p class="help-block" id="username_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>密码:</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码"
+                               required data-validation-required-message="Please enter your password.">
+                        <p class="help-block" id="password_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>姓氏:</label>
+                        <input type="text" class="form-control" id="lastname" name="lastname" placeholder="请输入姓氏"
+                               required data-validation-required-message="Please enter your lastname.">
+                        <p class="help-block" id="lastname_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>名字:</label>
+                        <input type="text" class="form-control" id="firstname" name="firstname" placeholder="请输入名字"
+                               required data-validation-required-message="Please enter your firstname.">
+                        <p class="help-block" id="firstname_validate"></p>
+                    </div>
+                </div>
+                <div>{{ msg }}</div>
+                <!-- For success/fail messages -->
+                <button type="submit" class="btn btn-primary" id="submit">注册</button>
+            </form>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <h3>Tips</h3>
+            <p>
+                <abbr title="已有账号?">已有账号</abbr>?
+                <br>
+                点击<a href="/login">此处</a>登录
+            </p>
+            {% include "login_register_tips.html" %}
+        </div>
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+<script>
+$(document).ready(function(){
+    $('#username').blur(function(){
+        var username = $('#username').val();
+        $.get('/check_username_validate/',{'username':username}, function(ret){
+            $('#username_validate').html(ret);
+        });
+    });
+
+    $('#password').blur(function(){
+        var password = $('#password').val();
+        $.get('/check_password_validate/',{'password':password}, function(ret){
+            $('#password_validate').html(ret);
+        });
+    });
+
+    $('#lastname').blur(function(){
+        var lastname = $('#lastname').val();
+        $.get('/check_lastname_validate/',{'lastname':lastname}, function(ret){
+            $('#lastname_validate').html(ret);
+        });
+    });
+
+    $('#firstname').blur(function(){
+        var firstname = $('#firstname').val();
+        $.get('/check_firstname_validate/',{'firstname':firstname}, function(ret){
+            $('#firstname_validate').html(ret);
+        });
+    });
+
+    $(function(){
+        $("#submit").click(function(event){
+            var username = $('#username').val();
+            var password = $('#password').val();
+            var lastname = $('#lastname').val();
+            var firstname = $('#firstname').val();
+            var username_validate = $('#username_validate').text();
+            var password_validate = $('#password_validate').text();
+            var lastname_validate = $('#lastname_validate').text();
+            var firstname_validate = $('#firstname_validate').text();
+            if(username == "" || password == "" || lastname == "" || firstname == ""){
+                event.preventDefault();
+                alert("输入不能为空！")
+            } else if(username_validate != "" || password_validate != "" || lastname_validate != "" || firstname_validate != ""){
+                event.preventDefault();
+                alert("输入有误，请检查！")
+            };
+        });
+    });
+});
+</script>
+</body>
+
+</html>

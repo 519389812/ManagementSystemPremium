@@ -1,0 +1,9 @@
+.table{
+  margin-top:50px;width:100% ;border:solid #add9c0; border-width:1px 0px 0px 1px;}
+
+.table tr td {
+  border:solid #add9c0; border-width:0px 1px 1px 0px; padding:10px 0px;font-size:18px;align:center;}
+
+.table tr td input{
+  width: 250px; height: 30px;font-size:18px
+}

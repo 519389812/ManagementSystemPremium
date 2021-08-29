@@ -1,0 +1,61 @@
+{% extends 'admin/change_list.html' %}
+{% load static %}
+
+{% block content_title %}
+    <h1>奖惩统计</h1>
+{% endblock %}
+
+{% block result_list %}
+    <div class="results">
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        <div class="text">
+                            <a href="#">姓名</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#">登记数量</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#">分数</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#">工作量</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#">奖金</a>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in summary %}
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td>{{ row.user__last_name }}{{ row.user__first_name }}</td>
+                        <td>{{ row.count }}</td>
+                        <td>{{ row.score }}</td>
+                        <td>{{ row.workload }}</td>
+                        <td>{{ row.bonus }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block pagination %}
+    <hr><br>
+    <p style="color:gray">{{ summary | length }} 工作量统计记录</p>
+    <hr><br>
+    <a class="btn btn-xs btn-primary" href="{% url 'reward_charts' %}"><input name="reward_charts" type="button" id="reward_charts" value="可视化统计图表(测试)"></a>
+{% endblock %}

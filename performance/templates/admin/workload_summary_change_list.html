@@ -1,0 +1,67 @@
+{% extends 'admin/change_list.html' %}
+{% load static %}
+
+{% block content_title %}
+    <h1>工作量统计</h1>
+{% endblock %}
+
+{% block result_list %}
+    <div class="results">
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        <div class="text">
+                            <a href="#">姓名</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#">登记数量</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#"><strong>总分数</strong></a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#"><strong>总工作量</strong></a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#"><strong>总奖金</strong></a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#"><strong>总工时</strong></a>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in summary %}
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td>{{ row.user__last_name }}{{ row.user__first_name }}</td>
+                        <td>{{ row.count }}</td>
+                        <td><strong>{{ row.total_score }}</strong></td>
+                        <td><strong>{{ row.total_workload }}</strong></td>
+                        <td><strong>{{ row.total_bonus }}</strong></td>
+                        <td><strong>{{ row.total_man_hours }}</strong></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block pagination %}
+    <hr><br>
+    <p style="color:gray">{{ summary | length }} 工作量统计记录</p>
+    <hr><br>
+    <div><a class="btn btn-xs btn-danger" href="{% url 'workload_summary_export' %}"><input name="workload_summary_export" type="button" id="workload_summary_export" value="导出(测试)"></a></div>
+{% endblock %}

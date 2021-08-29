@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>密保问题验证</title>
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">验证
+        <small>密保问题</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        <li class="breadcrumb-item active">密保问题验证</li>
+    </ol>
+
+    <!-- Contact Form -->
+    <!-- In order to set the email address and subject line for the contact form go to the bin/contact_me.php file. -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <h3>密保问题验证(最多可以设置三个问题，仅用于找回密码，答案已加密请放心设置)</h3>
+            <div>{{ msg }}</div>
+            <form name="loginForm" id="loginForm" action="{% url 'save_question_verify' %}" method="post">
+                {% csrf_token %}
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>密保问题:</label>
+                        <input type="text" class="form-control" id="question" name="question" placeholder="请输入密保问题"
+                               required data-validation-required-message="Please enter question.">
+                        <p class="help-block" id="question_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>密保答案:</label>
+                        <input type="text" class="form-control" id="answer" name="answer" placeholder="请输入密保答案"
+                               required data-validation-required-message="Please enter answer."
+                               style="-webkit-text-security:disc;text-security:disc;">
+                        <p class="help-block" id="answer_validate"></p>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="submit" onclick="submit()">确认</button>
+            </form>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <h3>Tips</h3>
+            {% include "login_register_tips.html" %}
+        </div>
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+<script>
+$(document).ready(function(){
+    $(function(){
+        $("#submit").click(function(event){
+            var question = $('#question').val();
+            var answer = $('#answer').val();
+            var question_validate = $('#question_validate').text();
+            var answer_validate = $('#answer_validate').text();
+            if(question == ""){
+                event.preventDefault();
+                alert("输入不能为空！")
+            } else if(answer == ""){
+                event.preventDefault();
+                alert("输入不能为空！")
+            };
+        });
+    });
+
+    $('#question').blur(function(){
+        var question = $('#question').val();
+        $.get('/check_question_validate/',{'question':question}, function(ret){
+            $('#question_validate').html(ret);
+        });
+    });
+
+    $('#answer').blur(function(){
+        var answer = $('#answer').val();
+        $.get('/check_answer_validate/',{'answer':answer}, function(ret){
+            $('#answer_validate').html(ret);
+        });
+    });
+});
+</script>
+</body>
+
+</html>
