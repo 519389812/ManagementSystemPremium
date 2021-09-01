@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponse
-from user.models import User, EmailVerifyRecord, QuestionVerifySource, QuestionVerifyRecord
+from user.models import CustomUser, EmailVerifyRecord, QuestionVerifySource, QuestionVerifyRecord
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth import login as login_admin
 from django.contrib.auth import logout as logout_admin
@@ -13,7 +13,7 @@ import re
 from django.utils import timezone
 import datetime
 from django.core.mail import send_mail
-from ManagementSystem.settings import EMAIL_FROM
+from ManagementSystemPremium.settings import EMAIL_FROM
 import random
 from user_agents import parse
 import json
@@ -93,15 +93,15 @@ def user_setting(request):
 def register(request):
     if request.method == "POST":
         if not check_post_valudate(request, check_username_validate, check_password_validate, check_lastname_validate,
-                                       check_firstname_validate):
+                                   check_firstname_validate):
             return render(request, "register.html", {"msg": "存在未按规定要求的字段！"})
         username = request.POST.get("username")
         password = request.POST.get("password")
         last_name = request.POST.get("lastname")
         first_name = request.POST.get("firstname")
         try:
-            User.objects.create(username=username, password=make_password(password), last_name=last_name,
-                                first_name=first_name, is_active=False)
+            CustomUser.objects.create(username=username, password=make_password(password), last_name=last_name,
+                                      first_name=first_name, is_active=False)
             return render(request, "register.html", {"msg": "注册成功，请等待管理员审核！"})
         except:
             return render(request, "register.html", {"msg": "注册失败，出现未知错误，请联系管理员！"})
@@ -126,7 +126,7 @@ def login(request):
                 return redirect('/')
         else:
             try:
-                user = User.objects.get(username=username)
+                user = CustomUser.objects.get(username=username)
                 if check_password(password, user.password):
                     if user.is_active:
                         return render(request, "login.html", {"msg": "登录出错，请管理员！"})
@@ -203,7 +203,7 @@ def check_set_user_verify_email(request, code):
     if len(records) > 0:
         for record in records:
             if check_datetime_opened(timezone.localtime(record.close_datetime), timezone.localtime(timezone.now())):
-                user = User.objects.get(id=record.user.id)
+                user = CustomUser.objects.get(id=record.user.id)
                 user.email = record.email
                 user.save()
                 return render(request, 'user_setting.html', {"msg": "邮箱验证成功"})
@@ -230,7 +230,7 @@ def select_reset_password_by_question(request):
         if username == "":
             return render(request, "pre_reset_password_by_question.html", {"msg": "用户名为空"})
         try:
-            user = User.objects.get(username=username)
+            user = CustomUser.objects.get(username=username)
             question_list = QuestionVerifySource.objects.filter(user=user).values('id', 'question')
             return render(request, "select_reset_password_by_question.html", {"question_list": question_list})
         except:
@@ -247,7 +247,6 @@ def check_reset_password_question(request):
             return render(request, "select_reset_password_by_question.html", {"msg": "输入为空"})
         try:
             question = QuestionVerifySource.objects.get(id=int(question_id))
-            print(answer, make_password(answer))
             if check_password(answer, question.answer):
                 code = random_str(16)
                 QuestionVerifyRecord.objects.create(user=question.user, code=code, close_datetime=timezone.localtime(timezone.now()) + datetime.timedelta(minutes=5))
@@ -274,7 +273,7 @@ def reset_password_by_question(request, code):
                         return render(request, 'reset_password_by_question.html', {"msg": "密码为空", "code": code})
                     if password != password_repeat:
                         return render(request, 'reset_password_by_question.html', {"msg": "两次输入的密码不一致", "code": code})
-                    user = User.objects.get(id=record.user.id)
+                    user = CustomUser.objects.get(id=record.user.id)
                     user.password = make_password(password)
                     user.save()
                     return render(request, 'login.html', {"msg": "密码修改成功"})
@@ -289,7 +288,7 @@ def send_reset_password_email(request):
             return render(request, "reset_password_email.html", {"msg": "存在未按格式输入的字段!"})
         username = request.POST.get("username", "")
         try:
-            user = User.objects.get(username=username)
+            user = CustomUser.objects.get(username=username)
         except:
             return render(request, "pre_reset_password_by_email.html", {"msg": "用户名不存在"})
         email_address = request.POST.get("email_address", "")
@@ -326,7 +325,7 @@ def reset_password_by_email(request, code):
                         return render(request, 'reset_password_by_email.html', {"msg": "密码为空", "code": code})
                     if password != password_repeat:
                         return render(request, 'reset_password_by_email.html', {"msg": "两次输入的密码不一致", "code": code})
-                    user = User.objects.get(id=record.user.id)
+                    user = CustomUser.objects.get(id=record.user.id)
                     user.password = make_password(password)
                     user.save()
                     return render(request, 'login.html', {"msg": "密码修改成功"})
@@ -350,7 +349,7 @@ def change_password(request):
                 return render(request, 'change_password.html', {"msg": "密码为空"})
             if password != password_repeat:
                 return render(request, 'change_password.html', {"msg": "两次输入的密码不一致"})
-            user = User.objects.get(id=request.user.id)
+            user = CustomUser.objects.get(id=request.user.id)
             user.password = make_password(password)
             user.save()
             return render(request, 'login.html', {"msg": "密码修改成功，请重新登录"})
@@ -374,7 +373,7 @@ def check_username_validate(request):
         return HttpResponse('用户名不能少于4个字符或超过16个字符')
     if not re.search(r'^[_a-zA-Z0-9]+$', username):
         return HttpResponse("用户名包含非法字符(!,@,#,$,%...)")
-    if User.objects.filter(username=username).count() != 0:
+    if CustomUser.objects.filter(username=username).count() != 0:
         return HttpResponse('用户名已存在')
     return HttpResponse('')
 

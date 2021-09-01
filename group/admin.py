@@ -28,4 +28,4 @@ class CustomGroupAdmin(GroupAdmin):
 
 
 admin.site.unregister(Group)
-admin.site.register(Group, CustomGroupAdmin)
+admin.site.register(CustomGroup, CustomGroupAdmin)

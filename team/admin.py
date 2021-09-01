@@ -1,9 +1,8 @@
 from django.contrib import admin
-from team.models import Team
-from user.models import User
+from team.models import CustomTeam
+from user.models import CustomUser
 import json
 from django.contrib import messages
-from ManagementSystem.admin import return_get_queryset_by_parent_team_foreignkey
 
 
 class TeamAdmin(admin.ModelAdmin):
@@ -44,7 +43,7 @@ class TeamAdmin(admin.ModelAdmin):
 
     def related_parent_name(self, obj):
         related_parent_id_list = json.loads(obj.related_parent)
-        related_parent_name = '-->'.join([Team.objects.get(id=id).name for id in related_parent_id_list])
+        related_parent_name = '-->'.join([CustomTeam.objects.get(id=id).name for id in related_parent_id_list])
         return related_parent_name
     related_parent_name.short_description = "组织关系"
 
@@ -61,7 +60,7 @@ class TeamAdmin(admin.ModelAdmin):
                 return related_parent
 
     def delete_included_related_parent(self, team_id):
-        included_related_parent_objects = Team.objects.filter(related_parent__iregex=r'\D%s\D' % str(team_id))
+        included_related_parent_objects = CustomTeam.objects.filter(related_parent__iregex=r'\D%s\D' % str(team_id))
         if included_related_parent_objects.count() > 0:
             for object in included_related_parent_objects:
                 related_parent = json.loads(object.related_parent)
@@ -70,7 +69,7 @@ class TeamAdmin(admin.ModelAdmin):
                 object.save()
 
     def change_included_related_parent(self, team_id, changed_related_parent_list):
-        included_related_parent_objects = Team.objects.filter(related_parent__iregex=r'\D%s\D' % str(team_id))
+        included_related_parent_objects = CustomTeam.objects.filter(related_parent__iregex=r'\D%s\D' % str(team_id))
         if included_related_parent_objects.count() > 0:
             for object in included_related_parent_objects:
                 related_parent = json.loads(object.related_parent)
@@ -94,7 +93,7 @@ class TeamAdmin(admin.ModelAdmin):
                         messages.error(request, "保存失败！%s 的上级部门不可为 %s，请重新设置！" % (obj.name, form.cleaned_data["parent"].name))
                         messages.set_level(request, messages.ERROR)
                         return
-                if Team.objects.get(id=obj.id).parent != obj.parent:
+                if CustomTeam.objects.get(id=obj.id).parent != obj.parent:
                     if not obj.parent:
                         super().save_model(request, obj, form, change)
                         self.delete_included_related_parent(obj.id)
@@ -107,4 +106,4 @@ class TeamAdmin(admin.ModelAdmin):
                 super().save_model(request, obj, form, change)
 
 
-admin.site.register(Team, TeamAdmin)
+admin.site.register(CustomTeam, TeamAdmin)

@@ -1,11 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from team.models import Team
+from team.models import CustomTeam
 
 
 class CustomUser(AbstractUser):
     ip_address = models.CharField(max_length=20, blank=True, verbose_name="上次登录ip")
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True, verbose_name="所属团队")
+    team = models.ForeignKey(CustomTeam, on_delete=models.CASCADE, null=True, blank=True, verbose_name="所属团队")
 
     def get_full_name(self):
         full_name = '%s%s' % (self.last_name, self.first_name)

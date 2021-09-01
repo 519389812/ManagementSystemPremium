@@ -32,14 +32,14 @@ online = False
 
 if online:
     DEBUG = False
-    ALLOWED_HOSTS = ['teamwork.pythonanywhere.com']
+    ALLOWED_HOSTS = ['teamworkad.pythonanywhere.com']
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': "teamwork$default",
-            'USER': 'teamwork',
+            'NAME': "teamworkad$default",
+            'USER': 'teamworkad',
             'PASSWORD': 'zjss123456',
-            'HOST': 'teamwork.mysql.pythonanywhere-services.com',
+            'HOST': 'teamworkad.mysql.pythonanywhere-services.com',
         }
     }
 else:
@@ -56,12 +56,15 @@ else:
 # Application definition
 INSTALLED_APPS = [
     'simpleui',
+    'user',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'group',
+    'team',
 ]
 
 MIDDLEWARE = [

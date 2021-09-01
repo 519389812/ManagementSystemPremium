@@ -3,9 +3,9 @@ from django.shortcuts import render, reverse, redirect
 from django.conf import settings
 from django.core.paginator import Paginator
 from performance.models import Position, WorkloadRecord, Level, Output, OutputRecord, RewardRecord
-from team.models import Team
+from team.models import CustomTeam
 from user.views import check_authority, check_grouping
-from ManagementSystem.views import parse_url_param
+from ManagementSystemPremium.views import parse_url_param
 from django.utils import timezone
 import pandas as pd
 import numpy as np

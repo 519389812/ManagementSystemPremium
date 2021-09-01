@@ -5,11 +5,6 @@ from urllib import parse
 from django.shortcuts import render
 from django.http import *
 
-# 当前路径钥匙地址
-curr_dir = os.path.dirname(os.path.realpath(__file__))
-private_key_file = os.path.join(curr_dir, "my_private_rsa_key.bin")  # 密钥
-public_key_file = os.path.join(curr_dir, "my_rsa_public.pem")  # 公钥
-
 
 def home(request):
     return render(request, "home.html")
