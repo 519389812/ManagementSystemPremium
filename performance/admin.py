@@ -16,86 +16,6 @@ def half_ceil(x):
     return math.modf(x)[1] + (0.5 if math.modf(x)[0] < 0.5 else 1)
 
 
-class RuleAdmin(admin.ModelAdmin):
-    list_display = ('name', 'effect', 'date_condition', 'condition', 'score', 'workload', 'bonus', 'man_hours', 'quantity')
-    filter_horizontal = ('team',)
-    search_fields = ('name',)
-
-    def get_form(self, request, obj=None, **kwargs):
-        help_texts = {
-            'date_condition': '如需要规定90天内重复某个差错，则时间条件设为：“<=90“，无条件则为空，当规则指向“程度”时，条件无效',
-            'condition': '如需要规定数量2次以上，则条件设为：“>=2“，无条件则为空，当规则指向“程度”时，条件无效',
-            'score': '如需设置双倍分数奖罚，则设为：“*2“，无权重则为空',
-            'workload': '如需设置扣20工作量，则设为：“-20“，无权重则为空',
-            'bonus': '如需设置奖金减半，则设为：“/2“，无权重则为空',
-            'man_hours': '如需设置工时加成30%，则设为：“*0.3，特别注意：工时仅作用于工作量表“，无权重则为空',
-            'quantity': '设置产出的加权，无权重则为空'
-        }
-        kwargs.update({'help_texts': help_texts})
-        return super(RuleAdmin, self).get_form(request, obj, **kwargs)
-
-    def save_model(self, request, obj, form, change):
-        if form.is_valid():
-            if obj.effect == "level":
-                if obj.date_condition:
-                    obj.date_condition = None
-                    messages.error(request, "注意：当规则作用于程度时，日期条件和数量条件无效！")
-                if obj.condition:
-                    obj.condition = None
-                    messages.error(request, "注意：当规则作用于程度时，日期条件和数量条件无效！")
-            elif obj.effect == "skill":
-                if obj.date_condition:
-                    obj.date_condition = None
-                    messages.error(request, "注意：当规则作用于技能时，日期条件无效！")
-            super().save_model(request, obj, form, change)
-
-
-class LevelTypeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
-    filter_horizontal = ('team',)
-    search_fields = ('name',)
-
-    def get_form(self, request, obj=None, **kwargs):
-        help_texts = {
-            'name': '如需要设置专用于“新增工作安排”表的程度项，请将名称设置为“工作安排记录”，“产出”同理。',
-        }
-        kwargs.update({'help_texts': help_texts})
-        return super(LevelTypeAdmin, self).get_form(request, obj, **kwargs)
-
-
-class LevelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'rule')
-    filter_horizontal = ('team',)
-    search_fields = ('name',)
-    # autocomplete_fields = ['type']
-
-
-class PositionTypeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
-    filter_horizontal = ('team',)
-    search_fields = ('name',)
-
-
-class PositionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'score', 'workload', 'bonus', 'man_hours', 'rule')
-    filter_horizontal = ('team',)
-    search_fields = ('name',)
-    # autocomplete_fields = ['type']
-
-
-class RewardTypeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
-    filter_horizontal = ('team',)
-    search_fields = ('name',)
-
-
-class RewardAdmin(admin.ModelAdmin):
-    list_display = ('type', 'name', 'score', 'workload', 'bonus', 'rule')
-    filter_horizontal = ('team',)
-    search_fields = ('name',)
-    # autocomplete_fields = ['type']
-
-
 class ShiftAdmin(admin.ModelAdmin):
     list_display = ('name', 'score', 'workload', 'bonus', 'rule')
     filter_horizontal = ('team',)
@@ -399,13 +319,6 @@ class OutputSummaryAdmin(admin.ModelAdmin):
         return response
 
 
-admin.site.register(Rule, RuleAdmin)
-admin.site.register(LevelType, LevelTypeAdmin)
-admin.site.register(Level, LevelAdmin)
-admin.site.register(PositionType, PositionTypeAdmin)
-admin.site.register(Position, PositionAdmin)
-admin.site.register(RewardType, RewardTypeAdmin)
-admin.site.register(Reward, RewardAdmin)
 admin.site.register(Shift, ShiftAdmin)
 admin.site.register(OutputType, OutputTypeAdmin)
 admin.site.register(Output, OutputAdmin)

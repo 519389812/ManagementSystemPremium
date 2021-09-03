@@ -56,13 +56,13 @@ else:
 # Application definition
 INSTALLED_APPS = [
     'simpleui',
-    'user',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'user',
     'group',
     'team',
 ]
@@ -147,7 +147,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'quickcheck', 'static', 'quickcheck'),
 ]
 
-AUTH_USER_MODEL = 'user.user'
+AUTH_USER_MODEL = 'user.CustomUser'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
