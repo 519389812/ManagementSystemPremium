@@ -1,5 +1,5 @@
 from django.contrib import admin
-from basic.models import PositionType, Position, RewardType, Reward, PenaltyType, Penalty
+from rule.models import PositionType, Position, RewardType, Reward, PenaltyType, Penalty
 
 
 class PositionTypeAdmin(admin.ModelAdmin):
@@ -40,3 +40,4 @@ admin.site.register(RewardType, RewardTypeAdmin)
 admin.site.register(Reward, RewardAdmin)
 admin.site.register(PenaltyType, PenaltyTypeAdmin)
 admin.site.register(Penalty, PenaltyAdmin)
+

@@ -1,5 +1,6 @@
 from django.contrib import admin
-from performance.models import LevelType, Level, Rule, PositionType, Position, RewardType, Reward, Shift, RewardRecord, RewardSummary, WorkloadRecord, WorkloadSummary, OutputType, Output, OutputRecord, OutputSummary
+from rule.models import PositionType, Position, RewardType, Reward, PenaltyType, Penalty
+from performance.models import RewardRecord, RewardSummary, PenaltyRecord, PenaltySummary, WorkloadRecord, WorkloadSummary
 from team.models import CustomTeam
 from user.models import CustomUser
 from django.contrib.admin import widgets
@@ -16,87 +17,20 @@ def half_ceil(x):
     return math.modf(x)[1] + (0.5 if math.modf(x)[0] < 0.5 else 1)
 
 
-class ShiftAdmin(admin.ModelAdmin):
-    list_display = ('name', 'score', 'workload', 'bonus', 'rule')
-    filter_horizontal = ('team',)
-    search_fields = ('name',)
-
-
-class OutputTypeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
-    filter_horizontal = ('team',)
-    search_fields = ('name',)
-
-
-class OutputAdmin(admin.ModelAdmin):
-    list_display = ('name', 'rule')
-    filter_horizontal = ('team',)
-    search_fields = ('name',)
-
-
 class RewardRecordAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'date', 'reward', 'level', 'title', 'score', 'workload', 'bonus')
-    fields = ('id', 'user', 'date', 'reward', 'get_reward_rule', 'level', 'get_level_rule', 'title', 'content', 'score', 'workload', 'bonus', 'created_datetime', 'created_user')
-    list_display_links = ('user',)
-    search_fields = ('user__last_name', 'user__first_name')
+    list_display = ('id', 'user', 'date', 'reward', 'score', 'title', 'content', 'create_datetime', 'create_user')
+    fields = ('id', 'user', 'date', 'reward', 'score', 'title', 'content', 'create_datetime', 'create_user')
+    list_display_links = ('id',)
+    search_fields = ('user__full_name', 'reward__name', 'reward__type', 'title', 'content')
     # autocomplete_fields = ['user']
-    readonly_fields = ('id', 'get_reward_rule', 'get_level_rule', 'created_datetime', 'created_user', 'score', 'workload', 'bonus')
+    readonly_fields = ('id', 'created_datetime', 'created_user')
     # list_filter = (
     #     ('date', DateRangeFilter), 'user__team', 'reward__type', 'reward'
     # )
 
-    def get_reward_rule(self, obj):
-        return obj.reward.rule if obj.reward.rule else "无"
-    get_reward_rule.short_description = "奖惩规则"
-
-    # def get_reference(self, obj):
-    #     return ' '.join([i.name for i in obj.reference.all()])
-    # get_reference.short_description = "影响"
-
-    def get_level_rule(self, obj):
-        return obj.level.rule if obj.level else "无"
-    get_level_rule.short_description = "程度规则"
-
-    def get_initial_reward(self, obj):
-        return '分数: %s, 工作量: %s, 奖金: %s' % (obj.reward.score, obj.reward.workload, obj.reward.bonus)
-    get_initial_reward.short_description = "初始分值"
-
-    def get_weight_column(self, obj, column_name):
-        return_column = eval('obj.reward.%s' % column_name)
-        if obj.reward.rule:
-            if obj.reward.rule.date_condition:
-                end_date = obj.date
-                date_delta = int(re.findall(r'\d+', obj.reward.rule.date_condition)[0])
-                start_date = end_date - timezone.timedelta(date_delta)
-                count = RewardRecord.objects.filter(user=obj.user, date__gte=start_date, date__lte=end_date).count()
-            else:
-                count = RewardRecord.objects.filter(user=obj.user).count()
-            if obj.reward.rule.condition:
-                match = eval('count %s' % obj.reward.rule.condition)
-                if match:
-                    string = 'obj.reward.rule.%s' % column_name
-                    return_column = eval('%s %s' % (return_column, eval(string))) if eval(string) else return_column
-            else:
-                if count > 0:
-                    string = 'obj.reward.rule.%s' % column_name
-                    return_column = eval('%s %s' % (return_column, eval(string))) if eval(string) else return_column
-        if obj.level:
-            if eval('obj.level.rule.%s' % column_name):
-                string = 'obj.level.rule.%s' % column_name
-                return_column = eval('%s %s' % (return_column, eval(string))) if eval(string) else return_column
-        return return_column
-
-    def save_model(self, request, obj, form, change):
-        if form.is_valid():
-            obj.score = round(self.get_weight_column(obj, 'score'), 2)
-            obj.workload = round(self.get_weight_column(obj, 'workload'), 2)
-            obj.bonus = round(self.get_weight_column(obj, 'bonus'), 2)
-            obj.created_user = request.user
-            super().save_model(request, obj, form, change)
-
 
 class RewardSummaryAdmin(admin.ModelAdmin):
-    change_list_template = "admin/reward_summary_change_list.html"
+    change_list_template = "admin/reward_penalty_summary_change_list.html"
 
     # list_filter = (
     #     ('date', DateTimeRangeFilter), 'user__team', 'reward__type', 'reward'
@@ -111,11 +45,44 @@ class RewardSummaryAdmin(admin.ModelAdmin):
         metrics = {
             'count': Count('user'),
             'score': Sum('score'),
-            'workload': Sum('workload'),
-            'bonus': Sum('bonus'),
         }
         response.context_data['summary'] = list(
-            qs.values("user__last_name", "user__first_name").annotate(**metrics).order_by('-workload')
+            qs.values('user__full_name').annotate(**metrics).order_by('-score')
+        )
+        return response
+
+
+class PenaltyRecordAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'date', 'penalty', 'score', 'title', 'content', 'create_datetime', 'create_user')
+    fields = ('id', 'user', 'date', 'penalty', 'score', 'title', 'content', 'create_datetime', 'create_user')
+    list_display_links = ('id',)
+    search_fields = ('user__full_name', 'penalty__name', 'penalty__type', 'title', 'content')
+    # autocomplete_fields = ['user']
+    readonly_fields = ('id', 'created_datetime', 'created_user')
+    # list_filter = (
+    #     ('date', DateRangeFilter), 'user__team', 'penalty__type', 'penalty'
+    # )
+
+
+class PenaltySummaryAdmin(admin.ModelAdmin):
+    change_list_template = "admin/reward_penalty_summary_change_list.html"
+
+    # list_filter = (
+    #     ('date', DateTimeRangeFilter), 'user__team', 'reward__type', 'reward'
+    # )
+
+    def changelist_view(self, request, extra_context=None):
+        response = super().changelist_view(request, extra_context=extra_context)
+        try:
+            qs = response.context_data['cl'].queryset
+        except (AttributeError, KeyError):
+            return response
+        metrics = {
+            'count': Count('user'),
+            'score': Sum('score'),
+        }
+        response.context_data['summary'] = list(
+            qs.values('user__full_name').annotate(**metrics).order_by('-score')
         )
         return response
 

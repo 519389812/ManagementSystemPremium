@@ -4,18 +4,17 @@ from team.models import CustomTeam
 
 
 class CustomUser(AbstractUser):
-    ip_address = models.CharField(max_length=20, blank=True, verbose_name="上次登录ip")
     team = models.ForeignKey(CustomTeam, on_delete=models.CASCADE, null=True, blank=True, verbose_name="所属团队")
-
-    def get_full_name(self):
-        full_name = '%s%s' % (self.last_name, self.first_name)
-        return full_name.strip()
+    full_name = models.CharField(max_length=300, null=True, blank=True, verbose_name='全名')
+    question = models.CharField(max_length=300, null=True, blank=True, verbose_name='密保问题')
+    answer = models.CharField(max_length=300, null=True, blank=True, verbose_name='密保答案')
 
     def __str__(self):
-        return self.get_full_name()
-    #
-    # def save(self, *args, **kwargs):
-    #     super(User, self).save(*args, **kwargs)
+        return self.full_name
+
+    def save(self, *args, **kwargs):
+        self.full_name = '%s%s' % (self.last_name, self.first_name)
+        super(CustomUser, self).save(*args, **kwargs)
 
 
 class EmailVerifyRecord(models.Model):
@@ -36,20 +35,6 @@ class EmailVerifyRecord(models.Model):
 
     def __str__(self):
         return self.email
-
-
-class QuestionVerifySource(models.Model):
-    id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='用户')
-    question = models.CharField(max_length=300, verbose_name='密保问题')
-    answer = models.CharField(max_length=300, verbose_name='密保答案')
-
-    class Meta:
-        verbose_name = '密保问题'
-        verbose_name_plural = '密保问题'
-
-    def __str__(self):
-        return self.user.username
 
 
 class QuestionVerifyRecord(models.Model):
