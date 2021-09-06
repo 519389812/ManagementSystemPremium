@@ -6,6 +6,7 @@ from team.models import CustomTeam
 class CustomUser(AbstractUser):
     team = models.ForeignKey(CustomTeam, on_delete=models.CASCADE, null=True, blank=True, verbose_name="所属团队")
     full_name = models.CharField(max_length=300, null=True, blank=True, verbose_name='全名')
+    email_verify = models.BooleanField(default=False, verbose_name='邮箱验证')
     question = models.CharField(max_length=300, null=True, blank=True, verbose_name='密保问题')
     answer = models.CharField(max_length=300, null=True, blank=True, verbose_name='密保答案')
 
@@ -19,7 +20,7 @@ class CustomUser(AbstractUser):
 
 class EmailVerifyRecord(models.Model):
     send_choices = (
-        ('register', '验证'),
+        ('verify', '验证'),
         ('reset', '重设'),
     )
     id = models.AutoField(primary_key=True)

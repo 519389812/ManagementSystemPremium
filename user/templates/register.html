@@ -37,7 +37,7 @@
                         <label>用户名:</label>
                         <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名"
                                required data-validation-required-message="Please enter your username.">
-                        <p class="help-block" id="username_validate"></p>
+                        <p style="color:red font-size:14px" class="help-block" id="username_validate"></p>
                     </div>
                 </div>
                 <div class="control-group form-group">
@@ -45,7 +45,7 @@
                         <label>密码:</label>
                         <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码"
                                required data-validation-required-message="Please enter your password.">
-                        <p class="help-block" id="password_validate"></p>
+                        <p style="color:red font-size:14px" class="help-block" id="password_validate"></p>
                     </div>
                 </div>
                 <div class="control-group form-group">
@@ -53,7 +53,7 @@
                         <label>姓氏:</label>
                         <input type="text" class="form-control" id="lastname" name="lastname" placeholder="请输入姓氏"
                                required data-validation-required-message="Please enter your lastname.">
-                        <p class="help-block" id="lastname_validate"></p>
+                        <p style="color:red font-size:14px" class="help-block" id="lastname_validate"></p>
                     </div>
                 </div>
                 <div class="control-group form-group">
@@ -61,10 +61,34 @@
                         <label>名字:</label>
                         <input type="text" class="form-control" id="firstname" name="firstname" placeholder="请输入名字"
                                required data-validation-required-message="Please enter your firstname.">
-                        <p class="help-block" id="firstname_validate"></p>
+                        <p style="color:red font-size:14px" class="help-block" id="firstname_validate"></p>
                     </div>
                 </div>
-                <div>{{ msg }}</div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>邮箱:</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="请输入邮箱"
+                               required data-validation-required-message="Please enter your email.">
+                        <p style="color:red font-size:14px" class="help-block" id="email_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>密保问题:</label>
+                        <input type="text" class="form-control" id="question" name="question" placeholder="请输入密保问题（用于找回密码）"
+                               required data-validation-required-message="Please enter a question.">
+                        <p style="color:red font-size:14px" class="help-block" id="question_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>密保答案:</label>
+                        <input type="text" class="form-control" id="answer" name="answer" placeholder="请输入密保答案"
+                               required data-validation-required-message="Please enter an answer.">
+                        <p style="color:red font-size:14px" class="help-block" id="answer_validate"></p>
+                    </div>
+                </div>
+                <div style="color:red font-size:14px">{{ msg }}</div>
                 <!-- For success/fail messages -->
                 <button type="submit" class="btn btn-primary" id="submit">注册</button>
             </form>
@@ -119,24 +143,51 @@ $(document).ready(function(){
         });
     });
 
+    $('#email').blur(function(){
+        var email = $('#email').val();
+        $.get('/check_email_validate/',{'email':email}, function(ret){
+            $('#email_validate').html(ret);
+        });
+    });
+
+    $('#question').blur(function(){
+        var question = $('#question').val();
+        $.get('/check_question_validate/',{'question':question}, function(ret){
+            $('#question_validate').html(ret);
+        });
+    });
+
+    $('#answer').blur(function(){
+        var answer = $('#answer').val();
+        $.get('/check_answer_validate/',{'answer':answer}, function(ret){
+            $('#answer_validate').html(ret);
+        });
+    });
+
     $(function(){
-        $("#submit").click(function(event){
+        $("#submit").click(function(event){
             var username = $('#username').val();
             var password = $('#password').val();
             var lastname = $('#lastname').val();
             var firstname = $('#firstname').val();
+            var email = $('#email').val();
+            var question = $('#question').val();
+            var answer = $('#answer').val();
             var username_validate = $('#username_validate').text();
             var password_validate = $('#password_validate').text();
             var lastname_validate = $('#lastname_validate').text();
             var firstname_validate = $('#firstname_validate').text();
-            if(username == "" || password == "" || lastname == "" || firstname == ""){
+            var email_validate = $('#email_validate').text();
+            var question_validate = $('#question_validate').text();
+            var answer_validate = $('#answer_validate').text();
+            if(username == "" || password == "" || lastname == "" || firstname == "" || email == "" || question == "" || answer == ""){
                 event.preventDefault();
                 alert("输入不能为空！")
-            } else if(username_validate != "" || password_validate != "" || lastname_validate != "" || firstname_validate != ""){
-                event.preventDefault();
+            } else if(username_validate!="" || password_validate != "" || lastname_validate != "" || email_validate == "" || firstname_validate != "" || question_validate == "" || answer_validate == ""){
+                event.preventDefault();
                 alert("输入有误，请检查！")
-            };
-        });
+            };
+        });
     });
 });
 </script>

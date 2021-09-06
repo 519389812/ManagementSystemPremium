@@ -30,17 +30,17 @@
     <div class="row">
         <div class="col-lg-8 mb-4">
             <h3>邮箱验证</h3>
-            <div>{{ msg }}</div>
-            <form name="loginForm" id="loginForm" action="{% url 'send_set_user_verify_email' %}" method="post">
+            <form name="loginForm" id="loginForm" action="{% url 'send_verify_email' %}" method="post">
                 {% csrf_token %}
                 <div class="control-group form-group">
                     <div class="controls">
                         <label>邮箱地址:</label>
-                        <input type="email" class="form-control" id="email_address" name="email_address" placeholder="请输入邮箱地址"
-                               required data-validation-required-message="Please enter email address.">
-                        <p class="help-block" id="email_address_validate"></p>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="请输入邮箱地址"
+                               required value="{{ email }}">
+                        <p class="help-block" id="email_validate"></p>
                     </div>
                 </div>
+                <div style="color:red font-size:14px">{{ msg }}</div>
                 <button type="submit" class="btn btn-primary" id="submit" onclick="submit()">发送验证邮件</button>
             </form>
         </div>
@@ -61,18 +61,25 @@
 {% include "script.html" %}
 <script>
 $(document).ready(function(){
+    $('#email').blur(function(){
+        var email = $('#email').val();
+        $.get('/check_email_validate/',{'email':email}, function(ret){
+            $('#email_validate').html(ret);
+        });
+    });
+
     $(function(){
-        $("#submit").click(function(event){
-            var email_address = $('#email_address').val();
-            var email_address_validate = $('#email_address_validate').text();
-            if(email_address == ""){
+        $("#submit").click(function(event){
+            var email = $('#email').val();
+            var email_validate = $('#email_validate').text();
+            if(email == ""){
                 event.preventDefault();
                 alert("输入不能为空！")
-            } else if(email_address_validate != ""){
-                event.preventDefault();
+            } else if(email_validate!=""){
+                event.preventDefault();
                 alert("输入有误，请检查！")
-            };
-        });
+            };
+        });
     });
 });
 </script>

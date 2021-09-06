@@ -105,28 +105,6 @@ class WorkloadRecordAdmin(admin.ModelAdmin):
         kwargs.update({'help_texts': help_texts})
         return super(WorkloadRecordAdmin, self).get_form(request, obj, **kwargs)
 
-    # def save_model(self, request, obj, form, change):
-    #     if form.is_valid():
-    #         if obj.working_time > 24:
-    #             messages.error(request, "保存失败！工作时长超过最大限制24小时！")
-    #             messages.set_level(request, messages.ERROR)
-    #             return
-    #         if not change:
-    #             super().save_model(request, obj, form, change)
-    #         obj.score = round(self.get_weight_column(obj, 'position', 'score', obj.working_time), 2)
-    #         obj.workload = round(self.get_weight_column(obj, 'position', 'workload', obj.working_time), 2)
-    #         obj.bonus = round(self.get_weight_column(obj, 'position', 'bonus', obj.working_time), 2)
-    #         if obj.position.man_hours:
-    #             obj.man_hours = round(self.get_weight_man_hours(obj, obj.working_time), 2)
-    #         else:
-    #             obj.man_hours = 0
-    #         verified_before = WorkloadRecord.objects.get(id=obj.id).verified
-    #         verified_after = form.cleaned_data["verified"]
-    #         if verified_before != verified_after and verified_after is True:
-    #             obj.verified_user = request.user
-    #             obj.verified_datetime = timezone.localtime(timezone.now())
-    #         super().save_model(request, obj, form, change)
-
 
 class WorkloadSummaryAdmin(admin.ModelAdmin):
     change_list_template = "admin/workload_summary_change_list.html"

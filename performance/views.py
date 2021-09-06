@@ -146,7 +146,7 @@ def workload_summary_export(request):
     data = pd.pivot_table(data, values=['分数', '工作量', '奖金', '工时'], index=['姓名'], aggfunc=np.sum)
     filename = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment;filename='{}''.format('Export pivot by score ' + filename + '.xlsx')
+    response['Content-Disposition'] = "attachment;filename='{}'".format('Export pivot by score ' + filename + '.xlsx')
     data.to_excel(outfile)
     response.write(outfile.getvalue())
     return response
@@ -190,29 +190,29 @@ def add_workload(request):
         sale = request.POST.get('sale', '')
         verifier_team_id = request.POST.get('verifier_team_id', '')
         remark = request.POST.get('remark', '')
-        if not all([date, position_id, number_people, number_baggage, sale, verifier]):
+        if not all([date, position_id, number_people, number_baggage, sale, verifier_team_id]):
             return render(request, 'error_500.html', status=500)
         try:
             position = Position.objects.get(id=int(position_id))
-            verifier = CustomTeam.objects.get(id=int(assigned_team_id))
-            WorkloadRecord.objects.create(user=request.user, position=position, level=level,
-                                          start_datetime=start_datetime, end_datetime=end_datetime,
-                                          working_time=working_time, assigned_team=assigned_team, remark=remark)
+            verifier = CustomTeam.objects.get(id=int(verifier_team_id))
+            WorkloadRecord.objects.create(user=request.user, date=date, position=position,
+                                          number_people=int(number_people), number_baggage=int(number_baggage),
+                                          sale=float(sale), verifier=verifier, remark=remark)
             msg = '登记成功！您可以继续登记下一条记录！'
             return render(request, 'add_workload.html',
-                          {'position_list': position_list, 'team_list': team_list, 'level_list': level_list,
-                           'position_name': position.name, 'assigned_team_name': assigned_team.name, 'msg': msg})
+                          {'position_list': position_list, 'team_list': team_list, 'position_name': position.name,
+                           'verifier_team_name': verifier.name, 'msg': msg})
         except:
             return render(request, 'error_500.html', status=500)
     else:
-        return render(request, 'add_workload.html', {'position_list': position_list, 'team_list': team_list, 'level_list': level_list})
+        return render(request, 'add_workload.html', {'position_list': position_list, 'team_list': team_list})
 
 
 @check_authority
 def view_workload(request):
     if request.method == 'GET':
         page_num = request.GET.get('page', '1')
-        create_datetime = timezone.localtime(timezone.now()) - timezone.timedelta(days=41)
+        create_datetime = timezone.localtime(timezone.now()) - timezone.timedelta(days=30)
         workload_list = WorkloadRecord.objects.filter(user=request.user, created_datetime__gte=create_datetime)
         paginator = Paginator(workload_list, 20)
         page = paginator.get_page(int(page_num))

@@ -30,7 +30,7 @@
     <!-- In order to set the email address and subject line for the contact form go to the bin/contact_me.php file. -->
     <div class="row">
         <div class="col-lg-8 mb-4">
-            {{ msg }}
+            <div style="color:red font-size:14px">{{ msg }}</div>
             <h3>新增工作量记录</h3>
             <form name="addWorkloadForm" id="addWorkloadForm" action="{% url 'add_workload' %}" method="post">
                 {% csrf_token %}
@@ -88,16 +88,16 @@
                 <div class="control-group form-group">
                     <div class="controls">
                         <label>审核室:</label>
-                        <select class="form-control" id="verifier" name="verifier">
+                        <select class="form-control" id="verifier_team_id" name="verifier_team_id">
                             {% for team in team_list %}
-                                {% if team.name == assigned_team_name %}
+                                {% if team.name == verifier_team_name %}
                                     <option selected value="{{ team.id }}">{{ team.name }}</option>
                                 {% else %}
                                     <option value="{{ team.id }}">{{ team.name }}</option>
                                 {% endif %}
                             {% endfor %}
                         </select>
-                        <p class="help-block" id="assigned_team_validate"></p>
+                        <p class="help-block" id="verifier_team_validate"></p>
                     </div>
                 </div>
                 <div class="control-group form-group">

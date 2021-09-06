@@ -44,6 +44,7 @@ urlpatterns = [
     path('register/', user_views.register, name="register"),
     path('user_setting/', user_views.user_setting, name="user_setting"),
     path('change_password/', user_views.change_password, name="change_password"),
+
     path('check_username_validate/', user_views.check_username_validate, name="check_username_validate"),
     path('check_password_validate/', user_views.check_password_validate, name="check_password_validate"),
     path('check_old_password_validate/', user_views.check_old_password_validate, name="check_old_password_validate"),
@@ -53,19 +54,21 @@ urlpatterns = [
     path('check_email_validate/', user_views.check_email_validate, name="check_email_validate"),
     path('check_question_validate/', user_views.check_question_validate, name="check_question_validate"),
     path('check_answer_validate/', user_views.check_answer_validate, name="check_answer_validate"),
-    path('check_post_valudate/', user_views.check_post_valudate, name="check_post_valudate"),
+    path('check_post_validate/', user_views.check_post_validate, name="check_post_validate"),
+
     path(r'set_email_verify/', user_views.set_email_verify, name="set_email_verify"),
-    path(r'send_set_user_verify_email/', user_views.send_set_user_verify_email, name="send_set_user_verify_email"),
-    path(r'set_question_verify/', user_views.set_question_verify, name="set_question_verify"),
-    path(r'save_question_verify/', user_views.save_question_verify, name="save_question_verify"),
+    path(r'send_verify_email/', user_views.send_verify_email, name="send_verify_email"),
+    re_path(r'check_verify_email/(.*)/$', user_views.check_verify_email, name="check_verify_email"),
+
     path(r'pre_reset_password/', user_views.pre_reset_password, name="pre_reset_password"),
+
     path(r'pre_reset_password_by_question/', user_views.pre_reset_password_by_question, name="pre_reset_password_by_question"),
-    path(r'pre_reset_password_by_email/', user_views.pre_reset_password_by_email, name="pre_reset_password_by_email"),
-    path(r'select_reset_password_by_question/', user_views.select_reset_password_by_question, name="select_reset_password_by_question"),
-    path(r'check_reset_password_question/', user_views.check_reset_password_question, name="check_reset_password_question"),
-    path(r'send_reset_password_email/', user_views.send_reset_password_email, name="send_reset_password_email"),
-    re_path(r'check_set_user_verify_email/(.*)/$', user_views.check_set_user_verify_email, name="check_set_user_verify_email"),
+    path(r'show_reset_password_question/', user_views.show_reset_password_question, name="show_reset_password_question"),
+    path(r'check_reset_password_answer/', user_views.check_reset_password_answer, name="check_reset_password_answer"),
     re_path(r'reset_password_by_question/(.*)/$', user_views.reset_password_by_question, name="reset_password_by_question"),
+
+    path(r'pre_reset_password_by_email/', user_views.pre_reset_password_by_email, name="pre_reset_password_by_email"),
+    path(r'send_reset_password_email/', user_views.send_reset_password_email, name="send_reset_password_email"),
     re_path(r'reset_password_by_email/(.*)/$', user_views.reset_password_by_email, name="reset_password_by_email"),
 
     # performance
@@ -73,8 +76,5 @@ urlpatterns = [
     path('performance/reward_charts', performance_views.reward_charts, name="reward_charts"),
     path('performance/add_workload/', performance_views.add_workload, name="add_workload"),
     path('performance/view_workload/', performance_views.view_workload, name="view_workload"),
-    path('performance/add_output/', performance_views.add_output, name="add_output"),
-    path('performance/view_output/', performance_views.view_output, name="view_output"),
     path('performance/workload_summary_export/', performance_views.workload_summary_export, name="workload_summary_export"),
-    path('performance/output_charts/', performance_views.output_charts, name="output_charts"),
 ]
