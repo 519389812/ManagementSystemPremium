@@ -36,14 +36,23 @@
                 {% csrf_token %}
                 <div class="control-group form-group">
                     <div class="controls">
+                        <label>日期:</label>
+                        <input type="date" class="form-control" id="date" name="date"
+                               placeholder="请选择日期"
+                               required data-validation-required-message="Please select the date.">
+                        <p class="help-block" id="date_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
                         <label>岗位:</label>
-                        <select class="form-control" id="position" name="position">
+                        <select class="form-control" id="position_id" name="position_id">
                             {% for position in position_list %}
-                            {% if position.name == position_name %}
-                            <option selected value="{{ position.id }}">{{ position.name }}</option>
-                            {% else %}
-                            <option value="{{ position.id }}">{{ position.name }}</option>
-                            {% endif %}
+                                {% if position.name == position_name %}
+                                    <option selected value="{{ position.id }}">{{ position.name }}</option>
+                                {% else %}
+                                    <option value="{{ position.id }}">{{ position.name }}</option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                         <p class="help-block" id="position_validate"></p>
@@ -51,44 +60,41 @@
                 </div>
                 <div class="control-group form-group">
                     <div class="controls">
-                        <label>岗位难度:</label>
-                        <select class="form-control" id="level" name="level">
-                            <option selected value="">无</option>
-                            {% for level in level_list %}
-                            <option value="{{ level.id }}">{{ level.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <p class="help-block" id="level_validate"></p>
+                        <label>办理客量:</label>
+                        <input type="number" class="form-control" id="number_people" name="number_people"
+                               placeholder="输入办理客量" value="0"
+                               required data-validation-required-message="Please enter number of people.">
+                        <p class="help-block" id="number_people_validate"></p>
                     </div>
                 </div>
                 <div class="control-group form-group">
                     <div class="controls">
-                        <label>开始时间:</label>
-                        <input type="datetime-local" class="form-control" id="start_datetime" name="start_datetime"
-                               placeholder="请选择开始时间"
-                               required data-validation-required-message="Please enter start datetime.">
-                        <p class="help-block" id="start_datetime_validate"></p>
+                        <label>办理行李量:</label>
+                        <input type="number" class="form-control" id="number_baggage" name="number_baggage"
+                               placeholder="输入办理行李量" value="0"
+                               required data-validation-required-message="Please enter quantity of baggage.">
+                        <p class="help-block" id="number_baggage_validate"></p>
                     </div>
                 </div>
                 <div class="control-group form-group">
                     <div class="controls">
-                        <label>结束时间:</label>
-                        <input type="datetime-local" class="form-control" id="end_datetime" name="end_datetime"
-                               placeholder="请选择结束时间"
-                               required data-validation-required-message="Please enter end datetime.">
-                        <p class="help-block" id="end_datetime_validate"></p>
+                        <label>销售额:</label>
+                        <input type="number" class="form-control" id="sale" name="sale"
+                               placeholder="输入办理行李量" value="0"
+                               required data-validation-required-message="Please enter quantity of sales.">
+                        <p class="help-block" id="sale_validate"></p>
                     </div>
                 </div>
                 <div class="control-group form-group">
                     <div class="controls">
                         <label>审核室:</label>
-                        <select class="form-control" id="assigned_team" name="assigned_team">
+                        <select class="form-control" id="verifier" name="verifier">
                             {% for team in team_list %}
-                            {% if team.name == assigned_team_name %}
-                            <option selected value="{{ team.id }}">{{ team.name }}</option>
-                            {% else %}
-                            <option value="{{ team.id }}">{{ team.name }}</option>
-                            {% endif %}
+                                {% if team.name == assigned_team_name %}
+                                    <option selected value="{{ team.id }}">{{ team.name }}</option>
+                                {% else %}
+                                    <option value="{{ team.id }}">{{ team.name }}</option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                         <p class="help-block" id="assigned_team_validate"></p>

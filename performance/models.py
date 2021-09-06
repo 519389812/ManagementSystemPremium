@@ -64,10 +64,11 @@ class PenaltySummary(RewardRecord):
 class WorkloadRecord(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(CustomUser, related_name='workloadRecord_user', on_delete=models.CASCADE, verbose_name='登记人')
+    date = models.DateField(verbose_name='日期')
     position = models.ForeignKey(Position, on_delete=models.CASCADE, verbose_name='岗位')
     number_people = models.IntegerField(null=True, blank=True, verbose_name='办理人数')
     number_baggage = models.IntegerField(null=True, blank=True, verbose_name='办理行李')
-    sales = models.FloatField(null=True, blank=True, verbose_name='销售额')
+    sale = models.FloatField(null=True, blank=True, verbose_name='销售额')
     verifier = models.ForeignKey(CustomTeam, related_name='workloadRecord_team', on_delete=models.CASCADE, verbose_name='审核组')
     remark = models.TextField(max_length=1000, blank=True, verbose_name='备注')
     create_datetime = models.DateTimeField(auto_now_add=True, verbose_name='登记时间')
