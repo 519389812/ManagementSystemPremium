@@ -20,7 +20,7 @@ class CustomUser(AbstractUser):
 
 class EmailVerifyRecord(models.Model):
     send_choices = (
-        ('verify', '验证'),
+        ('register', '验证'),
         ('reset', '重设'),
     )
     id = models.AutoField(primary_key=True)

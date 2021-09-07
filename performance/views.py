@@ -39,11 +39,11 @@ def get_queryset(url_params, model_name):
         filter_str = ''
         for key, value in url_params.items():
             if 'date' in key:
-                filter_str += key.replace('__range', '') + '='' + value[0].replace('/', '-') + '', '
+                filter_str += key.replace('__range', '') + '=' + value[0].replace('/', '-') + ', '
             elif 'id' in key:
                 filter_str += key + '=' + value[0] + ', '
             else:
-                filter_str += key + '='' + value[0] + '', '
+                filter_str += key + '=' + value[0] + ', '
         command_str = '%s.objects.filter(%s)' % (model_name, filter_str)
         queryset = eval(command_str)
     else:

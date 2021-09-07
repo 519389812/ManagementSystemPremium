@@ -167,7 +167,7 @@ def send_verify_email(request):
             return render(request, 'email_verify.html', {'msg': '存在未按格式输入的字段!'})
         user = request.user
         code = random_str(16)
-        EmailVerifyRecord.objects.create(user=user, email=user.email, code=code, type='verify', close_datetime=timezone.localtime(timezone.now()) + datetime.timedelta(minutes=5))
+        EmailVerifyRecord.objects.create(user=user, email=user.email, code=code, type='register', close_datetime=timezone.localtime(timezone.now()) + datetime.timedelta(minutes=5))
         email_title = '管理系统 - 验证邮箱'
         email_body = '请点击下面的链接验证邮箱，有效期为5分钟: https://%s/check_verify_email/%s' % (request.get_host(), code)
         send_status = send_mail(email_title, email_body, EMAIL_FROM, [user.email])

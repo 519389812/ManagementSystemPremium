@@ -12,27 +12,27 @@
                 <tr>
                     <th>
                         <div class="text">
+                            <a href="#">组别</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
                             <a href="#">姓名</a>
                         </div>
                     </th>
                     <th>
                         <div class="text">
-                            <a href="#">登记数量</a>
+                            <a href="#">奖项</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#">数量</a>
                         </div>
                     </th>
                     <th>
                         <div class="text">
                             <a href="#">分数</a>
-                        </div>
-                    </th>
-                    <th>
-                        <div class="text">
-                            <a href="#">工作量</a>
-                        </div>
-                    </th>
-                    <th>
-                        <div class="text">
-                            <a href="#">奖金</a>
                         </div>
                     </th>
                 </tr>
@@ -41,11 +41,11 @@
             <tbody>
                 {% for row in summary %}
                     <tr class="{% cycle 'row1' 'row2' %}">
-                        <td>{{ row.user__last_name }}{{ row.user__first_name }}</td>
+                        <td>{{ row.user__team__name }}</td>
+                        <td>{{ row.user__full_name }}</td>
+                        <td>{{ row.penalty__name }}</td>
                         <td>{{ row.count }}</td>
                         <td>{{ row.score }}</td>
-                        <td>{{ row.workload }}</td>
-                        <td>{{ row.bonus }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

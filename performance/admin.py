@@ -30,7 +30,7 @@ class RewardRecordAdmin(admin.ModelAdmin):
 
 
 class RewardSummaryAdmin(admin.ModelAdmin):
-    change_list_template = "admin/reward_penalty_summary_change_list.html"
+    change_list_template = "admin/reward_summary_change_list.html"
 
     # list_filter = (
     #     ('date', DateTimeRangeFilter), 'user__team', 'reward__type', 'reward'
@@ -65,7 +65,7 @@ class PenaltyRecordAdmin(admin.ModelAdmin):
 
 
 class PenaltySummaryAdmin(admin.ModelAdmin):
-    change_list_template = "admin/reward_penalty_summary_change_list.html"
+    change_list_template = "admin/penalty_summary_change_list.html"
 
     # list_filter = (
     #     ('date', DateTimeRangeFilter), 'user__team', 'reward__type', 'reward'
