@@ -12,6 +12,7 @@ class TeamAdmin(admin.ModelAdmin):
     fields = ("id", "name", "parent", "related_parent", "related_parent_name", )
     readonly_fields = ("id", "related_parent", "related_parent_name", )
     ordering = ('-related_parent',)
+    autocomplete_fields = ['parent']
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

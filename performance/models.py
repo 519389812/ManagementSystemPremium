@@ -12,7 +12,7 @@ class RewardRecord(models.Model):
     user = models.ForeignKey(CustomUser, related_name='rewardRecord_user', on_delete=models.CASCADE, verbose_name='奖励人')
     date = models.DateField(verbose_name='日期')
     reward = models.ForeignKey(Reward, on_delete=models.CASCADE, verbose_name='奖励项')
-    score = models.FloatField(null=True, blank=True, verbose_name='奖励分数')
+    score = models.FloatField(null=True, blank=True, verbose_name='加成后奖励分数')
     title = models.CharField(max_length=500, verbose_name='简述')
     content = models.TextField(max_length=1000, blank=True, verbose_name='详细情况')
     create_datetime = models.DateTimeField(auto_now_add=True, verbose_name='登记时间')
@@ -39,7 +39,7 @@ class PenaltyRecord(models.Model):
     user = models.ForeignKey(CustomUser, related_name='penaltyRecord_user', on_delete=models.CASCADE, verbose_name='责任人')
     date = models.DateField(verbose_name='日期')
     penalty = models.ForeignKey(Penalty, on_delete=models.CASCADE, verbose_name='处罚项')
-    score = models.FloatField(null=True, blank=True, verbose_name='处罚分数')
+    score = models.FloatField(null=True, blank=True, verbose_name='加成后处罚分数')
     title = models.CharField(max_length=500, verbose_name='简述')
     content = models.TextField(max_length=1000, blank=True, verbose_name='详细情况')
     create_datetime = models.DateTimeField(auto_now_add=True, verbose_name='登记时间')
@@ -53,7 +53,7 @@ class PenaltyRecord(models.Model):
         return str(self.id)
 
 
-class PenaltySummary(RewardRecord):
+class PenaltySummary(PenaltyRecord):
 
     class Meta:
         proxy = True
@@ -69,6 +69,7 @@ class WorkloadRecord(models.Model):
     number_people = models.IntegerField(default=0, verbose_name='办理人数')
     number_baggage = models.IntegerField(default=0, verbose_name='办理行李')
     sale = models.FloatField(default=0, verbose_name='销售额')
+    score = models.FloatField(null=True, blank=True, verbose_name='销售额加成后分数')
     verifier = models.ForeignKey(CustomTeam, related_name='workloadRecord_team', on_delete=models.CASCADE, verbose_name='审核组')
     remark = models.TextField(max_length=1000, blank=True, verbose_name='备注')
     create_datetime = models.DateTimeField(auto_now_add=True, verbose_name='登记时间')
@@ -80,9 +81,6 @@ class WorkloadRecord(models.Model):
         verbose_name = '工作量登记记录'
         verbose_name_plural = '工作量登记记录'
         ordering = ['-create_datetime']
-
-    def __str__(self):
-        return str(self.id)
 
 
 class WorkloadSummary(WorkloadRecord):

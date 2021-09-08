@@ -194,10 +194,21 @@ def add_workload(request):
             return render(request, 'error_500.html', status=500)
         try:
             position = Position.objects.get(id=int(position_id))
+            score = position.score
+            if position.sale_rule:
+                sale_string = 'float(sale)'
+                compare_string = 'position.sale_rule.require'
+                if eval(compare_string):
+                    # try:
+                    if eval('%s %s' % (sale_string, eval(compare_string))):
+                        calculate_string = 'position.sale_rule.calculation'
+                        score = eval('%s %s' % (score, eval(calculate_string))) if eval(calculate_string) else score
+                    # except:
+                    #     pass
             verifier = CustomTeam.objects.get(id=int(verifier_team_id))
             WorkloadRecord.objects.create(user=request.user, date=date, position=position,
                                           number_people=int(number_people), number_baggage=int(number_baggage),
-                                          sale=float(sale), verifier=verifier, remark=remark)
+                                          sale=float(sale), score=score, verifier=verifier, remark=remark)
             msg = '登记成功！您可以继续登记下一条记录！'
             return render(request, 'add_workload.html',
                           {'position_list': position_list, 'team_list': team_list, 'position_name': position.name,

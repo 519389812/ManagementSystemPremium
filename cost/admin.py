@@ -9,6 +9,7 @@ class CostTypeAdmin(admin.ModelAdmin):
 class CostAdmin(admin.ModelAdmin):
     list_display = ('id', 'type', 'name', 'score')
     search_fields = ('name',)
+    autocomplete_fields = ['type']
 
 
 class CostRecordAdmin(admin.ModelAdmin):
@@ -16,8 +17,8 @@ class CostRecordAdmin(admin.ModelAdmin):
     fields = ('id', 'date', 'team', 'cost', 'quantity', 'remark', 'create_datetime', 'create_user')
     list_display_links = ('id',)
     search_fields = ('team__name', 'cost__name', 'create_user__full_name')
-    # autocomplete_fields = ['user']
+    autocomplete_fields = ['team', 'cost', ]
     readonly_fields = ('id', 'create_datetime', 'create_user')
-    # list_filter = (
-    #     ('date', DateRangeFilter), 'user__team', 'reward__type', 'reward'
-    # )
+    list_filter = (
+        'date', 'team__name', 'cost__name', 'create_user__name',
+    )

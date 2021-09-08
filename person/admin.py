@@ -6,11 +6,11 @@ from ManagementSystemPremium.views import parse_url_param
 
 
 class PersonSummaryAdmin(admin.ModelAdmin):
-    change_list_template = "admin/workload_summary_change_list.html"
+    change_list_template = "admin/person_summary_change_list.html"
 
-    # list_filter = (
-    #     ('start_datetime', DateTimeRangeFilter), 'user__team', 'position__type', 'position'
-    # )
+    list_filter = (
+        'date', 'create_datetime', 'position__name', 'position__type__name', 'verifier'
+    )
 
     def changelist_view(self, request, extra_context=None):
         response = super().changelist_view(request, extra_context=extra_context)

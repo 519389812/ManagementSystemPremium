@@ -20,6 +20,7 @@ class CustomUserAdmin(UserAdmin):
     list_editable = ('is_active', 'is_staff', 'is_superuser', 'team')
     readonly_fields = ('full_name',)
     filter_horizontal = ('groups', 'user_permissions', )
+    autocomplete_fields = ['team']
 
     def save_model(self, request, obj, form, change):
         if form.is_valid():
