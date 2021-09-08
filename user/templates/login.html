@@ -29,7 +29,7 @@
     <!-- In order to set the email address and subject line for the contact form go to the bin/contact_me.php file. -->
     <div class="row">
         <div class="col-lg-8 mb-4">
-            {{ msg }}
+            {% include "message.html" %}
             <h3>用户登录</h3>
             <form name="loginForm" id="loginForm" action="{% url 'login' %}?next={{ next }}" method="post">
                 {% csrf_token %}
@@ -49,7 +49,6 @@
                         <p style="color:red font-size:14px" class="help-block" id="password_validate"></p>
                     </div>
                 </div>
-                <div style="color:red font-size:14px">{{ msg }}</div>
                 <!-- For success/fail messages -->
                 <button type="submit" class="btn btn-primary" id="submit">登录</button>
             </form>
@@ -85,7 +84,7 @@ $(document).ready(function(){
             if(username == "" || password == ""){
                 event.preventDefault();
                 alert("输入不能为空！")
-            } else if(username_validate!="" || password_validate != ""){
+            } else if(username_validate != "" || password_validate != ""){
                 event.preventDefault();
                 alert("输入有误，请检查！")
             };

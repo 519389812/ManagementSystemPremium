@@ -79,7 +79,7 @@ class WorkloadRecord(models.Model):
     class Meta:
         verbose_name = '工作量登记记录'
         verbose_name_plural = '工作量登记记录'
-        ordering = ['-created_datetime']
+        ordering = ['-create_datetime']
 
     def __str__(self):
         return str(self.id)

@@ -9,7 +9,7 @@ class TrainingTypeAdmin(admin.ModelAdmin):
 
 class TrainingAdmin(admin.ModelAdmin):
     list_display = ('id', 'type', 'name', 'training_date', 'expiration_date', 'remind_retraining', 'retraining_period')
-    filter_horizontal = ('owner',)
+    filter_horizontal = ('student',)
     search_fields = ('name',)
     # autocomplete_fields = ['type', 'owner']
 

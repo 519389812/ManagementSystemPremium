@@ -4,7 +4,7 @@
 <head>
     {% load static %}
     {% include "head.html" %}
-    <title>个人设置</title>
+    <title>个人信息</title>
 </head>
 
 <body>
@@ -16,12 +16,12 @@
 
     <!-- Page Heading/Breadcrumbs -->
     <h1 class="mt-4 mb-3">个人
-        <small>设置</small>
+        <small>信息</small>
     </h1>
 
     <ol class="breadcrumb">
         {% include "route.html" %}
-        <li class="breadcrumb-item active">个人设置</li>
+        <li class="breadcrumb-item active">个人信息</li>
     </ol>
 
     <!-- Content Row -->
@@ -29,9 +29,8 @@
         <!-- Sidebar Column -->
         <div class="col-lg-3 mb-4">
             <div class="list-group">
-                <a href="/user_setting" class="list-group-item active">用户设置</a>
+                <a href="/user_setting" class="list-group-item active">用户信息</a>
                 <a href="/change_password" class="list-group-item">修改密码</a>
-                <a href="/set_question_verify" class="list-group-item">设置密保问题</a>
                 <a href="/set_email_verify" class="list-group-item" style="pointer-events: none;cursor: default;color:gray;">设置和验证邮箱</a>
             </div>
         </div>
@@ -47,7 +46,7 @@
                 {% if request.user.email_verify == True %}
                     已验证
                 {% else %}
-                    未验证<a href="/set_email_verify" style="pointer-events: none;cursor: default;color:gray;">验证邮箱</a>
+                    未验证<<a href="/set_email_verify" style="pointer-events: none;cursor: default;color:gray;"><i style="font-size: 14px">验证邮箱</i></a>>
                 {% endif %}
             </p>
             <p><b>团队：</b>{{ request.user.team.name }}</p>

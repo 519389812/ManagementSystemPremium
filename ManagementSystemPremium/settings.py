@@ -63,8 +63,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user',
-    'group',
     'team',
+    'cost',
+    'performance',
+    'person',
+    'rule',
+    'training',
 ]
 
 MIDDLEWARE = [
@@ -142,9 +146,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static', 'ManagementSystem'),
-    os.path.join(BASE_DIR, 'document', 'static', 'document'),
-    os.path.join(BASE_DIR, 'quickcheck', 'static', 'quickcheck'),
+    os.path.join(BASE_DIR, 'static', 'ManagementSystemPremium'),
+    os.path.join(BASE_DIR, 'performance', 'static', 'performance'),
 ]
 
 AUTH_USER_MODEL = 'user.CustomUser'
@@ -155,8 +158,53 @@ MEDIA_URL = "/media/"
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"  # Default
 EMAIL_HOST = "smtp.qq.com"
 EMAIL_PORT = 25
-EMAIL_HOST_USER = "904874417@qq.com"   # 邮箱
+EMAIL_HOST_USER = "xxx@qq.com"   # 邮箱
 EMAIL_HOST_PASSWORD = "vtfkyizuxeysbeif"   # 邮箱授权码
 EMAIL_USE_TLS = True
-EMAIL_FROM = "904874417@qq.com"  # 邮箱
+EMAIL_FROM = "xxx@qq.com"  # 邮箱
 
+SIMPLEUI_HOME_INFO = False
+SIMPLEUI_LOGO = ''
+
+# SIMPLEUI_CONFIG = {
+#     'system_keep': True,  # 关闭系统默认
+#
+#     # 菜单名
+#     'menu_display': ['添加模块一', '测试用户信息', '添加模块二'],
+#     'dynamic': True,  # 设置是否开启动态菜单, 默认为False. 如果开启, 则会在每次用户登陆时动态展示菜单内容
+#
+#     'menus': [
+#         {
+#             'name': '添加模块一',
+#             'icon': 'fas fa-code',
+#             'url': 'https://baidu.com'
+#         },
+#
+#         {
+#             'name': '测试用户信息',
+#             'icon': 'fas fa-user-shield',
+#             'models': [
+#                 {
+#                     'name': '用户信息',
+#                     'icon': 'fa fa-user',
+#                     # 渲染数据表菜单
+#                     'url': '/admin/database/userinfo/'
+#                 }
+#             ]
+#         },
+#
+#         {
+#             'app': 'auth',
+#             'name': '添加模块二',
+#             'icon': 'fas fa-user-shield',
+#             'models': [
+#                 {
+#                     'name': '用户',
+#                     'icon': 'fa fa-user',
+#                     'url': 'auth/user/'
+#                 }
+#             ]
+#         },
+#
+#     ]
+# }

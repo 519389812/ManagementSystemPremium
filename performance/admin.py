@@ -23,7 +23,7 @@ class RewardRecordAdmin(admin.ModelAdmin):
     list_display_links = ('id',)
     search_fields = ('user__full_name', 'reward__name', 'reward__type__name', 'title', 'content')
     # autocomplete_fields = ['user']
-    readonly_fields = ('id', 'created_datetime', 'created_user')
+    readonly_fields = ('id', 'create_datetime', 'create_user')
     # list_filter = (
     #     ('date', DateRangeFilter), 'user__team', 'reward__type', 'reward'
     # )
@@ -58,7 +58,7 @@ class PenaltyRecordAdmin(admin.ModelAdmin):
     list_display_links = ('id',)
     search_fields = ('user__full_name', 'penalty__name', 'penalty__type__name', 'title', 'content')
     # autocomplete_fields = ['user']
-    readonly_fields = ('id', 'created_datetime', 'created_user')
+    readonly_fields = ('id', 'create_datetime', 'create_user')
     # list_filter = (
     #     ('date', DateRangeFilter), 'user__team', 'penalty__type', 'penalty'
     # )

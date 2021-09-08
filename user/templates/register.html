@@ -30,6 +30,7 @@
     <div class="row">
         <div class="col-lg-8 mb-4">
             <h3>用户注册</h3>
+            {% include "message.html" %}
             <form name="loginForm" id="loginForm" action="{% url 'register' %}" method="post">
                 {% csrf_token %}
                 <div class="control-group form-group">
@@ -88,7 +89,6 @@
                         <p style="color:red font-size:14px" class="help-block" id="answer_validate"></p>
                     </div>
                 </div>
-                <div style="color:red font-size:14px">{{ msg }}</div>
                 <!-- For success/fail messages -->
                 <button type="submit" class="btn btn-primary" id="submit">注册</button>
             </form>
@@ -183,7 +183,7 @@ $(document).ready(function(){
             if(username == "" || password == "" || lastname == "" || firstname == "" || email == "" || question == "" || answer == ""){
                 event.preventDefault();
                 alert("输入不能为空！")
-            } else if(username_validate!="" || password_validate != "" || lastname_validate != "" || email_validate == "" || firstname_validate != "" || question_validate == "" || answer_validate == ""){
+            } else if(username_validate !="" || password_validate != "" || lastname_validate != "" || firstname_validate != "" || email_validate != "" || question_validate != "" || answer_validate != ""){
                 event.preventDefault();
                 alert("输入有误，请检查！")
             };

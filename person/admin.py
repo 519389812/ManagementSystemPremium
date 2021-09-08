@@ -24,18 +24,19 @@ class PersonSummaryAdmin(admin.ModelAdmin):
             messages.error(request, '无数据')
             messages.set_level(request, messages.ERROR)
             return redirect(url)
-
-        try:
-            qs =
-        except (AttributeError, KeyError):
-            return response
-        metrics = {
-            'count': Count('user'),
-            'number_people': Sum('number_people'),
-            'number_baggage': Sum('number_baggage'),
-            'sale': Sum('sale'),
-        }
-        response.context_data['summary'] = list(
-            qs.filter(verified=True).values('user__team__name').values('user__full_name').annotate(**metrics).order_by('-sale')
-        )
+        print(workload_queryset)
+        #
+        # try:
+        #     qs =
+        # except (AttributeError, KeyError):
+        #     return response
+        # metrics = {
+        #     'count': Count('user'),
+        #     'number_people': Sum('number_people'),
+        #     'number_baggage': Sum('number_baggage'),
+        #     'sale': Sum('sale'),
+        # }
+        # response.context_data['summary'] = list(
+        #     qs.filter(verified=True).values('user__team__name').values('user__full_name').annotate(**metrics).order_by('-sale')
+        # )
         return response

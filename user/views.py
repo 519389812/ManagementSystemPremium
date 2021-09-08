@@ -453,8 +453,8 @@ def check_question_validate(request):
         question = request.POST.get('question')
     if question == '':
         return HttpResponse('密保问题不能为空')
-    if len(question) < 6 or len(question) > 50:
-        return HttpResponse('密保问题不能少于6个字符或者超过50个字符')
+    if len(question) < 3 or len(question) > 50:
+        return HttpResponse('密保问题不能少于3个字符或者超过50个字符')
     if not re.search(r'^[_a-zA-Z0-9\u4e00-\u9fa5\?\uff1f]+$', question):
         return HttpResponse('密保问题包含非法字符(!,@,#,$,%...)')
     return HttpResponse('')
