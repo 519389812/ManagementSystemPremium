@@ -174,9 +174,8 @@ def add_workload(request):
         team_id = request.user.team.parent.id
     else:
         team_id = request.user.team.id
-    team = request.user.team
     if not request.user.is_superuser:
-        position_list = list(Position.objects.filter(team__in=[team]).order_by('name').values('id', 'name'))
+        position_list = list(Position.objects.all().order_by('name').values('id', 'name'))
         team_list = list(CustomTeam.objects.filter(related_parent__iregex=r'[^0-9]*%s[^0-9]' % str(team_id)).order_by('name'))
     else:
         position_list = list(Position.objects.all().order_by('name').values('id', 'name'))
@@ -199,12 +198,12 @@ def add_workload(request):
                 sale_string = 'float(sale)'
                 compare_string = 'position.sale_rule.require'
                 if eval(compare_string):
-                    # try:
-                    if eval('%s %s' % (sale_string, eval(compare_string))):
-                        calculate_string = 'position.sale_rule.calculation'
-                        score = eval('%s %s' % (score, eval(calculate_string))) if eval(calculate_string) else score
-                    # except:
-                    #     pass
+                    try:
+                        if eval('%s %s' % (sale_string, eval(compare_string))):
+                            calculate_string = 'position.sale_rule.calculation'
+                            score = eval('%s %s' % (score, eval(calculate_string))) if eval(calculate_string) else score
+                    except:
+                        pass
             verifier = CustomTeam.objects.get(id=int(verifier_team_id))
             WorkloadRecord.objects.create(user=request.user, date=date, position=position,
                                           number_people=int(number_people), number_baggage=int(number_baggage),

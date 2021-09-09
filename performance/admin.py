@@ -82,6 +82,7 @@ class RewardRecordAdmin(admin.ModelAdmin):
 class RewardSummaryAdmin(admin.ModelAdmin):
     change_list_template = "admin/reward_summary_change_list.html"
 
+    search_fields = ('user__full_name', 'reward__name', 'reward__type__name', 'title', 'content', 'level_rule__name')
     list_filter = (
         'date', 'user__team', 'reward__name', 'reward__type__name',
     )
@@ -139,6 +140,7 @@ class PenaltyRecordAdmin(admin.ModelAdmin):
 class PenaltySummaryAdmin(admin.ModelAdmin):
     change_list_template = "admin/penalty_summary_change_list.html"
 
+    search_fields = ('user__full_name', 'penalty__name', 'penalty__type__name', 'title', 'content', 'level_rule__name')
     list_filter = (
         'date', 'user__team', 'penalty__name', 'penalty__type__name'
     )
@@ -158,18 +160,17 @@ class PenaltySummaryAdmin(admin.ModelAdmin):
         }
         data = list(
             qs.values('user__team__name', 'user__full_name').annotate(**metrics).order_by('-score'))
-        print(data)
         response.context_data['summary'] = data
         return response
 
 
 class WorkloadRecordAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'position', 'number_people', 'number_baggage', 'sale', 'verifier', 'remark', 'create_datetime', 'verify', 'verify_user', 'verify_datetime')
+    list_display = ('id', 'user', 'position', 'number_people', 'number_baggage', 'sale', 'score', 'verifier', 'remark', 'create_datetime', 'verify', 'verify_user', 'verify_datetime')
     list_editable = ('verify',)
     autocomplete_fields = ['user', 'position', 'verifier', 'verify_user']
     search_fields = ('user__full_name', 'position__name', 'position__type__name', 'verifier__name', 'remark', 'verify_user__name')
-    fields = ('id', 'user', 'position', 'number_people', 'number_baggage', 'sale', 'verifier', 'remark', 'create_datetime', 'verify', 'verify_user', 'verify_datetime')
-    readonly_fields = ('id', 'user', 'position', 'number_people', 'number_baggage', 'sale', 'create_datetime', 'verify_user', 'verify_datetime')
+    fields = ('id', 'user', 'position', 'number_people', 'number_baggage', 'sale', 'score', 'verifier', 'remark', 'create_datetime', 'verify', 'verify_user', 'verify_datetime')
+    readonly_fields = ('id', 'user', 'position', 'number_people', 'number_baggage', 'score', 'create_datetime', 'verify_user', 'verify_datetime')
     list_filter = (
         'date', 'create_datetime', 'position__name', 'position__type__name', 'verifier'
     )
@@ -181,12 +182,23 @@ class WorkloadRecordAdmin(admin.ModelAdmin):
         kwargs.update({'help_texts': help_texts})
         return super(WorkloadRecordAdmin, self).get_form(request, obj, **kwargs)
 
+    def save_model(self, request, obj, form, change):
+        if form.is_valid():
+            if form.cleaned_data['verify']:
+                obj.verify_user = request.user
+                obj.verify_datetime = timezone.localtime(timezone.now())
+            else:
+                obj.verify_user = None
+                obj.verify_datetime = None
+            super().save_model(request, obj, form, change)
+
 
 class WorkloadSummaryAdmin(admin.ModelAdmin):
     change_list_template = "admin/workload_summary_change_list.html"
 
+    search_fields = ('user__full_name', 'position__name', 'position__type__name', 'verifier__name', 'remark', 'verify_user__name')
     list_filter = (
-        'date', 'create_datetime', 'position__name', 'position__type__name', 'verifier'
+        'date', 'user__team', 'create_datetime', 'position__name', 'position__type__name', 'verifier'
     )
 
     def changelist_view(self, request, extra_context=None):
@@ -200,10 +212,10 @@ class WorkloadSummaryAdmin(admin.ModelAdmin):
             'number_people': Sum('number_people'),
             'number_baggage': Sum('number_baggage'),
             'sale': Sum('sale'),
+            'score': Sum('score'),
         }
-        response.context_data['summary'] = list(
-            qs.filter(verified=True).values('user__team__name').values('user__full_name').annotate(**metrics).order_by('-sale')
-        )
+        data = list(qs.filter(verify=True).values('user__team__name', 'user__full_name').annotate(**metrics).order_by('-score'))
+        response.context_data['summary'] = data
         return response
 
 

@@ -1,7 +1,8 @@
 from django.db import models
+from performance.models import WorkloadRecord
 
 
-class PersonSummary:
+class PersonSummary(WorkloadRecord):
 
     class Meta:
         proxy = True
