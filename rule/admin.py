@@ -63,13 +63,12 @@ class RewardTypeAdmin(admin.ModelAdmin):
 
 
 class RewardAdmin(admin.ModelAdmin):
-    list_display = ('id', 'type', 'name', 'score', 'level_rule', 'repeat_rule')
+    list_display = ('id', 'type', 'name', 'score', 'repeat_rule')
     search_fields = ('name',)
-    autocomplete_fields = ['type', 'level_rule', 'repeat_rule']
+    autocomplete_fields = ['type', 'repeat_rule']
 
     def get_form(self, request, obj=None, **kwargs):
         help_texts = {
-            'level_rule': '同类奖励，程度不同加分不同时，设置此项',
             'repeat_rule': '当需要设置X天内重复发生某个奖励的规则时，设置此项',
         }
         kwargs.update({'help_texts': help_texts})
@@ -82,13 +81,12 @@ class PenaltyTypeAdmin(admin.ModelAdmin):
 
 
 class PenaltyAdmin(admin.ModelAdmin):
-    list_display = ('id', 'type', 'name', 'score', 'level_rule', 'repeat_rule')
+    list_display = ('id', 'type', 'name', 'score', 'repeat_rule')
     search_fields = ('name',)
-    autocomplete_fields = ['type', 'level_rule', 'repeat_rule']
+    autocomplete_fields = ['type', 'repeat_rule']
 
     def get_form(self, request, obj=None, **kwargs):
         help_texts = {
-            'level_rule': '同类处罚，程度不同扣分不同时，建议设置程度加成规则',
             'repeat_rule': '当需要设置X天内重复发生某个处罚的规则时，设置此项',
         }
         kwargs.update({'help_texts': help_texts})

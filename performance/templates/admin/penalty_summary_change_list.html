@@ -22,11 +22,6 @@
                     </th>
                     <th>
                         <div class="text">
-                            <a href="#">奖项</a>
-                        </div>
-                    </th>
-                    <th>
-                        <div class="text">
                             <a href="#">数量</a>
                         </div>
                     </th>
@@ -41,9 +36,12 @@
             <tbody>
                 {% for row in summary %}
                     <tr class="{% cycle 'row1' 'row2' %}">
-                        <td>{{ row.user__team__name }}</td>
+                        {% if row.user__team__name != None %}
+                            <td>{{ row.user__team__name }}</td>
+                        {% else %}
+                            <td>未分配团队</td>
+                        {% endif %}
                         <td>{{ row.user__full_name }}</td>
-                        <td>{{ row.penalty__name }}</td>
                         <td>{{ row.count }}</td>
                         <td>{{ row.score }}</td>
                     </tr>

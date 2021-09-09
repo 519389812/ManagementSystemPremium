@@ -86,7 +86,6 @@ class Reward(models.Model):
     type = models.ForeignKey(RewardType, on_delete=models.CASCADE, verbose_name='奖励类别')
     name = models.CharField(max_length=100, verbose_name='奖励名称')
     score = models.FloatField(verbose_name='奖励分数')
-    level_rule = models.ForeignKey(LevelRule, null=True, blank=True, on_delete=models.CASCADE, verbose_name='程度加成规则')
     repeat_rule = models.ForeignKey(RepeatRule, null=True, blank=True, on_delete=models.CASCADE, verbose_name='重复规则')
 
     class Meta:
@@ -114,7 +113,6 @@ class Penalty(models.Model):
     type = models.ForeignKey(RewardType, on_delete=models.CASCADE, verbose_name='处罚类别')
     name = models.CharField(max_length=100, verbose_name='处罚名称')
     score = models.FloatField(verbose_name='处罚分数')
-    level_rule = models.ForeignKey(LevelRule, null=True, blank=True, on_delete=models.CASCADE, verbose_name='程度加成规则')
     repeat_rule = models.ForeignKey(RepeatRule, null=True, blank=True, on_delete=models.CASCADE, verbose_name='重复规则')
 
     class Meta:

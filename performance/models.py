@@ -4,7 +4,29 @@ from user.models import CustomUser
 from team.models import CustomTeam
 from django.contrib import admin
 from django.apps import apps
-from rule.models import Position, Reward, Penalty
+from rule.models import Position, Reward, Penalty, LevelRule
+
+
+def get_weight_column(self, column_name, model_name, model_column):
+    return_column = eval('self.%s.%s' % (model_column, column_name))
+    if eval('self.%s.repeat_rule' % model_column):
+        end_date = self.date
+        day_delta = eval('self.%s.repeat_rule.day' % model_column)
+        start_date = end_date - timezone.timedelta(day_delta)
+        count = eval('%s.objects.filter(user=self.user, %s=self.%s, date__gte=start_date, date__lte=end_date, create_datetime__lt=self.create_datetime).count()' % (model_name, model_column, model_column))
+        if count > 0:
+            string = 'self.%s.repeat_rule.calculation' % model_column
+            try:
+                return_column = eval('%s %s' % (return_column, eval(string))) if eval(string) else return_column
+            except:
+                pass
+    if self.level_rule:
+        string = 'self.level_rule.calculation'
+        try:
+            return_column = eval('%s %s' % (return_column, eval(string))) if eval(string) else return_column
+        except:
+            pass
+    return return_column
 
 
 class RewardRecord(models.Model):
@@ -12,6 +34,7 @@ class RewardRecord(models.Model):
     user = models.ForeignKey(CustomUser, related_name='rewardRecord_user', on_delete=models.CASCADE, verbose_name='奖励人')
     date = models.DateField(verbose_name='日期')
     reward = models.ForeignKey(Reward, on_delete=models.CASCADE, verbose_name='奖励项')
+    level_rule = models.ForeignKey(LevelRule, null=True, blank=True, on_delete=models.CASCADE, verbose_name='程度加成规则')
     score = models.FloatField(null=True, blank=True, verbose_name='加成后奖励分数')
     title = models.CharField(max_length=500, verbose_name='简述')
     content = models.TextField(max_length=1000, blank=True, verbose_name='详细情况')
@@ -28,10 +51,15 @@ class RewardRecord(models.Model):
 
 class RewardSummary(RewardRecord):
 
+    @property
+    @admin.display(description='加成后分数')
+    def weight_score(self):
+        return get_weight_column(self, 'score', 'RewardRecord', 'reward')
+
     class Meta:
         proxy = True
         verbose_name = '奖惩统计'
-        verbose_name_plural = '奖惩统计'
+        verbose_name_plural = '奖励统计'
 
 
 class PenaltyRecord(models.Model):
@@ -39,6 +67,7 @@ class PenaltyRecord(models.Model):
     user = models.ForeignKey(CustomUser, related_name='penaltyRecord_user', on_delete=models.CASCADE, verbose_name='责任人')
     date = models.DateField(verbose_name='日期')
     penalty = models.ForeignKey(Penalty, on_delete=models.CASCADE, verbose_name='处罚项')
+    level_rule = models.ForeignKey(LevelRule, null=True, blank=True, on_delete=models.CASCADE, verbose_name='程度加成规则')
     score = models.FloatField(null=True, blank=True, verbose_name='加成后处罚分数')
     title = models.CharField(max_length=500, verbose_name='简述')
     content = models.TextField(max_length=1000, blank=True, verbose_name='详细情况')
@@ -54,6 +83,11 @@ class PenaltyRecord(models.Model):
 
 
 class PenaltySummary(PenaltyRecord):
+
+    @property
+    @admin.display(description='加成后分数')
+    def weight_score(self):
+        return get_weight_column(self, 'score', 'PenaltyRecord', 'penalty')
 
     class Meta:
         proxy = True

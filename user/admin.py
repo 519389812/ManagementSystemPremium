@@ -21,20 +21,22 @@ class CustomUserAdmin(UserAdmin):
     readonly_fields = ('full_name',)
     filter_horizontal = ('groups', 'user_permissions', )
     autocomplete_fields = ['team']
+    search_fields = ('full_name', 'team__name')
 
     def save_model(self, request, obj, form, change):
         if form.is_valid():
-            if validate_email(obj.email):
-                messages.error(request, "保存失败，邮箱格式不合法！")
-                messages.set_level(request, messages.ERROR)
-                return
             if not change:
                 super().save_model(request, obj, form, change)
             if 'email' in form.cleaned_data.keys():
-                email_before = CustomUser.objects.get(id=obj.id).email
-                email_after = form.cleaned_data['email']
-                if email_before != email_after:
-                    obj.email_verify = False
+                if form.cleaned_data['email']:
+                    if validate_email(obj.email):
+                        messages.error(request, "保存失败，邮箱格式不合法！")
+                        messages.set_level(request, messages.ERROR)
+                        return
+                    email_before = CustomUser.objects.get(id=obj.id).email
+                    email_after = form.cleaned_data['email']
+                    if email_before != email_after:
+                        obj.email_verify = False
             super().save_model(request, obj, form, change)
 
 

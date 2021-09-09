@@ -1,5 +1,5 @@
 from django.contrib import admin
-from performance.views import get_queryset
+from performance.admin import get_weight_column_value
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from ManagementSystemPremium.views import parse_url_param
@@ -14,29 +14,17 @@ class PersonSummaryAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         response = super().changelist_view(request, extra_context=extra_context)
-
-        url = request.META.get('HTTP_REFERER', '')
-        if url == '':
-            return render(request, 'error_400.html', status=400)
-        url_params = parse_url_param(url)
-        workload_queryset = get_queryset(url_params, 'WorkloadRecord')
-        if workload_queryset.count() == 0:
-            messages.error(request, '无数据')
-            messages.set_level(request, messages.ERROR)
-            return redirect(url)
-        print(workload_queryset)
-        #
-        # try:
-        #     qs =
-        # except (AttributeError, KeyError):
-        #     return response
-        # metrics = {
-        #     'count': Count('user'),
-        #     'number_people': Sum('number_people'),
-        #     'number_baggage': Sum('number_baggage'),
-        #     'sale': Sum('sale'),
-        # }
-        # response.context_data['summary'] = list(
-        #     qs.filter(verified=True).values('user__team__name').values('user__full_name').annotate(**metrics).order_by('-sale')
-        # )
+        try:
+            qs = response.context_data['cl'].queryset
+        except (AttributeError, KeyError):
+            return response
+        value_list = get_weight_column_value(qs, 'weight_score')
+        for i in range(len(qs)):
+            RewardRecord.objects.filter(id=qs[i].id).update(score=value_list[i])
+        metrics = {
+            'count': Count('user'),
+            'score': Sum('score'),
+        }
+        data = list(qs.values('user__team__name', 'user__full_name').annotate(**metrics).order_by('-score'))
+        response.context_data['summary'] = data
         return response
