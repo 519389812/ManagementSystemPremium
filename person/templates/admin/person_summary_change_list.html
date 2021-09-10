@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content_title %}
-    <h1>工作量统计</h1>
+    <h1>个人表现统计</h1>
 {% endblock %}
 
 {% block result_list %}
@@ -40,46 +40,38 @@
                             <a href="#"><strong>销售分</strong></a>
                         </div>
                     </th>
-                    <th>
-                        <div class="text">
-                            <a href="#"><strong>奖励数</strong></a>
-                        </div>
-                    </th>
-                    <th>
-                        <div class="text">
-                            <a href="#"><strong>奖励分</strong></a>
-                        </div>
-                    </th>
-                    <th>
-                        <div class="text">
-                            <a href="#"><strong>处罚数</strong></a>
-                        </div>
-                    </th>
-                    <th>
-                        <div class="text">
-                            <a href="#"><strong>处罚分</strong></a>
-                        </div>
-                    </th>
+                    {% for row in addition_column_list %}
+                        <th>
+                            <div class="text">
+                                <a href="#"><strong>{{ row }}</strong></a>
+                            </div>
+                        </th>
+                    {% endfor %}
                 </tr>
             </thead>
 
             <tbody>
                 {% for row in summary %}
-                    <tr class="{% cycle 'row1' 'row2' %}">
-                        {% if row.user__team__name != None %}
-                            <td>{{ row.user__team__name }}</td>
-                        {% else %}
-                            <td>未分配团队</td>
-                        {% endif %}
-                        <td>{{ row.user__full_name }}</td>
-                        <td><strong>{{ row.number_people }}</strong></td>
-                        <td><strong>{{ row.number_baggage }}</strong></td>
-                        <td><strong>{{ row.sale }}</strong></td>
-                        <td><strong>{{ row.workload_score }}</strong></td>
-                        <td><strong>{{ row.reward_count }}</strong></td>
-                        <td><strong>{{ row.reward_score }}</strong></td>
-                        <td><strong>{{ row.penalty_count }}</strong></td>
-                        <td><strong>{{ row.penalty_score }}</strong></td>
+                    {% with mi=forloop.counter0 %}
+                        <tr class="{% cycle 'row1' 'row2' %}">
+                            {% if row.user__team__name != None %}
+                                <td>{{ row.user__team__name }}</td>
+                            {% else %}
+                                <td>未分配团队</td>
+                            {% endif %}
+                            <td>{{ row.user__full_name }}</td>
+                            <td><strong>{{ row.number_people }}</strong></td>
+                            <td><strong>{{ row.number_baggage }}</strong></td>
+                            <td><strong>{{ row.sale }}</strong></td>
+                            <td><strong>{{ row.workload_score }}</strong></td>
+                            {% for v in additional_data_list %}
+                                {% if forloop.counter0 == mi %}
+                                    {% for i in data_range %}
+                                        <td><strong>{{ v.i }}</strong></td>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                    {% endwith %}
                     </tr>
                 {% endfor %}
             </tbody>
