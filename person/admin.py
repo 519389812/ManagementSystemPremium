@@ -124,10 +124,11 @@ class PersonSummaryAdmin(admin.ModelAdmin):
                 if k in additional_column_list[i]:
                     additional_column_list[i] = additional_column_list[i].replace(k, v)
 
+        for i in range(len(qs_value)):
+            qs_value[i]['additional'] = additional_data_list[i]
+
         response.context_data['summary'] = qs_value
         response.context_data['additional_column_list'] = additional_column_list
-        response.context_data['additional_data_list'] = additional_data_list
-        response.context_data['data_range'] = range(len(additional_data_list[0]))
         return response
 
 

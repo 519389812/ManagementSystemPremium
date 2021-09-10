@@ -6,5 +6,5 @@ class PersonSummary(WorkloadRecord):
 
     class Meta:
         proxy = True
-        verbose_name = '个人统计'
-        verbose_name_plural = '个人统计'
+        verbose_name = '个人表现统计'
+        verbose_name_plural = '个人表现统计'
