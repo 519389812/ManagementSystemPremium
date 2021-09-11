@@ -17,12 +17,12 @@ class CostType(models.Model):
 
 class Cost(models.Model):
     id = models.AutoField(primary_key=True)
-    type = models.ForeignKey(CostType, on_delete=models.CASCADE, verbose_name='成本')
-    name = models.CharField(max_length=100, verbose_name='成本')
+    type = models.ForeignKey(CostType, on_delete=models.CASCADE, verbose_name='成本类别')
+    name = models.CharField(max_length=100, verbose_name='成本名称')
 
     class Meta:
-        verbose_name = '成本类别'
-        verbose_name_plural = '成本类别'
+        verbose_name = '成本'
+        verbose_name_plural = '成本'
 
     def __str__(self):
         return self.name
@@ -39,8 +39,16 @@ class CostRecord(models.Model):
     create_user = models.ForeignKey(CustomUser, related_name='costRecord_user', on_delete=models.CASCADE, verbose_name='登记人')
 
     class Meta:
-        verbose_name = '奖惩记录'
-        verbose_name_plural = '奖惩记录'
+        verbose_name = '成本登记记录'
+        verbose_name_plural = '成本登记记录'
 
     def __str__(self):
-        return str(self.id)
+        return str(self.team.name)
+
+
+class CostSummary(CostRecord):
+
+    class Meta:
+        proxy = True
+        verbose_name = '成本统计'
+        verbose_name_plural = '成本统计'

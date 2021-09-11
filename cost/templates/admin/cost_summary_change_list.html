@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content_title %}
-    <h1>奖惩统计</h1>
+    <h1>成本统计</h1>
 {% endblock %}
 
 {% block result_list %}
@@ -17,17 +17,12 @@
                     </th>
                     <th>
                         <div class="text">
-                            <a href="#">姓名</a>
+                            <a href="#">登记数量</a>
                         </div>
                     </th>
                     <th>
                         <div class="text">
-                            <a href="#">数量</a>
-                        </div>
-                    </th>
-                    <th>
-                        <div class="text">
-                            <a href="#">分数</a>
+                            <a href="#"><strong>成本量</strong></a>
                         </div>
                     </th>
                 </tr>
@@ -36,14 +31,9 @@
             <tbody>
                 {% for row in summary %}
                     <tr class="{% cycle 'row1' 'row2' %}">
-                        {% if row.user__team__name != None %}
-                            <td>{{ row.user__team__name }}</td>
-                        {% else %}
-                            <td>未分配团队</td>
-                        {% endif %}
-                        <td>{{ row.user__full_name }}</td>
+                        <td>{{ row.team__name }}</td>
                         <td>{{ row.count }}</td>
-                        <td>{{ row.score }}</td>
+                        <td><strong>{{ row.quantity }}</strong></td>
                     </tr>
                 {% endfor %}
             </tbody>
