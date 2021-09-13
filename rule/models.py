@@ -110,7 +110,7 @@ class PenaltyType(models.Model):
 
 class Penalty(models.Model):
     id = models.AutoField(primary_key=True)
-    type = models.ForeignKey(RewardType, on_delete=models.CASCADE, verbose_name='处罚类别')
+    type = models.ForeignKey(PenaltyType, on_delete=models.CASCADE, verbose_name='处罚类别')
     name = models.CharField(max_length=100, verbose_name='处罚名称')
     score = models.FloatField(verbose_name='处罚分数')
     repeat_rule = models.ForeignKey(RepeatRule, null=True, blank=True, on_delete=models.CASCADE, verbose_name='重复规则')

@@ -17,23 +17,29 @@
                     </th>
                     <th>
                         <div class="text">
-                            <a href="#">登记数量</a>
+                            <a href="#"><strong>销售额</strong></a>
                         </div>
                     </th>
-                    <th>
-                        <div class="text">
-                            <a href="#"><strong>成本量</strong></a>
-                        </div>
-                    </th>
+                    {% for row in additional_column_list %}
+                        <th>
+                            <div class="text">
+                                <a href="#"><strong>{{ row }}</strong></a>
+                            </div>
+                        </th>
+                    {% endfor %}
                 </tr>
             </thead>
 
             <tbody>
                 {% for row in summary %}
-                    <tr class="{% cycle 'row1' 'row2' %}">
-                        <td>{{ row.team__name }}</td>
-                        <td>{{ row.count }}</td>
-                        <td><strong>{{ row.quantity }}</strong></td>
+                    {% with mi=forloop.counter0 %}
+                        <tr class="{% cycle 'row1' 'row2' %}">
+                            <td>{{ row.user__team__name }}</td>
+                            <td><strong>{{ row.sale }}</strong></td>
+                            {% for v in row.additional %}
+                                <td><strong>{{ v }}</strong></td>
+                            {% endfor %}
+                    {% endwith %}
                     </tr>
                 {% endfor %}
             </tbody>
