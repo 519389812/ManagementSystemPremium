@@ -21,8 +21,8 @@ class Cost(models.Model):
     name = models.CharField(max_length=100, verbose_name='成本名称')
 
     class Meta:
-        verbose_name = '成本'
-        verbose_name_plural = '成本'
+        verbose_name = '成本设置'
+        verbose_name_plural = '成本设置'
 
     def __str__(self):
         return self.name
@@ -50,5 +50,5 @@ class CostSummary(CostRecord):
 
     class Meta:
         proxy = True
-        verbose_name = '成本统计'
-        verbose_name_plural = '成本统计'
+        verbose_name = '团队表现统计'
+        verbose_name_plural = '团队表现统计'
