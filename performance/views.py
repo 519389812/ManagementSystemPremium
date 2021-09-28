@@ -223,7 +223,7 @@ def view_workload(request):
     if request.method == 'GET':
         page_num = request.GET.get('page', '1')
         create_datetime = timezone.localtime(timezone.now()) - timezone.timedelta(days=30)
-        workload_list = WorkloadRecord.objects.filter(user=request.user, created_datetime__gte=create_datetime)
+        workload_list = WorkloadRecord.objects.filter(user=request.user, create_datetime__gte=create_datetime)
         paginator = Paginator(workload_list, 20)
         page = paginator.get_page(int(page_num))
         return render(request, 'view_workload.html', {'page_workload_list': list(page.object_list),
