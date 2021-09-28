@@ -192,6 +192,14 @@ class WorkloadRecordAdmin(admin.ModelAdmin):
                 obj.verify_datetime = None
             super().save_model(request, obj, form, change)
 
+    def get_model_perms(self, request):
+        model_perms = {
+            'change': self.has_change_permission(request),
+            'delete': self.has_delete_permission(request),
+            'view': self.has_view_permission(request),
+        }
+        return model_perms
+
 
 class WorkloadSummaryAdmin(admin.ModelAdmin):
     change_list_template = "admin/workload_summary_change_list.html"
