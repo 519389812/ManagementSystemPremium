@@ -194,6 +194,7 @@ class WorkloadRecordAdmin(admin.ModelAdmin):
 
     def get_model_perms(self, request):
         model_perms = {
+            'add': False,
             'change': self.has_change_permission(request),
             'delete': self.has_delete_permission(request),
             'view': self.has_view_permission(request),
