@@ -192,6 +192,10 @@ class WorkloadRecordAdmin(admin.ModelAdmin):
                 obj.verify_datetime = None
             super().save_model(request, obj, form, change)
 
+    def has_add_permission(self, request):
+        return False
+
+    # 未知原因不生效
     def get_model_perms(self, request):
         model_perms = {
             'add': False,
