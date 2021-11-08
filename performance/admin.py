@@ -168,7 +168,7 @@ class WorkloadRecordAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'position', 'number_people', 'number_baggage', 'sale', 'score', 'verifier', 'remark', 'create_datetime', 'verify', 'verify_user', 'verify_datetime')
     list_editable = ('verify',)
     autocomplete_fields = ['user', 'position', 'verifier', 'verify_user']
-    search_fields = ('user__full_name', 'position__name', 'position__type__name', 'verifier__name', 'remark', 'verify_user__name')
+    search_fields = ('user__full_name', 'position__name', 'position__type__name', 'verifier__name', 'remark')
     fields = ('id', 'user', 'position', 'number_people', 'number_baggage', 'sale', 'score', 'verifier', 'remark', 'create_datetime', 'verify', 'verify_user', 'verify_datetime')
     readonly_fields = ('id', 'user', 'position', 'number_people', 'number_baggage', 'score', 'create_datetime', 'verify_user', 'verify_datetime')
     list_filter = (
@@ -209,7 +209,7 @@ class WorkloadRecordAdmin(admin.ModelAdmin):
 class WorkloadSummaryAdmin(admin.ModelAdmin):
     change_list_template = "admin/workload_summary_change_list.html"
 
-    search_fields = ('user__full_name', 'position__name', 'position__type__name', 'verifier__name', 'remark', 'verify_user__name')
+    search_fields = ('user__full_name', 'position__name', 'position__type__name', 'verifier__name', 'remark')
     list_filter = (
         'date', 'user__team', 'create_datetime', 'position__name', 'position__type__name', 'verifier'
     )
