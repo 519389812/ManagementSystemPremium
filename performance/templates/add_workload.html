@@ -69,15 +69,6 @@
                 </div>
                 <div class="control-group form-group">
                     <div class="controls">
-                        <label>办理行李量:</label>
-                        <input type="number" class="form-control" id="number_baggage" name="number_baggage"
-                               placeholder="输入办理行李量" value="0"
-                               required data-validation-required-message="Please enter quantity of baggage.">
-                        <p class="help-block" id="number_baggage_validate"></p>
-                    </div>
-                </div>
-                <div class="control-group form-group">
-                    <div class="controls">
                         <label>销售额:</label>
                         <input type="number" class="form-control" id="sale" name="sale"
                                placeholder="输入办理行李量" value="0"
@@ -131,42 +122,24 @@
 
 <!-- Bootstrap core JavaScript -->
 {% include "script.html" %}
+
+<!--$.ajax({-->
+<!--    // 1. 数据提交url，与form表单的action属性一致-->
+<!--    url:'',-->
+<!--    // 2. 指定当前请求方式-->
+<!--    type: 'post',-->
+<!--    // 3. 提交的数据，{1标签id:$('#1标签id').val(),2标签id:$('#2标签id').val()}-->
+<!--    data: {},-->
+<!--    // 4. 异步提交回调函数，data就是异步提交的返回结果，将异步回调函数的结果通过DOM操作渲染到第三个input框中：(3标签id).val(data)-->
+<!--    success:function(data){-->
+<!--            $(3标签id).val(data)-->
+<!--        }-->
+<!--    })-->
+
 <script>
 $(document).ready(function(){
-    $('#level').change(function(){
-        var level = $('#level').val();
-        var position = $('#position').val();
-
-        if (level == '1' || level == '2' || level == '3')
-        {
-            if (position != '11' && position != '12')
-            {
-                $('#level').val('');
-                $('#level_validate').html('仅岗位为外航值机时才可选择此选项');
-            }
-            else
-            {
-                $('#level_validate').html('');
-            }
-        }
-    });
-
     $('#position').change(function(){
-        var level = $('#level').val();
-        var position = $('#position').val();
 
-        if (level == '1' || level == '2' || level == '3')
-        {
-            if (position != '11' && position != '12')
-            {
-                $('#level').val('');
-                $('#level_validate').html('仅岗位为外航值机时才可选择此选项');
-            }
-            else
-            {
-                $('#level_validate').html('');
-            }
-        }
     });
 })
 
@@ -182,8 +155,8 @@ $.fn.setNow = function (onlyBlank) {
     ;
 
   year = now.getFullYear();
-  month = (now.getMonth() + 1).toString().length === 1 ? '0' + (now.getMonth() + 1).toString() : now.getMonth() + 1;
-  date = now.getDate().toString().length === 1 ? '0' + (now.getDate()).toString() : now.getDate();
+  month = (now.getMonth()+1).toString().length === 1 ? '0' + (now.getMonth() + 1).toString() : now.getMonth() + 1;
+  date = now.getDate().toString().length === 1 ? '0' + now.getDate().toString() : now.getDate();
   hours = now.getHours().toString().length === 1 ? '0' + now.getHours().toString() : now.getHours();
   minutes = now.getMinutes().toString().length === 1 ? '0' + now.getMinutes().toString() : now.getMinutes();
   seconds = now.getSeconds().toString().length === 1 ? '0' + now.getSeconds().toString() : now.getSeconds();

@@ -36,11 +36,11 @@
         </div>
         <!-- Content Column -->
         <div class="col-lg-9 mb-4">
-            <div style="color:red font-size:14px">{{ msg }}</div>
+            {% include "message.html" %}
             <h2>个人信息</h2>
             <hr>
             <p><b>用户名：</b>{{ request.user.username }}</p>
-            <p><b>姓名：</b>{{ request.user.get_full_name }}</p>
+            <p><b>姓名：</b>{{ request.user.full_name }}</p>
             <p><b>邮箱：</b>{{ request.user.email }}</p>
             <p><b>邮箱验证状态：</b>
                 {% if request.user.email_verify == True %}

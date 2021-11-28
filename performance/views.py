@@ -2,7 +2,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, reverse, redirect
 from django.conf import settings
 from django.core.paginator import Paginator
-from performance.models import Position, WorkloadRecord, RewardRecord
+from performance.models import Position, WorkloadRecord, RewardPenaltyRecord
+from rule.models import WorkloadItem
 from team.models import CustomTeam
 from user.views import check_authority, check_grouping
 from ManagementSystemPremium.views import parse_url_param
@@ -52,12 +53,12 @@ def get_queryset(url_params, model_name):
 
 
 @check_authority
-def reward_charts(request):
+def reward_penalty_charts(request):
     url = request.META.get('HTTP_REFERER', '')
     if url == '':
         return render(request, 'error_400.html', status=400)
     url_params = parse_url_param(url)
-    queryset = get_queryset(url_params, 'RewardRecord')
+    queryset = get_queryset(url_params, 'RewardPenaltyRecord')
     if queryset.count() == 0:
         messages.error(request, '无数据')
         return redirect(url)
@@ -67,10 +68,10 @@ def reward_charts(request):
     start_date, end_date = date_range[0], date_range[-1]
     date_list = make_date_list(start_date, end_date)
     data = pd.DataFrame(date_list, columns=['日期'])
-    data_db = pd.DataFrame(queryset.values('user__last_name', 'user__first_name', 'reward__name', 'date'))
+    data_db = pd.DataFrame(queryset.values('user__last_name', 'user__first_name', 'reward_penalty__name', 'date'))
     data_db['name'] = data_db['user__last_name'] + data_db['user__first_name']
-    data_db = data_db[['name', 'reward__name', 'date']]
-    data_db = data_db.rename(columns={'name': '姓名', 'reward__name': '奖惩名称', 'date': '日期'})
+    data_db = data_db[['name', 'reward_penalty__name', 'date']]
+    data_db = data_db.rename(columns={'name': '姓名', 'reward_penalty__name': '奖惩名称', 'date': '日期'})
     data_db['日期'] = data_db['日期'].apply(lambda x: x.strftime('%Y-%m-%d'))
     data = pd.merge(data, data_db, on='日期', how='left')
     data['次数'] = data['奖惩名称']
@@ -82,29 +83,29 @@ def reward_charts(request):
     line.add_xaxis(data.index.values.tolist())
     for value in second_list:
         line.add_yaxis(value, data['次数'][value], symbol_size=10, is_smooth=True)
-    reward_summary_line = (
+    reward_penalty_summary_line = (
         line
     )
 
     # summary_bar
-    data = pd.DataFrame(queryset.values('user__last_name', 'user__first_name', 'reward__name'))
+    data = pd.DataFrame(queryset.values('user__last_name', 'user__first_name', 'reward_penalty__name'))
     data['name'] = data['user__last_name'] + data['user__first_name']
-    data = data[['name', 'reward__name']]
-    data = data.rename(columns={'name': '姓名', 'reward__name': '奖惩名称'})
+    data = data[['name', 'reward_penalty__name']]
+    data = data.rename(columns={'name': '姓名', 'reward_penalty__name': '奖惩名称'})
     data['次数'] = data['姓名']
     data = pd.pivot_table(data, values=['次数'], index=['奖惩名称'], aggfunc=np.count_nonzero)
     bar = Bar(init_opts=opts.InitOpts()).set_global_opts(title_opts=opts.TitleOpts(title='奖惩统计', subtitle='总体'))
     bar.add_xaxis(data.index.values.tolist())
     bar.add_yaxis('奖惩名称', data['次数'].values.tolist())
-    reward_summary_bar = (
+    reward_penalty_summary_bar = (
         bar
     )
 
     # summary_bar
-    data = pd.DataFrame(queryset.values('user__last_name', 'user__first_name', 'reward__name'))
+    data = pd.DataFrame(queryset.values('user__last_name', 'user__first_name', 'reward_penalty__name'))
     data['name'] = data['user__last_name'] + data['user__first_name']
-    data = data[['name', 'reward__name']]
-    data = data.rename(columns={'name': '姓名', 'reward__name': '奖惩名称'})
+    data = data[['name', 'reward_penalty__name']]
+    data = data.rename(columns={'name': '姓名', 'reward_penalty__name': '奖惩名称'})
     data['次数'] = data['姓名']
     data = pd.pivot_table(data, values=['次数'], index=['姓名', '奖惩名称'], aggfunc=np.count_nonzero)
     first_list, second_list = zip(*data.index.values)
@@ -113,14 +114,14 @@ def reward_charts(request):
     bar.add_xaxis(second_list)
     for value in first_list:
         bar.add_yaxis(value, data.loc[value]['次数'].values.tolist())
-    reward_summary_by_name_bar = (
+    reward_penalty_summary_by_name_bar = (
         bar
     )
 
     page = Page(layout=Page.SimplePageLayout, page_title='奖惩统计')
-    page.add(reward_summary_line)
-    page.add(reward_summary_bar)
-    page.add(reward_summary_by_name_bar)
+    page.add(reward_penalty_summary_line)
+    page.add(reward_penalty_summary_bar)
+    page.add(reward_penalty_summary_by_name_bar)
     return HttpResponse(page.render_embed())
 
 
@@ -180,16 +181,15 @@ def add_workload(request):
     else:
         position_list = list(Position.objects.all().order_by('name').values('id', 'name'))
         team_list = list(CustomTeam.objects.all().order_by('name'))
+    workload_item_list = list(WorkloadItem.objects.all())
     team_list = [{'id': team.id, 'name': team.get_related_parent_name()} for team in team_list]
     if request.method == 'POST':
         date = request.POST.get('date', '')
         position_id = request.POST.get('position_id', '')
-        number_people = request.POST.get('number_people', '')
-        number_baggage = request.POST.get('number_baggage', '')
-        sale = request.POST.get('sale', '')
+        workload_item = request.POST.get('workload_item', '')
         verifier_team_id = request.POST.get('verifier_team_id', '')
         remark = request.POST.get('remark', '')
-        if not all([date, position_id, number_people, number_baggage, sale, verifier_team_id]):
+        if not all([date, position_id, workload_item, verifier_team_id]):
             return render(request, 'error_500.html', status=500)
         try:
             position = Position.objects.get(id=int(position_id))
@@ -206,16 +206,16 @@ def add_workload(request):
                         pass
             verifier = CustomTeam.objects.get(id=int(verifier_team_id))
             WorkloadRecord.objects.create(user=request.user, date=date, position=position,
-                                          number_people=int(number_people), number_baggage=int(number_baggage),
-                                          sale=float(sale), score=score, verifier=verifier, remark=remark)
+                                          workload_item=workload_item, score=score, verifier=verifier, remark=remark)
             msg = '登记成功！您可以继续登记下一条记录！'
             return render(request, 'add_workload.html',
-                          {'position_list': position_list, 'team_list': team_list, 'position_name': position.name,
-                           'verifier_team_name': verifier.name, 'msg': msg})
+                          {'position_list': position_list, 'team_list': team_list,
+                           'workload_item_list': workload_item_list, 'msg': msg})
         except:
             return render(request, 'error_500.html', status=500)
     else:
-        return render(request, 'add_workload.html', {'position_list': position_list, 'team_list': team_list})
+        return render(request, 'add_workload.html', {'position_list': position_list,
+                                                     'workload_item_list': workload_item_list, 'team_list': team_list})
 
 
 @check_authority

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from rule.models import LevelRule, RepeatRule, SaleRule, PositionType, Position, RewardType, Reward, PenaltyType, Penalty
+from rule.models import LevelRule, RepeatRule, SaleRule, PositionType, Position, RewardPenaltyType, RewardPenalty
 
 
 class LevelRuleAdmin(admin.ModelAdmin):
@@ -39,30 +39,30 @@ class SaleRuleAdmin(admin.ModelAdmin):
         return super(SaleRuleAdmin, self).get_form(request, obj, **kwargs)
 
 
-class PositionTypeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
-    search_fields = ('name',)
-
-
 class PositionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'type', 'name', 'score', 'sale_rule')
+    list_display = ('id', 'name', 'score')
     search_fields = ('name',)
-    autocomplete_fields = ['type', 'sale_rule']
+
+
+class WorkloadItemAdmin(admin.ModelAdmin):
+    list_display = ('id', 'position', 'name', 'weight', 'sale_rule')
+    search_fields = ('name',)
+    autocomplete_fields = ['sale_rule', ]
 
     def get_form(self, request, obj=None, **kwargs):
         help_texts = {
             'sale_rule': '当需要设置销量目标并转成分数时，设置此项',
         }
         kwargs.update({'help_texts': help_texts})
-        return super(PositionAdmin, self).get_form(request, obj, **kwargs)
+        return super(WorkloadItemAdmin, self).get_form(request, obj, **kwargs)
 
 
-class RewardTypeAdmin(admin.ModelAdmin):
+class RewardPenaltyTypeAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
     search_fields = ('name',)
 
 
-class RewardAdmin(admin.ModelAdmin):
+class RewardPenaltyAdmin(admin.ModelAdmin):
     list_display = ('id', 'type', 'name', 'score', 'repeat_rule')
     search_fields = ('name',)
     autocomplete_fields = ['type', 'repeat_rule']
@@ -72,34 +72,12 @@ class RewardAdmin(admin.ModelAdmin):
             'repeat_rule': '当需要设置X天内重复发生某个奖励的规则时，设置此项',
         }
         kwargs.update({'help_texts': help_texts})
-        return super(RewardAdmin, self).get_form(request, obj, **kwargs)
-
-
-class PenaltyTypeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
-    search_fields = ('name',)
-
-
-class PenaltyAdmin(admin.ModelAdmin):
-    list_display = ('id', 'type', 'name', 'score', 'repeat_rule')
-    search_fields = ('name',)
-    autocomplete_fields = ['type', 'repeat_rule']
-
-    def get_form(self, request, obj=None, **kwargs):
-        help_texts = {
-            'repeat_rule': '当需要设置X天内重复发生某个处罚的规则时，设置此项',
-        }
-        kwargs.update({'help_texts': help_texts})
-        return super(PenaltyAdmin, self).get_form(request, obj, **kwargs)
+        return super(RewardPenaltyAdmin, self).get_form(request, obj, **kwargs)
 
 
 admin.site.register(LevelRule, LevelRuleAdmin)
 admin.site.register(RepeatRule, RepeatRuleAdmin)
 admin.site.register(SaleRule, SaleRuleAdmin)
-admin.site.register(PositionType, PositionTypeAdmin)
 admin.site.register(Position, PositionAdmin)
-admin.site.register(RewardType, RewardTypeAdmin)
-admin.site.register(Reward, RewardAdmin)
-admin.site.register(PenaltyType, PenaltyTypeAdmin)
-admin.site.register(Penalty, PenaltyAdmin)
-
+admin.site.register(RewardPenaltyType, RewardPenaltyTypeAdmin)
+admin.site.register(RewardPenalty, RewardPenaltyAdmin)
