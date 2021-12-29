@@ -1,6 +1,6 @@
 from django.contrib import admin
 from rule.models import PositionType, Position, RewardType, Reward, PenaltyType, Penalty
-from performance.models import RewardRecord, RewardSummary, PenaltyRecord, PenaltySummary, WorkloadRecord, WorkloadSummary
+from performance.models import RewardPenaltyRecord, RewardPenaltySummary, WorkloadRecord, WorkloadSummary
 from team.models import CustomTeam
 from user.models import CustomUser
 from django.contrib.admin import widgets
@@ -46,24 +46,24 @@ def get_weight_column_value(qs, column_name):
     return value_list
 
 
-class RewardRecordAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'date', 'reward', 'level_rule', 'basic_score', 'weight_score', 'title', 'create_datetime', 'create_user')
-    fields = ('id', 'user', 'date', 'reward', 'level_rule', 'basic_score', 'weight_score', 'title', 'content', 'create_datetime', 'create_user')
+class RewardPenaltyRecordAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'date', 'reward_penalty', 'level_rule', 'basic_score', 'weight_score', 'title', 'create_datetime', 'create_user')
+    fields = ('id', 'user', 'date', 'reward_penalty', 'level_rule', 'basic_score', 'weight_score', 'title', 'content', 'create_datetime', 'create_user')
     list_display_links = ('id',)
-    search_fields = ('user__full_name', 'reward__name', 'reward__type__name', 'title', 'content', 'level_rule__name')
-    autocomplete_fields = ['user', 'reward', 'level_rule']
+    search_fields = ('user__full_name', 'reward_penalty__name', 'reward_penalty__type__name', 'title', 'content', 'level_rule__name')
+    autocomplete_fields = ['user', 'reward_penalty', 'level_rule']
     readonly_fields = ('id', 'score', 'create_datetime', 'create_user', 'basic_score', 'weight_score')
     list_filter = (
-        'date', 'user__team', 'reward__name', 'reward__type__name', 'level_rule__name'
+        'date', 'user__team', 'reward_penalty__name', 'reward_penalty__type__name', 'level_rule__name'
     )
 
     # 必须要写入readonly_fields，否则报错
     def basic_score(self, obj):
-        return obj.reward.score
+        return obj.reward_penalty.score
     basic_score.short_description = '基础分数'
 
     def weight_score(self, obj):
-        return get_weight_column(obj, 'score', 'RewardRecord', 'reward')
+        return get_weight_column(obj, 'score', 'RewardPenaltyRecord', 'reward_penalty')
     weight_score.short_description = '加成后分数'
 
     def get_form(self, request, obj=None, **kwargs):
@@ -71,7 +71,7 @@ class RewardRecordAdmin(admin.ModelAdmin):
             'level_rule': '同类奖励，程度不同加分不同时，设置此项',
         }
         kwargs.update({'help_texts': help_texts})
-        return super(RewardRecordAdmin, self).get_form(request, obj, **kwargs)
+        return super(RewardPenaltyRecordAdmin, self).get_form(request, obj, **kwargs)
 
     def save_model(self, request, obj, form, change):
         if form.is_valid():
@@ -79,12 +79,12 @@ class RewardRecordAdmin(admin.ModelAdmin):
             super().save_model(request, obj, form, change)
 
 
-class RewardSummaryAdmin(admin.ModelAdmin):
-    change_list_template = "admin/reward_summary_change_list.html"
+class RewardPenaltySummaryAdmin(admin.ModelAdmin):
+    change_list_template = "admin/reward_penalty_summary_change_list.html"
 
-    search_fields = ('user__full_name', 'reward__name', 'reward__type__name', 'title', 'content', 'level_rule__name')
+    search_fields = ('user__full_name', 'reward_penalty__name', 'reward_penalty__type__name', 'title', 'content', 'level_rule__name')
     list_filter = (
-        'date', 'user__team', 'reward__name', 'reward__type__name',
+        'date', 'user__team', 'reward_penalty__name', 'reward_penalty__type__name',
     )
 
     def changelist_view(self, request, extra_context=None):
@@ -95,7 +95,7 @@ class RewardSummaryAdmin(admin.ModelAdmin):
             return response
         value_list = get_weight_column_value(qs, 'weight_score')
         for i in range(len(qs)):
-            RewardRecord.objects.filter(id=qs[i].id).update(score=value_list[i])
+            RewardPenaltyRecord.objects.filter(id=qs[i].id).update(score=value_list[i])
         metrics = {
             'count': Count('user'),
             'score': Sum('score'),
@@ -232,8 +232,8 @@ class WorkloadSummaryAdmin(admin.ModelAdmin):
         return response
 
 
-admin.site.register(RewardRecord, RewardRecordAdmin)
-admin.site.register(RewardSummary, RewardSummaryAdmin)
+admin.site.register(RewardPenaltyRecord, RewardPenaltyRecordAdmin)
+admin.site.register(RewardPenaltySummary, RewardPenaltySummaryAdmin)
 admin.site.register(PenaltyRecord, PenaltyRecordAdmin)
 admin.site.register(PenaltySummary, PenaltySummaryAdmin)
 admin.site.register(WorkloadRecord, WorkloadRecordAdmin)

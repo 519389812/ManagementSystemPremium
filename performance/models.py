@@ -31,7 +31,7 @@ def get_weight_column(self, column_name, model_name, model_column):
 
 class RewardPenaltyRecord(models.Model):
     id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(CustomUser, related_name='rewardRecord_user', on_delete=models.CASCADE, verbose_name='奖励人')
+    user = models.ForeignKey(CustomUser, related_name='rewardPenaltyRecord_user', on_delete=models.CASCADE, verbose_name='奖励人')
     date = models.DateField(verbose_name='日期')
     reward_penalty = models.ForeignKey(RewardPenalty, on_delete=models.CASCADE, verbose_name='奖惩项')
     level_rule = models.ForeignKey(LevelRule, null=True, blank=True, on_delete=models.CASCADE, verbose_name='程度加成规则')
