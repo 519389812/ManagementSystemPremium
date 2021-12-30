@@ -4,9 +4,9 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from ManagementSystemPremium.views import parse_url_param
 from django.db.models import Count, Sum
-from rule.models import RewardType, PenaltyType
+from rule.models import RewardPenaltyType
 from person.models import PersonSummary
-from performance.models import RewardSummary, PenaltySummary
+from performance.models import RewardPenaltySummary
 from training.models import Training
 import pandas as pd
 import numpy as np

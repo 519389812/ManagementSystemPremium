@@ -46,40 +46,30 @@
                 <div class="control-group form-group">
                     <div class="controls">
                         <label>岗位:</label>
-                        <select class="form-control" id="position_id" name="position_id">
+                        <select class="form-control" id="position_id" name="position_id" required>
+                            <option value=""></option>
                             {% for position in position_list %}
-                                {% if position.name == position_name %}
-                                    <option selected value="{{ position.id }}">{{ position.name }}</option>
-                                {% else %}
-                                    <option value="{{ position.id }}">{{ position.name }}</option>
-                                {% endif %}
+                                <option value="{{ position.id }}">{{ position.name }}</option>
                             {% endfor %}
                         </select>
                         <p class="help-block" id="position_validate"></p>
                     </div>
                 </div>
-                <div class="control-group form-group">
-                    <div class="controls">
-                        <label>办理客量:</label>
-                        <input type="number" class="form-control" id="number_people" name="number_people"
-                               placeholder="输入办理客量" value="0"
-                               required data-validation-required-message="Please enter number of people.">
-                        <p class="help-block" id="number_people_validate"></p>
+                {% for item in workload_item_dict.position_id %}
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>{{ item.name }}</label>
+                            <input type="number" class="form-control" id="{{ item.name }}" name="{{ item.name }}"
+                               placeholder="输入值" value="0"
+                               required data-validation-required-message="Please enter a number.">
+                            <p class="help-block" id="workload_item_validate"></p>
+                        </div>
                     </div>
-                </div>
-                <div class="control-group form-group">
-                    <div class="controls">
-                        <label>销售额:</label>
-                        <input type="number" class="form-control" id="sale" name="sale"
-                               placeholder="输入办理行李量" value="0"
-                               required data-validation-required-message="Please enter quantity of sales.">
-                        <p class="help-block" id="sale_validate"></p>
-                    </div>
-                </div>
+                {% endfor %}
                 <div class="control-group form-group">
                     <div class="controls">
                         <label>审核室:</label>
-                        <select class="form-control" id="verifier_team_id" name="verifier_team_id">
+                        <select class="form-control" id="verifier_team_id" name="verifier_team_id" required>
                             {% for team in team_list %}
                                 {% if team.name == verifier_team_name %}
                                     <option selected value="{{ team.id }}">{{ team.name }}</option>
@@ -137,11 +127,32 @@
 <!--    })-->
 
 <script>
-$(document).ready(function(){
-    $('#position').change(function(){
-
+$('#position_id').change(function(){
+    var position_id = $('#position_id').val();
+    $.ajax({
+        type: "POST",
+        url: "/performance/get_workload_item/",
+        async : false,
+        timeout: 5000,
+        data: {
+            'position_id': position_id,
+            'csrfmiddlewaretoken':$("[name='csrfmiddlewaretoken']").val()
+        },
+        dataType: "JSON",
+        success: function(data){
+            console.log(data);
+        },
+        complete : function(XMLHttpRequest,status) { //请求完成后最终执行参数
+            if(status == 'timeout') { //超时,status还有success,error等值的情况
+                return;
+            } else if(status == 'error') {
+                return;
+            } else if(status == 'success') {
+                return;
+            }
+        },
     });
-})
+});
 
 $.fn.setNow = function (onlyBlank) {
   var now = new Date($.now())

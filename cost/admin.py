@@ -2,7 +2,7 @@ from django.contrib import admin
 from cost.models import CostType, Cost, CostRecord, CostSummary
 from django.db.models import Count, Sum
 from performance.admin import get_weight_column_value
-from performance.models import RewardSummary, PenaltySummary, WorkloadRecord
+from performance.models import RewardPenaltySummary, WorkloadRecord
 import numpy as np
 import pandas as pd
 
@@ -65,12 +65,12 @@ class CostSummaryAdmin(admin.ModelAdmin):
         reward_qs = eval('RewardSummary.objects.filter(%s)' % filter_string)
         value_list = get_weight_column_value(reward_qs, 'weight_score')
         for i in range(len(reward_qs)):
-            RewardSummary.objects.filter(id=reward_qs[i].id).update(score=value_list[i])
+            RewardPenaltySummary.objects.filter(id=reward_qs[i].id).update(score=value_list[i])
 
         penalty_qs = eval('PenaltySummary.objects.filter(%s)' % filter_string)
         value_list = get_weight_column_value(penalty_qs, 'weight_score')
         for i in range(len(penalty_qs)):
-            PenaltySummary.objects.filter(id=penalty_qs[i].id).update(score=value_list[i])
+            RewardPenaltySummary.objects.filter(id=penalty_qs[i].id).update(score=value_list[i])
 
         # workload
         if len(workload_qs) > 0:

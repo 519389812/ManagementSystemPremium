@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, reverse, redirect
 from django.conf import settings
 from django.core.paginator import Paginator
@@ -170,6 +170,19 @@ def return_formfield_for_foreignkey(request, db_field, kwargs, db_field_name, ob
 
 @check_authority
 @check_grouping
+def get_workload_item(request):
+    if request.method == 'POST':
+        position_id = request.POST.get('position_id', '')
+        if not position_id:
+            return render(request, 'error_500.html', status=500)
+        workload_item = list(WorkloadItem.objects.filter(position__id=position_id).values())
+        print(workload_item)
+        return JsonResponse(workload_item, safe=False)
+
+
+
+@check_authority
+@check_grouping
 def add_workload(request):
     if request.user.team.parent:
         team_id = request.user.team.parent.id
@@ -181,7 +194,6 @@ def add_workload(request):
     else:
         position_list = list(Position.objects.all().order_by('name').values('id', 'name'))
         team_list = list(CustomTeam.objects.all().order_by('name'))
-    workload_item_list = list(WorkloadItem.objects.all())
     team_list = [{'id': team.id, 'name': team.get_related_parent_name()} for team in team_list]
     if request.method == 'POST':
         date = request.POST.get('date', '')
@@ -209,13 +221,11 @@ def add_workload(request):
                                           workload_item=workload_item, score=score, verifier=verifier, remark=remark)
             msg = '登记成功！您可以继续登记下一条记录！'
             return render(request, 'add_workload.html',
-                          {'position_list': position_list, 'team_list': team_list,
-                           'workload_item_list': workload_item_list, 'msg': msg})
+                          {'position_list': position_list, 'team_list': team_list, 'msg': msg})
         except:
             return render(request, 'error_500.html', status=500)
     else:
-        return render(request, 'add_workload.html', {'position_list': position_list,
-                                                     'workload_item_list': workload_item_list, 'team_list': team_list})
+        return render(request, 'add_workload.html', {'position_list': position_list, 'team_list': team_list})
 
 
 @check_authority

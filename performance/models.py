@@ -67,7 +67,7 @@ class WorkloadRecord(models.Model):
     user = models.ForeignKey(CustomUser, related_name='workloadRecord_user', on_delete=models.CASCADE, verbose_name='登记人')
     date = models.DateField(verbose_name='日期')
     position = models.ForeignKey(Position, on_delete=models.CASCADE, verbose_name='岗位')
-    workload_item = models.TextField(max_length=1000, blank=True, verbose_name='项目')
+    workload = models.JSONField(max_length=1000, blank=True, verbose_name='项目')
     verifier = models.ForeignKey(CustomTeam, related_name='workloadRecord_team', on_delete=models.CASCADE, verbose_name='审核组')
     remark = models.TextField(max_length=1000, blank=True, verbose_name='备注')
     create_datetime = models.DateTimeField(auto_now_add=True, verbose_name='登记时间')

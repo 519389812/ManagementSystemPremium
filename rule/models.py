@@ -60,7 +60,6 @@ class WorkloadItem(models.Model):
     position = models.ForeignKey(Position, on_delete=models.CASCADE, verbose_name='所属岗位')
     name = models.CharField(max_length=100, verbose_name='项目')
     weight = models.FloatField(verbose_name='每单位折算收入')
-    sale_rule = models.ForeignKey(SaleRule, null=True, blank=True, on_delete=models.CASCADE, verbose_name='销量目标规则')
 
     class Meta:
         verbose_name = '绩效项目'

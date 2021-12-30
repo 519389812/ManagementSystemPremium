@@ -1,5 +1,5 @@
 from django.contrib import admin
-from rule.models import LevelRule, RepeatRule, SaleRule, PositionType, Position, RewardPenaltyType, RewardPenalty
+from rule.models import LevelRule, RepeatRule, SaleRule, Position, RewardPenaltyType, RewardPenalty, WorkloadItem
 
 
 class LevelRuleAdmin(admin.ModelAdmin):
@@ -45,9 +45,8 @@ class PositionAdmin(admin.ModelAdmin):
 
 
 class WorkloadItemAdmin(admin.ModelAdmin):
-    list_display = ('id', 'position', 'name', 'weight', 'sale_rule')
+    list_display = ('id', 'position', 'name', 'weight')
     search_fields = ('name',)
-    autocomplete_fields = ['sale_rule', ]
 
     def get_form(self, request, obj=None, **kwargs):
         help_texts = {
@@ -81,3 +80,4 @@ admin.site.register(SaleRule, SaleRuleAdmin)
 admin.site.register(Position, PositionAdmin)
 admin.site.register(RewardPenaltyType, RewardPenaltyTypeAdmin)
 admin.site.register(RewardPenalty, RewardPenaltyAdmin)
+admin.site.register(WorkloadItem, WorkloadItemAdmin)
