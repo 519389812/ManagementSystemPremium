@@ -80,6 +80,9 @@ class WorkloadRecord(models.Model):
         verbose_name_plural = '工作量登记记录'
         ordering = ['-create_datetime']
 
+    def __str__(self):
+        return self.id
+
 
 class WorkloadSummary(WorkloadRecord):
 

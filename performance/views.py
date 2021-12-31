@@ -1,3 +1,5 @@
+import json
+
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, reverse, redirect
 from django.conf import settings
@@ -176,9 +178,7 @@ def get_workload_item(request):
         if not position_id:
             return render(request, 'error_500.html', status=500)
         workload_item = list(WorkloadItem.objects.filter(position__id=position_id).values())
-        print(workload_item)
         return JsonResponse(workload_item, safe=False)
-
 
 
 @check_authority
@@ -198,30 +198,23 @@ def add_workload(request):
     if request.method == 'POST':
         date = request.POST.get('date', '')
         position_id = request.POST.get('position_id', '')
-        workload_item = request.POST.get('workload_item', '')
         verifier_team_id = request.POST.get('verifier_team_id', '')
         remark = request.POST.get('remark', '')
-        if not all([date, position_id, workload_item, verifier_team_id]):
+        if not all([date, position_id, verifier_team_id]):
             return render(request, 'error_500.html', status=500)
         try:
+            post_dict = (dict(request.POST))
+            post_dict = {k: int(v[0]) for k, v in post_dict.items() if k not in ['date', 'position_id', 'verifier_team_id', 'remark', 'csrfmiddlewaretoken']}
+            position_workload_item_list = list(WorkloadItem.objects.filter(position__id=int(position_id)).values_list('name', flat=True))
+            if set(list(post_dict.keys())) != set(position_workload_item_list):
+                return render(request, 'error_500.html', status=500)
+            post_dict = json.dumps(post_dict)
             position = Position.objects.get(id=int(position_id))
-            score = position.score
-            if position.sale_rule:
-                sale_string = 'float(sale)'
-                compare_string = 'position.sale_rule.require'
-                if eval(compare_string):
-                    try:
-                        if eval('%s %s' % (sale_string, eval(compare_string))):
-                            calculate_string = 'position.sale_rule.calculation'
-                            score = eval('%s %s' % (score, eval(calculate_string))) if eval(calculate_string) else score
-                    except:
-                        pass
             verifier = CustomTeam.objects.get(id=int(verifier_team_id))
-            WorkloadRecord.objects.create(user=request.user, date=date, position=position,
-                                          workload_item=workload_item, score=score, verifier=verifier, remark=remark)
+            WorkloadRecord.objects.create(user=request.user, date=date, position=position, workload=post_dict,
+                                          verifier=verifier, remark=remark)
             msg = '登记成功！您可以继续登记下一条记录！'
-            return render(request, 'add_workload.html',
-                          {'position_list': position_list, 'team_list': team_list, 'msg': msg})
+            return render(request, 'add_workload.html', {'position_list': position_list, 'team_list': team_list, 'msg': msg})
         except:
             return render(request, 'error_500.html', status=500)
     else:

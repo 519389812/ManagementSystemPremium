@@ -55,17 +55,9 @@
                         <p class="help-block" id="position_validate"></p>
                     </div>
                 </div>
-                {% for item in workload_item_dict.position_id %}
-                    <div class="control-group form-group">
-                        <div class="controls">
-                            <label>{{ item.name }}</label>
-                            <input type="number" class="form-control" id="{{ item.name }}" name="{{ item.name }}"
-                               placeholder="输入值" value="0"
-                               required data-validation-required-message="Please enter a number.">
-                            <p class="help-block" id="workload_item_validate"></p>
-                        </div>
-                    </div>
-                {% endfor %}
+                <div class="control-group form-group" id="workload-loading"></div>
+                <div id="workload">
+                </div>
                 <div class="control-group form-group">
                     <div class="controls">
                         <label>审核室:</label>
@@ -129,6 +121,13 @@
 <script>
 $('#position_id').change(function(){
     var position_id = $('#position_id').val();
+    var workloadDiv = $('#workload'); //找到一个DOM节点
+    if (position_id == '') {
+        workloadDiv.empty();
+        return;
+    }
+    $('#workload-loading').html('工作量项目加载中...');
+    $("#saveButton").attr("hidden", "false");
     $.ajax({
         type: "POST",
         url: "/performance/get_workload_item/",
@@ -140,7 +139,17 @@ $('#position_id').change(function(){
         },
         dataType: "JSON",
         success: function(data){
-            console.log(data);
+            $('#workload-loading').html('');
+            $("#saveButton").attr("hidden", "true");
+            workloadDiv.empty();
+            var content = "";
+            for (var i = 0; i <= data.length - 1; i++) {
+                content += '<div class="control-group form-group"><div class="controls">';
+                content += '<label>' + data[i].name + '</label>';
+                content += '<input type="number" class="form-control" id="' + data[i].name + '" name="' + data[i].name + '" placeholder="输入值" value="0" required data-validation-required-message="Please enter a number.">';
+                content += '<p class="help-block" id="workload_item_' + data[i].id + '_validate"></p>';
+            }
+            workloadDiv.append(content);
         },
         complete : function(XMLHttpRequest,status) { //请求完成后最终执行参数
             if(status == 'timeout') { //超时,status还有success,error等值的情况
