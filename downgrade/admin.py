@@ -1,5 +1,6 @@
 from django.contrib import admin
 from downgrade.models import FlightType, Compensation, DowngradeRecord
+from django.utils import timezone
 
 
 class FlightTypeAdmin(admin.ModelAdmin):
@@ -14,44 +15,44 @@ class CompensationAdmin(admin.ModelAdmin):
     fields = ('id', 'name')
 
 
-class WorkloadRecordAdmin(admin.ModelAdmin):
-    list_display = ('id', 'date', 'type', 'flight_number', 'workload_exchange', 'output', 'verifier', 'remark', 'create_datetime', 'verify', 'verify_user', 'verify_datetime')
-    list_editable = ('verify',)
-    autocomplete_fields = ['user', 'position', 'verifier', 'verify_user']
-    search_fields = ('user__full_name', 'date', 'position__name', 'verifier__name', 'remark')
-    fields = ('id', 'user', 'position', 'verifier', 'remark', 'create_datetime', 'verify', 'verify_user', 'verify_datetime')
-    readonly_fields = ('id', 'user', 'position', 'workload_exchange', 'output', 'create_datetime', 'verify_user', 'verify_datetime')
-    list_filter = (
-        'date', 'create_datetime', 'position__name', 'verifier'
+class DowngradeRecordAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('基本信息', {'fields': ('id', 'date', 'type', 'flight_number', 'aircraft_id', 'aircraft')}),
+        ('客户信息', {'fields': ('passenger', 'phone', 'ticket', 'release', 'before_class', 'new_class')}),
+        ('补偿信息', {'fields': ('compensation', 'miles', 'compensation_amount')}),
+        ('验证信息', {'fields': ('fill_user', 'fill_datetime', 'review', 'review_user', 'review_datetime', 'supervisor_verify', 'supervisor_verify_user', 'supervisor_verify_datetime', 'manager_verify', 'manager_verify_user', 'manager_verify_datetime')})
     )
-
-    def workload_exchange(self, obj):
-        return obj.workload.replace('\"', '').replace('{', '').replace('}', '')
-    workload_exchange.short_description = '工作量'
-
-    def output(self, obj):
-        workload_item = list(WorkloadItem.objects.filter(position=obj.position).values('name', 'weight'))
-        workload_item = {i['name']: i['weight'] for i in workload_item}
-        out = sum([v * workload_item[k] for k, v in json.loads(obj.workload).items()])
-        return out
-    output.short_description = '折算收入'
-
-    def get_form(self, request, obj=None, **kwargs):
-        help_texts = {
-            'date': '请以开始工作日期为准!',
-        }
-        kwargs.update({'help_texts': help_texts})
-        return super(WorkloadRecordAdmin, self).get_form(request, obj, **kwargs)
+    list_display = ('id', 'date', 'type', 'flight_number', 'aircraft_id', 'aircraft', 'passenger', 'phone', 'ticket', 'release', 'before_class', 'new_class', 'compensation', 'miles', 'compensation_amount', 'fill_user', 'fill_datetime', 'review', 'review_user', 'review_datetime', 'supervisor_verify', 'supervisor_verify_user', 'supervisor_verify_datetime', 'manager_verify', 'manager_verify_user', 'manager_verify_datetime')
+    # list_editable = ('',)
+    # autocomplete_fields = ['',]
+    search_fields = ('ticket', 'passenger', 'fill_user__full_name',)
+    readonly_fields = ('fill_user', 'fill_datetime', 'review', 'review_user', 'review_datetime', 'supervisor_verify', 'supervisor_verify_user', 'supervisor_verify_datetime', 'manager_verify', 'manager_verify_user', 'manager_verify_datetime')
+    list_filter = ('date',)
 
     def save_model(self, request, obj, form, change):
         if form.is_valid():
-            if form.cleaned_data['verify']:
-                obj.verify_user = request.user
-                obj.verify_datetime = timezone.localtime(timezone.now())
+            if not any([form.cleaned_data['review'], form.cleaned_data['supervisor_verify'], form.cleaned_data['manager_verify']]):
+                obj.fill_user = request.user
+                obj.fill_datetime = timezone.localtime(timezone.now())
+            if form.cleaned_data['review']:
+                obj.review_user = request.user
+                obj.review_datetime = timezone.localtime(timezone.now())
             else:
-                obj.verify_user = None
-                obj.verify_datetime = None
+                obj.review_user = None
+                obj.review_datetime = None
+            if form.cleaned_data['supervisor_verify']:
+                obj.supervisor_verify_user = request.user
+                obj.supervisor_verify_datetime = timezone.localtime(timezone.now())
+            else:
+                obj.supervisor_verify_user = None
+                obj.supervisor_verify_datetime = None
+            if form.cleaned_data['manager_verify']:
+                obj.supervisor_verify_user = request.user
+                obj.supervisor_verify_datetime = timezone.localtime(timezone.now())
+            else:
+                obj.manager_verify_user = None
+                obj.manager_verify_datetime = None
             super().save_model(request, obj, form, change)
 
     def has_add_permission(self, request):
-        return False
+        return True
