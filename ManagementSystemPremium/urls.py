@@ -18,6 +18,7 @@ from django.urls import path, re_path
 from . import views as main_views
 from user import views as user_views
 from performance import views as performance_views
+from sale import views as sales_views
 from django.shortcuts import render
 from ManagementSystemPremium.views import error_404, error_400, error_403, error_500
 
@@ -78,4 +79,7 @@ urlpatterns = [
     path('performance/view_workload/', performance_views.view_workload, name='view_workload'),
     path('performance/workload_summary_export/', performance_views.workload_summary_export, name='workload_summary_export'),
     path('performance/get_workload_item/', performance_views.get_workload_item, name='get_workload_item'),
+
+    # sales
+    path('sales/', sales_views.sales, name='sales'),
 ]

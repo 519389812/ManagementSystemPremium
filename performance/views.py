@@ -4,8 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, reverse, redirect
 from django.conf import settings
 from django.core.paginator import Paginator
-from performance.models import Position, WorkloadRecord, RewardPenaltyRecord
-from rule.models import WorkloadItem
+from performance.models import Position, WorkloadRecord, WorkloadItem, RewardPenaltyRecord
 from team.models import CustomTeam
 from user.views import check_authority, check_grouping
 from ManagementSystemPremium.views import parse_url_param
@@ -188,12 +187,8 @@ def add_workload(request):
         team_id = request.user.team.parent.id
     else:
         team_id = request.user.team.id
-    if not request.user.is_superuser:
-        position_list = list(Position.objects.all().order_by('name').values('id', 'name'))
-        team_list = list(CustomTeam.objects.filter(related_parent__iregex=r'[^0-9]*%s[^0-9]' % str(team_id)).order_by('name'))
-    else:
-        position_list = list(Position.objects.all().order_by('name').values('id', 'name'))
-        team_list = list(CustomTeam.objects.all().order_by('name'))
+    position_list = list(Position.objects.all().order_by('name').values('id', 'name'))
+    team_list = list(CustomTeam.objects.filter(related_parent__iregex=r'[^0-9]*%s[^0-9]' % str(team_id)).order_by('name'))
     team_list = [{'id': team.id, 'name': team.get_related_parent_name()} for team in team_list]
     if request.method == 'POST':
         date = request.POST.get('date', '')

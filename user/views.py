@@ -6,14 +6,13 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth import login as login_admin
 from django.contrib.auth import logout as logout_admin
 from django.contrib.auth import authenticate
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
 from django.utils.datastructures import MultiValueDictKeyError
 import re
 from django.utils import timezone
 import datetime
 from django.core.mail import send_mail
 from ManagementSystemPremium.settings import EMAIL_FROM
+from ManagementSystemPremium.views import *
 import random
 from user_agents import parse
 import json
@@ -89,9 +88,9 @@ def user_setting(request):
 
 def register(request):
     if request.method == 'POST':
-        if not check_post_validate(request, check_username_validate, check_password_validate, check_lastname_validate,
-                                   check_firstname_validate, check_email_validate, check_question_validate,
-                                   check_answer_validate):
+        if not check_post_validate(request, check_register_username_validate, check_password_validate, check_name_validate,
+                                   check_name_validate, check_email_validate, check_question_validate,
+                                   check_answer_validate, ['username', 'password', 'lastname', 'firstname', 'email', 'question', 'answer']):
             return render(request, 'register.html', {'msg': '存在未按规定要求填写的字段！'})
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
@@ -163,7 +162,7 @@ def set_email_verify(request):
 @check_authority
 def send_verify_email(request):
     if request.method == 'POST':
-        if not check_post_validate(request, check_username_validate, check_email_validate):
+        if not check_post_validate(request, check_username_validate, check_email_validate, ['username', 'email']):
             return render(request, 'email_verify.html', {'msg': '存在未按格式输入的字段!'})
         user = request.user
         code = random_str(16)
@@ -243,7 +242,7 @@ def reset_password_by_question(request, code):
         if len(records) > 0:
             for record in records:
                 if check_datetime_opened(timezone.localtime(record.close_datetime), timezone.localtime(timezone.now())):
-                    if not check_post_validate(request, check_passwords_validate, check_password_repeat_validate):
+                    if not check_post_validate(request, check_password_validate, check_password_validate, ['password', 'password_repeat']):
                         return render(request, 'reset_password_by_question.html', {'msg': '存在未按格式输入的字段!'})
                     password = request.POST.get('password', '')
                     password_repeat = request.POST.get('password_repeat', '')
@@ -266,7 +265,7 @@ def pre_reset_password_by_email(request):
 
 def send_reset_password_email(request):
     if request.method == 'POST':
-        if not check_post_validate(request, check_username_validate, check_email_validate):
+        if not check_post_validate(request, check_username_validate, check_email_validate, ['username', 'email']):
             return render(request, 'pre_reset_password_email.html', {'msg': '存在未按格式输入的字段!'})
         username = request.POST.get('username', '')
         try:
@@ -299,7 +298,7 @@ def reset_password_by_email(request, code):
                     record.save()
                     return render(request, 'reset_password_by_email.html', {'msg': '验证成功，请于5分钟内重设密码', 'code': code})
                 elif request.method == 'POST':
-                    if not check_post_validate(request, check_passwords_validate, check_password_repeat_validate):
+                    if not check_post_validate(request, check_password_validate, check_password_validate, ['password', 'password_repeat']):
                         return render(request, 'reset_password_by_email.html', {'msg': '存在未按格式输入的字段!'})
                     password = request.POST.get('password', '')
                     password_repeat = request.POST.get('password_repeat', '')
@@ -321,7 +320,7 @@ def change_password(request):
     if request.method == 'GET':
         return render(request, 'change_password.html')
     else:
-        if not check_post_validate(request, check_passwords_validate, check_password_repeat_validate):
+        if not check_post_validate(request, check_password_validate, check_password_validate, ['password', 'password_repeat']):
             return render(request, 'change_password.html', {'msg': '存在未按格式输入的字段!'})
         old_password = request.POST.get('old_password', '')
         if check_password(old_password, request.user.password):
@@ -344,11 +343,11 @@ def logout(request):
     return redirect(reverse('home'))
 
 
-def check_username_validate(request):
+def check_register_username_validate(request, username_tag):
     try:
-        username = request.GET['username']
+        username = request.GET.get(username_tag)
     except MultiValueDictKeyError:
-        username = request.POST.get('username')
+        username = request.POST.get(username_tag)
     if username == '':
         return HttpResponse('用户名不能为空')
     if len(username) < 4 or len(username) > 16:
@@ -358,137 +357,3 @@ def check_username_validate(request):
     if CustomUser.objects.filter(username=username).count() != 0:
         return HttpResponse('用户名已存在')
     return HttpResponse('')
-
-
-def check_password_validate(request):
-    try:
-        password = request.GET['password']
-    except MultiValueDictKeyError:
-        password = request.POST.get('password')
-    if password == '':
-        return HttpResponse('密码不能为空')
-    if len(password) < 6 or len(password) > 16:
-        return HttpResponse('密码不能少于6个字符或超过16个字符')
-    if not re.search(r'^\S+$', password):
-        return HttpResponse('密码包含非法字符(‘ ’)')
-    return HttpResponse('')
-
-
-def check_old_password_validate(request):
-    try:
-        password = request.GET['old_password']
-    except MultiValueDictKeyError:
-        password = request.POST.get('old_password')
-    if password == '':
-        return HttpResponse('密码不能为空')
-    if len(password) < 6 or len(password) > 16:
-        return HttpResponse('密码不能少于6个字符或超过16个字符')
-    if not re.search(r'^\S+$', password):
-        return HttpResponse('密码包含非法字符(‘ ’)')
-    return HttpResponse('')
-
-
-def check_password_repeat_validate(request):
-    try:
-        password = request.GET['password_repeat']
-    except MultiValueDictKeyError:
-        password = request.POST.get('password_repeat')
-    if password == '':
-        return HttpResponse('密码不能为空')
-    if len(password) < 6 or len(password) > 16:
-        return HttpResponse('密码不能少于6个字符或超过16个字符')
-    if not re.search(r'^\S+$', password):
-        return HttpResponse('密码包含非法字符(‘ ’)')
-    return HttpResponse('')
-
-
-def check_passwords_validate(request):
-    try:
-        params = request.GET.dict()
-    except MultiValueDictKeyError:
-        params = request.POST.dict()
-    for key, value in params.items():
-        if 'password' in key:
-            if key == '':
-                return HttpResponse('密码不能为空')
-            if len(key) < 6 or len(key) > 16:
-                return HttpResponse('密码不能少于6个字符或超过16个字符')
-            if not re.search(r'^\S+$', key):
-                return HttpResponse('密码包含非法字符(‘ ’)')
-    return HttpResponse('')
-
-
-def check_lastname_validate(request):
-    try:
-        lastname = request.GET['lastname']
-    except MultiValueDictKeyError:
-        lastname = request.POST.get('lastname')
-    if lastname == '':
-        return HttpResponse('姓氏不能为空')
-    if len(lastname) > 50:
-        return HttpResponse('姓氏不能超过50个字符')
-    if not re.search(r'^[_a-zA-Z0-9\u4e00-\u9fa5]+$', lastname):
-        return HttpResponse('姓氏包含非法字符(!,@,#,$,%...)')
-    return HttpResponse('')
-
-
-def check_firstname_validate(request):
-    try:
-        firstname = request.GET['firstname']
-    except MultiValueDictKeyError:
-        firstname = request.POST.get('firstname')
-    if firstname == '':
-        return HttpResponse('名字不能为空')
-    if len(firstname) > 50:
-        return HttpResponse('名字不能超过50个字符')
-    if not re.search(r'^[_a-zA-Z0-9\u4e00-\u9fa5]+$', firstname):
-        return HttpResponse('名字包含非法字符(!,@,#,$,%...)')
-    return HttpResponse('')
-
-
-def check_question_validate(request):
-    try:
-        question = request.GET['question']
-    except MultiValueDictKeyError:
-        question = request.POST.get('question')
-    if question == '':
-        return HttpResponse('密保问题不能为空')
-    if len(question) < 3 or len(question) > 50:
-        return HttpResponse('密保问题不能少于3个字符或者超过50个字符')
-    if not re.search(r'^[_a-zA-Z0-9\u4e00-\u9fa5\?\uff1f]+$', question):
-        return HttpResponse('密保问题包含非法字符(!,@,#,$,%...)')
-    return HttpResponse('')
-
-
-def check_answer_validate(request):
-    try:
-        answer = request.GET['answer']
-    except MultiValueDictKeyError:
-        answer = request.POST.get('answer')
-    if answer == '':
-        return HttpResponse('密保答案不能为空')
-    if len(answer) < 2 or len(answer) > 16:
-        return HttpResponse('密保答案不能少于2个字符或者超过16个字符')
-    if not re.search(r'^[_a-zA-Z0-9\u4e00-\u9fa5]+$', answer):
-        return HttpResponse('密保答案包含非法字符(!,@,#,$,%...)')
-    return HttpResponse('')
-
-
-def check_email_validate(request):
-    try:
-        email = request.GET['email']
-    except MultiValueDictKeyError:
-        email = request.POST.get('email')
-    try:
-        validate_email(email)
-    except ValidationError:
-        return HttpResponse('请输入正确的邮箱格式')
-    return HttpResponse('')
-
-
-def check_post_validate(request, *args):
-    check_method = args
-    for method in check_method:
-        if method(request).content != b'':
-            return False
-    return True

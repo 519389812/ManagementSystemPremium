@@ -4,7 +4,7 @@
 <head>
     {% load static %}
     {% include "head.html" %}
-    <title>新增工作量记录</title>
+    <title>新增销售记录</title>
 </head>
 
 <body>
@@ -17,7 +17,7 @@
 
     <!-- Page Heading/Breadcrumbs -->
     <h1 class="mt-4 mb-3">新增
-        <small>工作量</small>
+        <small>销售</small>
     </h1>
 
     <ol class="breadcrumb">
@@ -30,9 +30,9 @@
     <!-- In order to set the email address and subject line for the contact form go to the bin/contact_me.php file. -->
     <div class="row">
         <div class="col-lg-8 mb-4">
-            <h3>新增工作量记录</h3>
+            <h3>新增销售记录</h3>
             {% include "message.html" %}
-            <form name="addWorkloadForm" id="addWorkloadForm" action="{% url 'add_workload' %}" method="post">
+            <form name="addSalesForm" id="addSalesForm" action="{% url 'add_sales' %}" method="post">
                 {% csrf_token %}
                 <div class="control-group form-group">
                     <div class="controls">
