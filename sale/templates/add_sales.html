@@ -22,7 +22,7 @@
 
     <ol class="breadcrumb">
         {% include "route.html" %}
-        {% include "route_performance.html" %}
+        {% include "route_sales.html" %}
         <li class="breadcrumb-item active">新增</li>
     </ol>
 
@@ -45,40 +45,81 @@
                 </div>
                 <div class="control-group form-group">
                     <div class="controls">
-                        <label>岗位:</label>
+                        <label>产品:</label>
                         <select class="form-control" id="position_id" name="position_id" required>
                             <option value=""></option>
-                            {% for position in position_list %}
-                                <option value="{{ position.id }}">{{ position.name }}</option>
+                            {% for product in product_list %}
+                                <option value="{{ product.id }}">{{ product.name }}</option>
                             {% endfor %}
                         </select>
                         <p class="help-block" id="position_validate"></p>
                     </div>
                 </div>
-                <div class="control-group form-group" id="workload-loading"></div>
-                <div id="workload">
-                </div>
                 <div class="control-group form-group">
                     <div class="controls">
-                        <label>审核室:</label>
-                        <select class="form-control" id="verifier_team_id" name="verifier_team_id" required>
-                            {% for team in team_list %}
-                                {% if team.name == verifier_team_name %}
-                                    <option selected value="{{ team.id }}">{{ team.name }}</option>
-                                {% else %}
-                                    <option value="{{ team.id }}">{{ team.name }}</option>
-                                {% endif %}
-                            {% endfor %}
-                        </select>
-                        <p class="help-block" id="verifier_team_validate"></p>
+                        <label>航班:</label>
+                        <input type="text" class="form-control" id="flight_number" name="flight_number"
+                               placeholder="请填写航班号" data-validation-required-message="Please enter flight number."/>
+                        <p class="help-block" id="flight_number_validate"></p>
                     </div>
                 </div>
                 <div class="control-group form-group">
                     <div class="controls">
-                        <label>备注(可选):</label>
-                        <textarea class="form-control" id="remark" name="remark" placeholder="请填写备注"
-                                  data-validation-required-message="Please enter remark."></textarea>
-                        <p class="help-block" id="remark_validate"></p>
+                        <label>旅客姓名:</label>
+                        <input type="text" class="form-control" id="passenger" name="passenger"
+                               placeholder="请填写旅客姓名" data-validation-required-message="Please enter passenger name."/>
+                        <p class="help-block" id="passenger_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>票号:</label>
+                        <input type="number" class="form-control" id="ticket" name="ticket" placeholder="请填写票号"
+                                  data-validation-required-message="Please enter ticket number."/>
+                        <p class="help-block" id="ticket_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>emd号:</label>
+                        <input type="number" class="form-control" id="emd" name="emd" placeholder="请填写emd号"
+                               data-validation-required-message="Please enter emd number."/>
+                        <p class="help-block" id="emd_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>目的地三字码:</label>
+                        <input type="text" class="form-control" id="destination" name="destination"
+                               placeholder="请填写目的地三字码" data-validation-required-message="Please enter destination."/>
+                        <p class="help-block" id="destination_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>金额:</label>
+                        <input type="number" step = "0.01" class="form-control" id="amount" name="amount"
+                               placeholder="请填写金额" data-validation-required-message="Please enter amount."/>
+                        <p class="help-block" id="amount_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>里程:</label>
+                        <input type="number" step = "0.01" class="form-control" id="miles" name="miles"
+                               placeholder="请填写里程数" data-validation-required-message="Please enter miles."/>
+                        <p class="help-block" id="miles_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>开票人:</label>
+                        <select class="form-control" id="issue_user_id" name="issue_user_id" required>
+                            {% for user in user_list %}
+                                <option value="{{ user.id }}">{{ user.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <p class="help-block" id="issue_user_validate"></p>
                     </div>
                 </div>
                 <!-- For success/fail messages -->
@@ -88,9 +129,9 @@
         <div class="col-lg-4 mb-4">
             <h3>Tips</h3>
             <p>
-                <abbr title="查询审核状态">查询审核状态</abbr>
+                <abbr title="查询审核状态">查询登记</abbr>
                 <br>
-                请点击<a href="/performance/view_workload/">此处</a>
+                请点击<a href="{% url 'view_sales' %}">此处</a>
             </p>
         </div>
     </div>
@@ -119,49 +160,6 @@
 <!--    })-->
 
 <script>
-$('#position_id').change(function(){
-    var position_id = $('#position_id').val();
-    var workloadDiv = $('#workload'); //找到一个DOM节点
-    if (position_id == '') {
-        workloadDiv.empty();
-        return;
-    }
-    $('#workload-loading').html('工作量项目加载中...');
-    $("#saveButton").attr("hidden", "false");
-    $.ajax({
-        type: "POST",
-        url: "/performance/get_workload_item/",
-        async : false,
-        timeout: 5000,
-        data: {
-            'position_id': position_id,
-            'csrfmiddlewaretoken':$("[name='csrfmiddlewaretoken']").val()
-        },
-        dataType: "JSON",
-        success: function(data){
-            $('#workload-loading').html('');
-            $("#saveButton").attr("hidden", "true");
-            workloadDiv.empty();
-            var content = "";
-            for (var i = 0; i <= data.length - 1; i++) {
-                content += '<div class="control-group form-group"><div class="controls">';
-                content += '<label>' + data[i].name + '</label>';
-                content += '<input type="number" class="form-control" id="' + data[i].name + '" name="' + data[i].name + '" placeholder="输入值" value="0" required data-validation-required-message="Please enter a number.">';
-                content += '<p class="help-block" id="workload_item_' + data[i].id + '_validate"></p>';
-            }
-            workloadDiv.append(content);
-        },
-        complete : function(XMLHttpRequest,status) { //请求完成后最终执行参数
-            if(status == 'timeout') { //超时,status还有success,error等值的情况
-                return;
-            } else if(status == 'error') {
-                return;
-            } else if(status == 'success') {
-                return;
-            }
-        },
-    });
-});
 
 $.fn.setNow = function (onlyBlank) {
   var now = new Date($.now())

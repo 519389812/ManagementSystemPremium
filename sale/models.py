@@ -41,6 +41,7 @@ class SalesRecord(models.Model):
     amount = models.FloatField(verbose_name='销售金额')
     miles = models.FloatField(verbose_name='销售里程')
     user = models.ForeignKey(CustomUser, null=True, blank=True, related_name='salesRecord_user', on_delete=models.CASCADE, verbose_name='经办人')
+    create_datetime = models.DateTimeField(auto_now_add=True, verbose_name='登记时间')
 
     class Meta:
         verbose_name = '销售记录'

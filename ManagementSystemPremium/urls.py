@@ -82,4 +82,6 @@ urlpatterns = [
 
     # sales
     path('sales/', sales_views.sales, name='sales'),
+    path('sales/add_sales/', sales_views.add_sales, name='add_sales'),
+    path('sales/view_sales/', sales_views.view_sales, name='view_sales'),
 ]
