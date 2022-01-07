@@ -27,12 +27,14 @@ def add_sales(request):
         amount = request.POST.get('amount', '')
         miles = request.POST.get('miles', '')
         issue_user_id = request.POST.get('issue_user_id', '')
-        if not all([date, product_id, flight_number, passenger, ticket, emd, destination, amount, miles, issue_user_id]):
+        if not all(
+                [date, product_id, flight_number, passenger, ticket, emd, destination, amount, miles, issue_user_id]):
             return render(request, 'error_500.html', status=500)
         if not check_post_validate(request, check_date_validate, check_flight_validate, check_fullname_validate,
                                    check_ticket_validate, check_ticket_validate, check_airport_code_validate,
                                    check_amount_validate, check_amount_validate,
-                                   ['date', 'flight_number', 'passenger', 'ticket', 'emd', 'destination', 'amount', 'miles']):
+                                   ['date', 'flight_number', 'passenger', 'ticket', 'emd', 'destination', 'amount',
+                                    'miles']):
             return render(request, 'add_sales.html', {'msg': '存在未按规定要求填写的字段！'})
         try:
             product = Product.objects.get(id=int(product_id))
@@ -57,8 +59,8 @@ def view_sales(request):
         paginator = Paginator(sales_list, 30)
         page = paginator.get_page(int(page_num))
         return render(request, 'view_sales.html', {'page_sales_list': list(page.object_list),
-                                                      'total_sales': paginator.count,
-                                                      'total_page_num': paginator.num_pages,
-                                                      'page_num': page.number})
+                                                   'total_sales': paginator.count,
+                                                   'total_page_num': paginator.num_pages,
+                                                   'page_num': page.number})
     else:
         return render(request, 'error_500.html', status=500)

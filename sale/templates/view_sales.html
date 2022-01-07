@@ -33,41 +33,37 @@
             <tr>
                 <th scope="col">序号</th>
                 <th scope="col">日期</th>
-                <th scope="col">岗位</th>
-                <th scope="col">办理人数</th>
-                <th scope="col">办理行李</th>
-                <th scope="col">销售额</th>
-                <th scope="col">审核组</th>
-                <th scope="col">审核状态</th>
-                <th scope="col">审核人</th>
+                <th scope="col">产品</th>
+                <th scope="col">航班号</th>
+                <th scope="col">旅客姓名</th>
+                <th scope="col">开票人</th>
+                <th scope="col">销售金额</th>
+                <th scope="col">销售里程</th>
+                <th scope="col">登记时间</th>
             </tr>
         </thead>
         <tbody>
-            {% for workload in page_workload_list %}
+            {% for sales in page_sales_list %}
                 <tr>
-                    <th scope="row">{{ workload.id }}</th>
-                    <td>{{ workload.date }}</td>
-                    <td>{{ workload.position.name }}</td>
-                    <td>{{ workload.number_people }}</td>
-                    <td>{{ workload.number_baggage }}</td>
-                    <td>{{ workload.sale }}</td>
-                    <td>{{ workload.verifier }}</td>
-                    {% if workload.verify == True %}
-                        <td class="table-success">通过</td>
-                    {% else %}
-                        <td class="table-danger">未通过</td>
-                    {% endif %}
-                    <td>{{ workload.verify_user }}</td>
+                    <th scope="row">{{ sales.id }}</th>
+                    <td>{{ sales.date }}</td>
+                    <td>{{ sales.product.name }}</td>
+                    <td>{{ sales.flight_number }}</td>
+                    <td>{{ sales.passenger }}</td>
+                    <td>{{ sales.issue_user.name }}</td>
+                    <td>{{ sales.amount }}</td>
+                    <td>{{ sales.miles }}</td>
+                    <td>{{ sales.create_datetime }}</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-    共有{{ total_workload }}条记录
+    共有{{ total_sales }}条记录
 
     <!-- Pagination -->
     <ul class="pagination justify-content-center">
         <li class="page-item">
-            <a class="page-link" href="{% url 'view_workload' %}?page=1" aria-label="Previous">
+            <a class="page-link" href="{% url 'view_sales' %}?page=1" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
                 <span class="sr-only">首页</span>
             </a>
