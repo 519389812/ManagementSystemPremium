@@ -16,7 +16,7 @@ class FlightType(models.Model):
 
 class Compensation(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=30, verbose_name='补偿名称')
+    name = models.CharField(max_length=50, verbose_name='补偿名称')
 
     class Meta:
         verbose_name = '补偿方案设置'
@@ -40,7 +40,7 @@ class DowngradeRecord(models.Model):
     before_class = models.CharField(max_length=30, verbose_name='原舱位')
     new_class = models.CharField(max_length=30, verbose_name='新舱位')
     compensation = models.ManyToManyField(Compensation, related_name='downgrade_compensation', verbose_name='补偿方案')
-    miles = models.FloatField(verbose_name='里程数')
+    compensation_miles = models.FloatField(verbose_name='补偿里程数')
     compensation_amount = models.FloatField(verbose_name='补偿金额')
     fill_user = models.ForeignKey(CustomUser, null=True, blank=True, related_name='downgrade_fill_user', on_delete=models.DO_NOTHING, verbose_name='经办人')
     fill_datetime = models.DateTimeField(null=True, blank=True, verbose_name='填写时间')
@@ -61,3 +61,11 @@ class DowngradeRecord(models.Model):
 
     def __str__(self):
         return self.id
+
+
+class DowngradeSummary(DowngradeRecord):
+
+    class Meta:
+        proxy = True
+        verbose_name = '非自愿降舱统计'
+        verbose_name_plural = '非自愿降舱统计'
