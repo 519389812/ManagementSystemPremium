@@ -4,7 +4,7 @@
 <head>
     {% load static %}
     {% include "head.html" %}
-    <title>新增工作量记录</title>
+    <title>新增工时记录</title>
 </head>
 
 <body>
@@ -17,7 +17,7 @@
 
     <!-- Page Heading/Breadcrumbs -->
     <h1 class="mt-4 mb-3">新增
-        <small>工作量</small>
+        <small>工时</small>
     </h1>
 
     <ol class="breadcrumb">
@@ -30,19 +30,10 @@
     <!-- In order to set the email address and subject line for the contact form go to the bin/contact_me.php file. -->
     <div class="row">
         <div class="col-lg-8 mb-4">
-            <h3>新增工作量记录</h3>
+            <h3>新增工时记录</h3>
             {% include "message.html" %}
-            <form name="addWorkloadForm" id="addWorkloadForm" action="{% url 'add_workload' %}" method="post">
+            <form name="addManHourForm" id="addManHourForm" action="{% url 'add_man_hour' %}" method="post">
                 {% csrf_token %}
-                <div class="control-group form-group">
-                    <div class="controls">
-                        <label>日期:</label>
-                        <input type="date" class="form-control" id="date" name="date"
-                               placeholder="请选择日期"
-                               required data-validation-required-message="Please select a date.">
-                        <p class="help-block" id="date_validate"></p>
-                    </div>
-                </div>
                 <div class="control-group form-group">
                     <div class="controls">
                         <label>岗位:</label>
@@ -55,8 +46,32 @@
                         <p class="help-block" id="position_validate"></p>
                     </div>
                 </div>
-                <div class="control-group form-group" id="workload-loading"></div>
-                <div id="workload">
+                <div class="control-group form-group" id="man-hour-loading"></div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>工时项目:</label>
+                        <select class="form-control" id="man_hour_id" name="man_hour_id" required>
+                        </select>
+                        <p class="help-block" id="man_hour_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>开始时间:</label>
+                        <input type="datetime-local" class="form-control" id="start_datetime" name="start_datetime"
+                               placeholder="请选择开始时间"
+                               required data-validation-required-message="Please enter a datetime.">
+                        <p class="help-block" id="start_datetime_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>结束时间:</label>
+                        <input type="datetime-local" class="form-control" id="end_datetime" name="end_datetime"
+                               placeholder="请选择结束时间"
+                               required data-validation-required-message="Please enter a datetime.">
+                        <p class="help-block" id="end_datetime_validate"></p>
+                    </div>
                 </div>
                 <div class="control-group form-group">
                     <div class="controls">
@@ -121,35 +136,32 @@
 <script>
 $('#position_id').change(function(){
     var position_id = $('#position_id').val();
-    var workloadDiv = $('#workload'); //找到一个DOM节点
+    var manHourDiv = $('#man_hour_id'); //找到一个DOM节点
     if (position_id == '') {
-        workloadDiv.empty();
+        manHourDiv.empty();
         return;
     }
-    $('#workload-loading').html('工作量项目加载中...');
+    $('#man-hour-loading').html('工时项目加载中...');
     $("#saveButton").attr("hidden", "false");
     $.ajax({
         type: "POST",
-        url: "/performance/get_workload_item/",
+        url: "/performance/get_man_hour_item/",
         async : false,
         timeout: 5000,
         data: {
             'position_id': position_id,
             'csrfmiddlewaretoken':$("[name='csrfmiddlewaretoken']").val()
         },
-        dataType: "JSON",
+        dataType: "text",
         success: function(data){
-            $('#workload-loading').html('');
+            $('#man-hour-loading').html('');
             $("#saveButton").attr("hidden", "true");
-            workloadDiv.empty();
+            manHourDiv.empty();
             var content = "";
             for (var i = 0; i <= data.length - 1; i++) {
-                content += '<div class="control-group form-group"><div class="controls">';
-                content += '<label>' + data[i].name + '</label>';
-                content += '<input type="number" class="form-control" id="' + data[i].name + '" name="' + data[i].name + '" placeholder="输入值" value="0" required data-validation-required-message="Please enter a number.">';
-                content += '<p class="help-block" id="workload_item_' + data[i].id + '_validate"></p></div></div>';
+                content += '<option value="data[i].id">data[i].name</option>';
             }
-            workloadDiv.append(content);
+            manHourDiv.append(content);
         },
         complete : function(XMLHttpRequest,status) { //请求完成后最终执行参数
             if(status == 'timeout') { //超时,status还有success,error等值的情况

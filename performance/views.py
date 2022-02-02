@@ -4,7 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, reverse, redirect
 from django.conf import settings
 from django.core.paginator import Paginator
-from performance.models import Position, WorkloadRecord, WorkloadItem, RewardPenaltyRecord
+from performance.models import Position, WorkloadRecord, WorkloadItem, ManHourItem, ManHourRecord
 from team.models import CustomTeam
 from user.views import check_authority, check_grouping
 from ManagementSystemPremium.views import parse_url_param
@@ -170,7 +170,6 @@ def return_formfield_for_foreignkey(request, db_field, kwargs, db_field_name, ob
 
 
 @check_authority
-@check_grouping
 def get_workload_item(request):
     if request.method == 'POST':
         position_id = request.POST.get('position_id', '')
@@ -181,7 +180,6 @@ def get_workload_item(request):
 
 
 @check_authority
-@check_grouping
 def add_workload(request):
     if request.user.team.parent:
         team_id = request.user.team.parent.id
@@ -230,3 +228,48 @@ def view_workload(request):
                                                       'page_num': page.number})
     else:
         return render(request, 'error_500.html', status=500)
+
+
+@check_authority
+def get_man_hour_item(request):
+    if request.method == 'POST':
+        position_id = request.POST.get('position_id', '')
+        if not position_id:
+            return render(request, 'error_500.html', status=500)
+        man_hour_item = list(ManHourItem.objects.filter(position__id=position_id).values())
+        return JsonResponse(man_hour_item, safe=False)
+
+
+@check_authority
+def add_man_hour(request):
+    if request.user.team.parent:
+        team_id = request.user.team.parent.id
+    else:
+        team_id = request.user.team.id
+    position_list = list(Position.objects.all().order_by('name').values('id', 'name'))
+    team_list = list(CustomTeam.objects.filter(related_parent__iregex=r'[^0-9]*%s[^0-9]' % str(team_id)).order_by('name'))
+    team_list = [{'id': team.id, 'name': team.get_related_parent_name()} for team in team_list]
+    if request.method == 'POST':
+        position_id = request.POST.get('position_id', '')
+        man_hour_id = request.POST.get('man_hour_id', '')
+        verifier_team_id = request.POST.get('verifier_team_id', '')
+        remark = request.POST.get('remark', '')
+        if not all([position_id, man_hour_id, verifier_team_id]):
+            return render(request, 'error_500.html', status=500)
+        try:
+            post_dict = (dict(request.POST))
+            post_dict = {k: int(v[0]) for k, v in post_dict.items() if k not in ['date', 'position_id', 'verifier_team_id', 'remark', 'csrfmiddlewaretoken']}
+            position_workload_item_list = list(WorkloadItem.objects.filter(position__id=int(position_id)).values_list('name', flat=True))
+            if set(list(post_dict.keys())) != set(position_workload_item_list):
+                return render(request, 'error_500.html', status=500)
+            post_dict = json.dumps(post_dict)
+            position = Position.objects.get(id=int(position_id))
+            verifier = CustomTeam.objects.get(id=int(verifier_team_id))
+            WorkloadRecord.objects.create(user=request.user, position=position, workload=post_dict,
+                                          verifier=verifier, remark=remark)
+            msg = '登记成功！您可以继续登记下一条记录！'
+            return render(request, 'add_workload.html', {'position_list': position_list, 'team_list': team_list, 'msg': msg})
+        except:
+            return render(request, 'error_500.html', status=500)
+    else:
+        return render(request, 'add_workload.html', {'position_list': position_list, 'team_list': team_list})

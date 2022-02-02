@@ -1,10 +1,9 @@
 from django.contrib import admin
-from performance.admin import get_weight_column_value
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from ManagementSystemPremium.views import parse_url_param
 from django.db.models import Count, Sum
-from person.models import PersonSummary
+from person.models import Person, SkillType, Skill
 from reward.models import RewardPenaltyType, RewardPenaltySummary
 from training.models import Training
 import pandas as pd
