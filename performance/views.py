@@ -252,24 +252,24 @@ def add_man_hour(request):
     if request.method == 'POST':
         position_id = request.POST.get('position_id', '')
         man_hour_id = request.POST.get('man_hour_id', '')
+        start_datetime = request.POST.get('start_datetime', '')
+        end_datetime = request.POST.get('end_datetime', '')
         verifier_team_id = request.POST.get('verifier_team_id', '')
         remark = request.POST.get('remark', '')
-        if not all([position_id, man_hour_id, verifier_team_id]):
+        if not all([position_id, man_hour_id, start_datetime, end_datetime, verifier_team_id]):
             return render(request, 'error_500.html', status=500)
         try:
-            post_dict = (dict(request.POST))
-            post_dict = {k: int(v[0]) for k, v in post_dict.items() if k not in ['date', 'position_id', 'verifier_team_id', 'remark', 'csrfmiddlewaretoken']}
-            position_workload_item_list = list(WorkloadItem.objects.filter(position__id=int(position_id)).values_list('name', flat=True))
-            if set(list(post_dict.keys())) != set(position_workload_item_list):
-                return render(request, 'error_500.html', status=500)
-            post_dict = json.dumps(post_dict)
             position = Position.objects.get(id=int(position_id))
+            man_hour = ManHourItem.objects.get(id=int(man_hour_id))
+            start_datetime = timezone.datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M")
+            end_datetime = timezone.datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M")
             verifier = CustomTeam.objects.get(id=int(verifier_team_id))
-            WorkloadRecord.objects.create(user=request.user, position=position, workload=post_dict,
+            WorkloadRecord.objects.create(user=request.user, position=position, man_hour=man_hour,
+                                          start_datetime=start_datetime, end_datetime=end_datetime,
                                           verifier=verifier, remark=remark)
             msg = '登记成功！您可以继续登记下一条记录！'
-            return render(request, 'add_workload.html', {'position_list': position_list, 'team_list': team_list, 'msg': msg})
+            return render(request, 'add_man_hour.html', {'position_list': position_list, 'team_list': team_list, 'msg': msg})
         except:
             return render(request, 'error_500.html', status=500)
     else:
-        return render(request, 'add_workload.html', {'position_list': position_list, 'team_list': team_list})
+        return render(request, 'add_man_hour.html', {'position_list': position_list, 'team_list': team_list})

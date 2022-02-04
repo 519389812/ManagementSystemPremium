@@ -29,7 +29,7 @@ class Skill(models.Model):
         return self.name
 
 
-class Person(models.Model):
+class Employee(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.OneToOneField(CustomUser, related_name='person_user', on_delete=models.CASCADE, verbose_name='员工')
     skill = models.ManyToManyField(Skill, related_name='person_skill', verbose_name='掌握技能')
@@ -42,9 +42,9 @@ class Person(models.Model):
         return self.id
 
 
-# class PersonSummary(WorkloadRecord):
-#
-#     class Meta:
-#         proxy = True
-#         verbose_name = '个人表现统计'
-#         verbose_name_plural = '个人表现统计'
+class EmployeeSummary(WorkloadRecord):
+
+    class Meta:
+        proxy = True
+        verbose_name = '个人技能统计'
+        verbose_name_plural = '个人技能统计'
