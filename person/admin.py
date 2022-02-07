@@ -161,17 +161,12 @@ class EmployeeSummaryAdmin(admin.ModelAdmin):
             qs = response.context_data['cl'].queryset
         except (AttributeError, KeyError):
             return response
-        qs = pd.DataFrame(qs.values('user__full_name', 'skill'))
-        qs = qs.pivot_table(values=['training'], columns=['skill__name'],
-                            index=['user__team__name', 'user__id', 'user__full_name'], aggfunc='count')
-
-        metrics = {
-            'cost': Count('cost'),
-            'quantity': Sum('quantity'),
-        }
-        data = list(
-            qs.filter(user__is_active=True).values('team__name').annotate(**metrics).order_by('-quantity'))
-        response.context_data['summary'] = data
+        qs = pd.DataFrame(qs.values('user__full_name', 'skill__name'))
+        skill = qs['skill__name'].str.get_dummies(sep=',')
+        qs = pd.concat([qs, skill], axis=1)
+        qs['技能数'] = qs.iloc[:, 2:].sum(axis=1)
+        response.context_data['columns'] = qs.columns
+        response.context_data['summary'] = qs.values.tolist()
         return response
 
 
