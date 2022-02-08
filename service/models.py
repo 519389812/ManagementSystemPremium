@@ -24,8 +24,16 @@ class ServiceRecord(models.Model):
     fill_datetime = models.DateTimeField(null=True, blank=True, verbose_name='记录时间')
 
     class Meta:
-        verbose_name = '服务得分'
-        verbose_name_plural = '服务得分'
+        verbose_name = '服务满意度得分'
+        verbose_name_plural = '服务满意度得分'
 
     def __str__(self):
         return self.id
+
+
+class ServiceRecordSummary(models.Model):
+
+    class Meta:
+        proxy = True
+        verbose_name = '服务满意度得分统计'
+        verbose_name_plural = '服务满意度得分统计'

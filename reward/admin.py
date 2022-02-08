@@ -39,7 +39,7 @@ class LevelRuleAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         help_texts = {
-            'calculation': '应由运算符号和数值组成，如“*2”，若未按规范设置，则不生效',
+            'calculation': '应由运算符号和数值组成，如“*2”，若未按规范设置将无法生效',
         }
         kwargs.update({'help_texts': help_texts})
         return super(LevelRuleAdmin, self).get_form(request, obj, **kwargs)
@@ -51,7 +51,7 @@ class RepeatRuleAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         help_texts = {
-            'calculation': '应由运算符号和数值组成，如“*2”，若未按规范设置，则不生效',
+            'calculation': '应由运算符号和数值组成，如“*2”，若未按规范设置将无法生效',
         }
         kwargs.update({'help_texts': help_texts})
         return super(RepeatRuleAdmin, self).get_form(request, obj, **kwargs)
@@ -69,7 +69,7 @@ class RewardPenaltyAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         help_texts = {
-            'repeat_rule': '当需要设置X天内重复发生某个奖励的规则时，设置此项',
+            'repeat_rule': '当需要设置X天内重复发生某个奖励或处罚的规则时，设置此项',
         }
         kwargs.update({'help_texts': help_texts})
         return super(RewardPenaltyAdmin, self).get_form(request, obj, **kwargs)
@@ -97,7 +97,7 @@ class RewardPenaltyRecordAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         help_texts = {
-            'level_rule': '同类奖励，程度不同加分不同时，设置此项',
+            'level_rule': '同类奖励处罚，因影响的程度不同而加减分不同时，设置此项',
         }
         kwargs.update({'help_texts': help_texts})
         return super(RewardPenaltyRecordAdmin, self).get_form(request, obj, **kwargs)
