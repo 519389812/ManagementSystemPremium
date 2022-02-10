@@ -62,7 +62,7 @@ class WorkloadSummary(WorkloadRecord):
         verbose_name_plural = '工作量统计'
 
 
-class ManHourItem(models):
+class ManHourItem(models.Model):
     id = models.AutoField(primary_key=True)
     position = models.ForeignKey(Position, on_delete=models.CASCADE, verbose_name='所属岗位')
     name = models.CharField(max_length=100, verbose_name='项目')
