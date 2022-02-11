@@ -36,7 +36,7 @@ class CostRecord(models.Model):
     quantity = models.FloatField(null=True, blank=True, verbose_name='金额')
     remark = models.TextField(max_length=1000, blank=True, verbose_name='备注')
     create_datetime = models.DateTimeField(auto_now_add=True, verbose_name='登记时间')
-    create_user = models.ForeignKey(CustomUser, related_name='costRecord_user', on_delete=models.CASCADE, verbose_name='登记人')
+    create_user = models.ForeignKey(CustomUser, related_name='costRecord_create_user', on_delete=models.CASCADE, verbose_name='登记人')
 
     class Meta:
         verbose_name = '成本登记记录'

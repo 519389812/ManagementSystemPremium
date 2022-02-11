@@ -31,8 +31,8 @@ class Skill(models.Model):
 
 class Employee(models.Model):
     id = models.AutoField(primary_key=True)
-    user = models.OneToOneField(CustomUser, related_name='person_user', on_delete=models.CASCADE, verbose_name='员工')
-    skill = models.ManyToManyField(Skill, related_name='person_skill', verbose_name='掌握技能')
+    user = models.OneToOneField(CustomUser, related_name='employee_user', on_delete=models.CASCADE, verbose_name='员工')
+    skill = models.ManyToManyField(Skill, related_name='employee_skill', verbose_name='掌握技能')
 
     class Meta:
         verbose_name = '个人技能掌握'
