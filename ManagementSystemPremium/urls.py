@@ -14,13 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, re_path
+from django.urls import path, re_path, include
 from . import views as main_views
 from user import views as user_views
 from performance import views as performance_views
 from sale import views as sales_views
 from django.shortcuts import render
 from ManagementSystemPremium.views import error_404, error_400, error_403, error_500
+import notifications.urls
 
 
 handler404 = error_404
@@ -38,6 +39,10 @@ urlpatterns = [
     path('error_not_accessible/', main_views.error_not_accessible, name='error_not_accessible'),
     path('contact/', main_views.contact, name='contact'),
     path('about/', main_views.about, name='about'),
+
+    # notifications
+    path('inbox/notifications/', include(notifications.urls, namespace='notifications')),
+    path('notice/', include('notice.urls', namespace='notice')),
 
     # user
     path('login/', user_views.login, name='login'),

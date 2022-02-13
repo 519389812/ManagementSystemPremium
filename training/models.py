@@ -32,8 +32,9 @@ class TrainingRecord(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name="培训名称")
     date = models.DateField(verbose_name='培训日期')
     user = models.ManyToManyField(CustomUser, related_name='trainingRecord_user', blank=True, verbose_name='培训对象')
-    expiration_date = models.DateField(verbose_name='到期日期')
-    remind_retraining = models.BooleanField(default=False, verbose_name='是否提醒复训')
+    expiry_date = models.DateField(verbose_name='到期日期')
+    teacher = models.CharField(max_length=300, blank=True, verbose_name='讲师')
+    remind = models.BooleanField(default=False, verbose_name='是否提醒复训')
 
     class Meta:
         verbose_name = '培训记录'

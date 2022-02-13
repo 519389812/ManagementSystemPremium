@@ -31,7 +31,7 @@ class ServiceRecord(models.Model):
         return self.id
 
 
-class ServiceRecordSummary(models.Model):
+class ServiceRecordSummary(ServiceRecord):
 
     class Meta:
         proxy = True

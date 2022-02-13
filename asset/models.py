@@ -39,8 +39,21 @@ class Room(models.Model):
         return self.name
 
 
+class CurrentType(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=300, unique=True, verbose_name='流动资产类型')
+
+    class Meta:
+        verbose_name = '流动资产类型设置'
+        verbose_name_plural = '流动资产类型设置'
+
+    def __str__(self):
+        return self.name
+
+
 class Current(models.Model):
     id = models.CharField(max_length=300, primary_key=True, verbose_name='流动资产编号')
+    type = models.ForeignKey(CurrentType, related_name='current_type', on_delete=models.CASCADE, verbose_name='类型')
     name = models.CharField(max_length=300, unique=True, verbose_name='流动资产名称')
 
     class Meta:
@@ -51,11 +64,25 @@ class Current(models.Model):
         return self.name
 
 
+class FixedType(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=300, unique=True, verbose_name='固定资产类型')
+
+    class Meta:
+        verbose_name = '固定资产类型设置'
+        verbose_name_plural = '固定资产类型设置'
+
+    def __str__(self):
+        return self.name
+
+
 class Fixed(models.Model):
     id = models.CharField(max_length=300, primary_key=True, verbose_name='固定资产编号')
+    type = models.ForeignKey(FixedType, related_name='fixed_type', on_delete=models.CASCADE, verbose_name='类型')
     name = models.CharField(max_length=300, unique=True, verbose_name='固定资产名称')
     room = models.ForeignKey(Room, related_name='fixed_room', on_delete=models.CASCADE, verbose_name='位置')
     status = models.ForeignKey(FixedStatus, related_name='fixed_status', on_delete=models.CASCADE, verbose_name='状态')
+    expiry_date = models.DateField(null=True, verbose_name='过期日期')
 
     class Meta:
         verbose_name = '固定资产管理'
@@ -81,8 +108,8 @@ class Rack(models.Model):
 
 class CurrentRecord(models.Model):
     id = models.AutoField(primary_key=True)
-    current = models.ForeignKey(Current, related_name='currentRecord_current', on_delete=models.CASCADE, verbose_name='名称')
-    quantity = models.IntegerField(verbose_name='数量')
+    current = models.ForeignKey(Current, related_name='currentRecord_current', on_delete=models.CASCADE, verbose_name='流动资产名称')
+    quantity = models.FloatField(verbose_name='出入库数量')
     rack = models.ForeignKey(Rack, related_name='currentRecord_rack', on_delete=models.CASCADE, verbose_name='位置')
     in_out = models.CharField(max_length=300, choices=(('入库', '入库'), ('出库', '出库')), verbose_name='出入库')
     operating_datetime = models.DateTimeField(auto_now=True, verbose_name='最新操作时间')

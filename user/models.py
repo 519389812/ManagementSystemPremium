@@ -11,10 +11,7 @@ class CustomUser(AbstractUser):
     answer = models.CharField(max_length=300, null=True, blank=True, verbose_name='密保答案')
 
     def __str__(self):
-        if self.team:
-            return '%s - %s' % (self.team.name, self.full_name)
-        else:
-            return '%s - %s' % ('未分配团队', self.full_name)
+        return self.full_name
 
     def save(self, *args, **kwargs):
         self.full_name = '%s%s' % (self.last_name, self.first_name)

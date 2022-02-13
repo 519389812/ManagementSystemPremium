@@ -15,7 +15,7 @@ class CourseAdmin(admin.ModelAdmin):
 
 
 class TrainingRecordAdmin(admin.ModelAdmin):
-    list_display = ('id', 'type', 'name', 'date', 'expiration_date', 'remind_retraining', 'retraining_period')
+    list_display = ('id', 'type', 'name', 'date', 'expiry_date', 'remind')
     filter_horizontal = ('user',)
     search_fields = ('name',)
     list_filter = ('date',)

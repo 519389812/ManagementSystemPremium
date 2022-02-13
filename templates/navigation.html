@@ -1,4 +1,7 @@
 {% load static %}
+<!-- 引入notifications的模板标签 -->
+{% load notifications_tags %}
+{% notifications_unread as unread_count %}
 <nav class="navbar fixed-top navbar-expand-lg navbar-dark fixed-top" style="background-color: rgba(189,15,16,0.9);">
     <div class="container">
         <a class="navbar-brand" href="/">高端值机管理系统</a>
@@ -29,7 +32,22 @@
                 </li>
                 {% if user.is_authenticated == True %}
                     <li class="nav-item">
-                        <a class="nav-link active" href="javascript:return false">欢迎，{{ request.user.full_name }}</a>
+                        <a class="nav-link active" href="javascript:return false">
+                            {% if unread_count %}
+                            <svg viewBox="0 0 8 8" width="8px" height="8px">
+                                <circle cx="4" cy="4" r="4" fill="#ff6b6b"></circle>
+                            </svg>
+                            {% endif %}
+                            {{ request.user.full_name }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'notice:notice_list' %}">
+                            我的消息
+                            {% if unread_count %}
+                                <span class="badge badge-danger">{{ unread_count }}</span>
+                            {% endif %}
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/user_setting">个人信息</a>

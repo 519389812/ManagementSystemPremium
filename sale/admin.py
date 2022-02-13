@@ -1,5 +1,5 @@
 from django.contrib import admin
-from sale.models import SalesRule
+from sale.models import SalesRule, Product, SalesRecord
 from django.db.models import Count, Sum, DateTimeField, DateField, Min, Max, Avg, F, ExpressionWrapper, fields, Value, Func
 
 
@@ -51,5 +51,5 @@ class SalesSummaryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(SalesRule, SalesRuleAdmin)
-admin.site.register(SalesRule, SalesRuleAdmin)
-admin.site.register(SalesRule, SalesRuleAdmin)
+admin.site.register(Product, ProductAdmin)
+admin.site.register(SalesRecord, SalesRecordAdmin)
