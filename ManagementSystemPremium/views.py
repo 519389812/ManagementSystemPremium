@@ -83,11 +83,11 @@ def check_name_validate(request, name_tag):
     else:
         name = request.POST.get(name_tag)
     if name == '':
-        return HttpResponse('姓氏不能为空')
+        return HttpResponse('姓名不能为空')
     if len(name) > 50:
-        return HttpResponse('姓氏不能超过50个字符')
+        return HttpResponse('姓名不能超过50个字符')
     if not re.search(r'^[_a-zA-Z0-9\u4e00-\u9fa5]+$', name):
-        return HttpResponse('姓氏包含非法字符(!,@,#,$,%...)')
+        return HttpResponse('姓名包含非法字符(!,@,#,$,%...)')
     return HttpResponse('')
 
 

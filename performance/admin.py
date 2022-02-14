@@ -11,6 +11,7 @@ from django.contrib import messages
 import math
 import json
 from django.db.models import Count, Sum, DateTimeField, DateField, Min, Max, Avg, F, ExpressionWrapper, fields, Value, Func
+import pandas as pd
 
 
 def half_ceil(x):
@@ -18,7 +19,7 @@ def half_ceil(x):
 
 
 class PositionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'score')
+    list_display = ('id', 'name')
     search_fields = ('name',)
 
 
@@ -39,7 +40,10 @@ class WorkloadRecordAdmin(admin.ModelAdmin):
     list_editable = ('verify',)
     autocomplete_fields = ['user', 'position', 'verifier', 'verify_user']
     search_fields = ('user__full_name', 'date', 'position__name', 'verifier__name', 'remark')
-    fields = ('id', 'user', 'position', 'verifier', 'remark', 'create_datetime', 'verify', 'verify_user', 'verify_datetime')
+    fieldsets = (
+        ('基本信息', {'fields': ['id', 'user', 'position', 'verifier', 'verify', 'remark']}),
+        ('操作信息', {'fields': ['create_datetime', 'verify_user', 'verify_datetime']}),
+    )
     readonly_fields = ('id', 'user', 'position', 'workload_exchange', 'output', 'create_datetime', 'verify_user', 'verify_datetime')
     list_filter = (
         'date', 'create_datetime', 'position__name', 'verifier'
@@ -87,12 +91,22 @@ class WorkloadRecordAdmin(admin.ModelAdmin):
         return model_perms
 
 
+def flatten_json(df, column_name):
+    basic = []
+    for i in df[column_name]:
+        basic.append(json.loads(i))
+    flatten_columns = pd.DataFrame(basic)
+    df = pd.concat([df, flatten_columns], axis=1)
+    df = df.drop([column_name], axis=1)
+    return df
+
+
 class WorkloadSummaryAdmin(admin.ModelAdmin):
     change_list_template = "admin/workload_summary_change_list.html"
 
     search_fields = ('user__full_name', 'position__name', 'verifier__name', 'remark')
     list_filter = (
-        'date', 'user__team', 'create_datetime', 'position__name', 'verifier'
+        'date', 'user__team__name', 'create_datetime', 'position__name', 'verifier'
     )
 
     def changelist_view(self, request, extra_context=None):
@@ -101,15 +115,78 @@ class WorkloadSummaryAdmin(admin.ModelAdmin):
             qs = response.context_data['cl'].queryset
         except (AttributeError, KeyError):
             return response
-        metrics = {
-            'count': Count('user'),
-            'number_people': Sum('number_people'),
-            'number_baggage': Sum('number_baggage'),
-            'sale': Sum('sale'),
-            'score': Sum('score'),
+        qs = pd.DataFrame(qs.values('user__team__name', 'user__full_name', 'position__name', 'workload'))
+        qs.rename(columns={'user__team__name': '组别', 'user__full_name': '姓名', 'position__name': '岗位'}, inplace=True)
+        qs = flatten_json(qs, 'workload')
+        qs = pd.pivot_table(qs, index=['组别', '姓名'], columns=['岗位'], margins=True, margins_name='总计')
+        response.context_data['columns'] = qs.columns
+        response.context_data['summary'] = qs.values.tolist()
+        return response
+
+
+class ManHourRecordAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'position', 'man_hour', 'start_datetime', 'end_datetime', 'working_hour', 'verifier', 'remark', 'create_datetime', 'verify', 'verify_user', 'verify_datetime')
+    list_editable = ('verify',)
+    autocomplete_fields = ['user', 'position', 'man_hour', 'verifier', 'verify_user']
+    search_fields = ('user__full_name', 'position__name', 'verifier__name')
+    fieldsets = (
+        ('基本信息', {'fields': ['id', 'user', 'position', 'man_hour', 'start_datetime', 'end_datetime', 'working_hour', 'verifier', 'verify', 'remark']}),
+        ('操作信息', {'fields': ['create_datetime', 'verify_user', 'verify_datetime']}),
+    )
+    readonly_fields = ('id', 'create_datetime', 'verify_user', 'verify_datetime')
+    list_filter = (
+        'date', 'create_datetime', 'position__name', 'verifier'
+    )
+
+    def working_hours(self, obj):
+        return max(round((obj.end_datetime - obj.start_datetime).seconds/3600, 2), 0)
+    working_hours.short_description = '工作时长'
+
+    def save_model(self, request, obj, form, change):
+        if form.is_valid():
+            if form.cleaned_data['verify']:
+                obj.verify_user = request.user
+                obj.verify_datetime = timezone.localtime(timezone.now())
+            else:
+                obj.verify_user = None
+                obj.verify_datetime = None
+            super().save_model(request, obj, form, change)
+
+    def has_add_permission(self, request):
+        return False
+
+    # 未知原因不生效
+    def get_model_perms(self, request):
+        model_perms = {
+            'add': False,
+            'change': self.has_change_permission(request),
+            'delete': self.has_delete_permission(request),
+            'view': self.has_view_permission(request),
         }
-        data = list(qs.filter(verify=True).values('user__team__name', 'user__full_name').annotate(**metrics).order_by('-score'))
-        response.context_data['summary'] = data
+        return model_perms
+
+
+class ManHourSummaryAdmin(admin.ModelAdmin):
+    change_list_template = "admin/man_hour_summary_change_list.html"
+
+    search_fields = ('user__full_name', 'position__name', 'man_hour__name', 'verifier__name', 'remark')
+    list_filter = (
+        'user__team__name', 'create_datetime', 'start_datetime', 'position__name', 'man_hour__name', 'verifier'
+    )
+
+    def changelist_view(self, request, extra_context=None):
+        response = super().changelist_view(request, extra_context=extra_context)
+        try:
+            qs = response.context_data['cl'].queryset
+        except (AttributeError, KeyError):
+            return response
+        qs = pd.DataFrame(qs.values('user__team__name', 'man_hour__name', 'user__full_name', 'start_datetime', 'end_datetime'))
+        qs['working_hour'] = max(round((pd.to_datetime(qs['end_datetime']) - pd.to_datetime(qs['start_datetime'])).dt.seconds/3600), 0)
+        qs.drop(columns=['start_datetime', 'end_datetime'], inplace=True)
+        qs.rename(columns={'user__team__name': '组别', 'user__full_name': '姓名', 'man_hour__name': '工时项目', 'working_hour': '工作时长'}, inplace=True)
+        qs = pd.pivot_table(qs, index=['组别', '姓名'], columns=['工时项目'], values='工作时长', margins=True, margins_name='总计')
+        response.context_data['columns'] = qs.columns
+        response.context_data['summary'] = qs.values.tolist()
         return response
 
 

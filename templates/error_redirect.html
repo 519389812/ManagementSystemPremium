@@ -2,13 +2,13 @@
 <p>点击下列链接跳转:</p>
 <ul>
     <li>
-        <a href="/">首页</a>
+        <a href="{% url 'home' %}">首页</a>
     </li>
     <li>
         功能模块
         <ul>
             <li>
-                <a href="/performance">绩效管理</a>
+                <a href="{% url 'performance' %}">绩效管理</a>
             </li>
         </ul>
     </li>
@@ -16,10 +16,10 @@
         其他
         <ul>
             <li>
-                <a href="/about">关于</a>
+                <a href="{% url 'about' %}">关于</a>
             </li>
             <li>
-                <a href="/contect">联系我们</a>
+                <a href="/{% url 'contact' %}">联系我们</a>
             </li>
         </ul>
     </li>

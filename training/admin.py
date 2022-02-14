@@ -15,11 +15,11 @@ class CourseAdmin(admin.ModelAdmin):
 
 
 class TrainingRecordAdmin(admin.ModelAdmin):
-    list_display = ('id', 'type', 'name', 'date', 'expiry_date', 'remind')
+    list_display = ('id', 'course', 'date', 'expiry_date', 'remind')
     filter_horizontal = ('user',)
-    search_fields = ('name',)
-    list_filter = ('date',)
-    autocomplete_fields = ['type']
+    search_fields = ('course__name',)
+    list_filter = ('date', 'course__type__name')
+    autocomplete_fields = ['course']
 
 
 class TrainingRecordSummaryAdmin(admin.ModelAdmin):

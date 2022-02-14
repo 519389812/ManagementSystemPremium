@@ -22,7 +22,7 @@ class SkillAdmin(admin.ModelAdmin):
 
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = ('id', 'user')
-    fields = ('id', 'user')
+    fields = ('id', 'user', 'skill')
     list_display_links = ('id',)
     filter_horizontal = ('skill',)
     search_fields = ('user__full_name',)

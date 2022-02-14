@@ -52,7 +52,7 @@ class FixedAdmin(admin.ModelAdmin):
     list_display_links = ('id',)
     search_fields = ('name', 'type__name')
     list_editable = ('status',)
-    list_filter = ('type__name', 'room__name', 'room__purpose__name', 'status', 'expiry_date', 'is_expired')
+    list_filter = ('type__name', 'room__name', 'room__purpose__name', 'status', 'expiry_date')
 
     def save_model(self, request, obj, form, change):
         if change:
@@ -86,9 +86,9 @@ class FixedAdmin(admin.ModelAdmin):
 
 
 class RackAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'room', 'fixed')
+    list_display = ('id', 'room', 'fixed')
     list_display_links = ('id',)
-    search_fields = ('name',)
+    search_fields = ('room__name', 'fixed__name')
     list_filter = ('room__name', 'room__purpose__name', 'fixed__name')
 
     def save_model(self, request, obj, form, change):
@@ -102,17 +102,17 @@ class RackAdmin(admin.ModelAdmin):
 
 class CurrentRecordAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'current', 'quantity', 'rack', 'in_out', 'operation_datetime', 'operation_username', 'comment')
+        'id', 'current', 'quantity', 'rack', 'in_out', 'operating_datetime', 'operating_user', 'comment')
     list_display_links = ('id',)
     search_fields = ('current__name',)
-    list_filter = ('expiry_date', 'rack__room__name', 'rack__fixed__name', 'in_out')
+    list_filter = ('rack__room__name', 'rack__fixed__name', 'in_out')
     autocomplete_fields = ('current', 'rack')
     fieldsets = (
         ('基本信息', {'fields': ['id', 'current', 'quantity', 'rack', 'in_out', 'comment']}),
-        ('操作信息', {'fields': ['operation_datetime', 'operation_username']}),
+        ('操作信息', {'fields': ['operating_datetime', 'operating_user']}),
     )
-    date_hierarchy = 'operation_datetime'  # 详细时间分层筛选
-    readonly_fields = ['operation_datetime', 'operation_username']
+    # date_hierarchy = 'operating_datetime'  # 详细时间分层筛选
+    readonly_fields = ['operating_datetime', 'operating_user']
 
     def save_model(self, request, obj, form, change):
         try:
@@ -170,9 +170,9 @@ class CurrentRecordAdmin(admin.ModelAdmin):
 
 class CurrentStorageAdmin(admin.ModelAdmin):
     list_display = ('id', 'current', 'rack', 'quantity')
-    search_fields = ('current_name', 'room_name', 'area_name', 'quantity',)
-    list_filter = ('current_name', 'room_name', 'area_name', 'quantity',)
-    ordering = ('expiry_date', 'current_name')
+    search_fields = ('current', 'rack', 'quantity',)
+    list_filter = ('current', 'rack', 'quantity',)
+    ordering = ('current',)
     readonly_fields = ['id', 'current', 'rack', 'quantity']
 
     def get_readonly_fields(self, request, obj=None):

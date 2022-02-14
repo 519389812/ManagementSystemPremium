@@ -53,10 +53,7 @@ urlpatterns = [
 
     path('check_username_validate/', user_views.check_username_validate, name='check_username_validate'),
     path('check_password_validate/', user_views.check_password_validate, name='check_password_validate'),
-    path('check_old_password_validate/', user_views.check_old_password_validate, name='check_old_password_validate'),
-    path('check_password_repeat_validate/', user_views.check_password_repeat_validate, name='check_password_repeat_validate'),
-    path('check_lastname_validate/', user_views.check_lastname_validate, name='check_lastname_validate'),
-    path('check_firstname_validate/', user_views.check_firstname_validate, name='check_firstname_validate'),
+    path('check_name_validate/', user_views.check_name_validate, name='check_name_validate'),
     path('check_email_validate/', user_views.check_email_validate, name='check_email_validate'),
     path('check_question_validate/', user_views.check_question_validate, name='check_question_validate'),
     path('check_answer_validate/', user_views.check_answer_validate, name='check_answer_validate'),
@@ -82,6 +79,8 @@ urlpatterns = [
     path('performance/reward_charts', performance_views.reward_penalty_charts, name='reward_penalty_charts'),
     path('performance/add_workload/', performance_views.add_workload, name='add_workload'),
     path('performance/view_workload/', performance_views.view_workload, name='view_workload'),
+    path('performance/add_man_hour/', performance_views.add_man_hour, name='add_man_hour'),
+    path('performance/view_man_hour/', performance_views.view_man_hour, name='view_man_hour'),
     path('performance/workload_summary_export/', performance_views.workload_summary_export, name='workload_summary_export'),
     path('performance/get_workload_item/', performance_views.get_workload_item, name='get_workload_item'),
 

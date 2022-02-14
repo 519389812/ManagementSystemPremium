@@ -273,3 +273,19 @@ def add_man_hour(request):
             return render(request, 'error_500.html', status=500)
     else:
         return render(request, 'add_man_hour.html', {'position_list': position_list, 'team_list': team_list})
+
+
+@check_authority
+def view_man_hour(request):
+    if request.method == 'GET':
+        page_num = request.GET.get('page', '1')
+        create_datetime = timezone.localtime(timezone.now()) - timezone.timedelta(days=30)
+        man_hour_list = ManHourRecord.objects.filter(user=request.user, create_datetime__gte=create_datetime)
+        paginator = Paginator(man_hour_list, 30)
+        page = paginator.get_page(int(page_num))
+        return render(request, 'view_man_hour.html', {'page_man_hour_list': list(page.object_list),
+                                                      'total_man_hour': paginator.count,
+                                                      'total_page_num': paginator.num_pages,
+                                                      'page_num': page.number})
+    else:
+        return render(request, 'error_500.html', status=500)

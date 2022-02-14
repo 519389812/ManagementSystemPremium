@@ -4,7 +4,7 @@
 <head>
     {% load static %}
     {% include "head.html" %}
-    <title>高端值机管理系统</title>
+    <title>值机管理系统</title>
 </head>
 
 <body>
@@ -17,7 +17,7 @@
 <!-- Page Content -->
 <div class="container">
 
-    <h1 class="my-4">欢迎访问高端值机管理系统</h1>
+    <h1 class="my-4">欢迎访问值机管理系统</h1>
 
     <!-- Marketing Icons Section -->
     <div class="row">
@@ -28,7 +28,7 @@
                     <p class="card-text">工作量登记、审核</p>
                 </div>
                 <div class="card-footer">
-                    <a href="performance/" class="btn btn-primary" style="btn btn-primary">进入</a>
+                    <a href="{% url 'performance' %}" class="btn btn-primary" style="btn btn-primary">进入</a>
 <!--                    <a href="javascript:return false" class="btn btn-primary" style="opacity: 0.2">敬请期待</a>-->
                 </div>
             </div>
@@ -51,8 +51,8 @@
     <!-- Features Section -->
     <div class="row">
         <div class="col-lg-6">
-            <h2>高端值机团队介绍</h2>
-            <p>高端值机团队介绍</p>
+            <h2>团队介绍</h2>
+            <p>团队介绍</p>
             <ul>
                 <li>
                     <strong>XXXX</strong>
@@ -76,7 +76,7 @@
             <p style="font-size: 10px">由国际值机创新工作室研发</p>
         </div>
         <div class="col-md-4">
-            <a class="btn btn-lg btn-secondary btn-block" href="/contact" style="font-size: 12px">联系我们</a>
+            <a class="btn btn-lg btn-secondary btn-block" href="{% url 'contact' %}" style="font-size: 12px">联系我们</a>
         </div>
     </div>
 

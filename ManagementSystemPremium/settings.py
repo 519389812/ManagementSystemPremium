@@ -94,10 +94,16 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR, 'notice', 'templates'),
             os.path.join(BASE_DIR, 'user', 'templates'),
+            os.path.join(BASE_DIR, 'cost', 'templates'),
+            os.path.join(BASE_DIR, 'downgrade', 'templates'),
             os.path.join(BASE_DIR, 'performance', 'templates'),
             os.path.join(BASE_DIR, 'person', 'templates'),
-            os.path.join(BASE_DIR, 'cost', 'templates'),
+            os.path.join(BASE_DIR, 'reward', 'templates'),
+            os.path.join(BASE_DIR, 'sale', 'templates'),
+            os.path.join(BASE_DIR, 'service', 'templates'),
+            os.path.join(BASE_DIR, 'training', 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {

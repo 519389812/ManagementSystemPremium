@@ -79,8 +79,8 @@ class ManHourItem(models.Model):
 class ManHourRecord(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(CustomUser, related_name='manHourRecord_user', on_delete=models.CASCADE, verbose_name="登记人")
-    position = models.ForeignKey(Position, on_delete=models.CASCADE, verbose_name="岗位")
-    man_hour = models.ForeignKey(Position, on_delete=models.CASCADE, verbose_name='所属岗位')
+    position = models.ForeignKey(Position, related_name='manHourRecord_position', on_delete=models.CASCADE, verbose_name="岗位")
+    man_hour = models.ForeignKey(ManHourItem, related_name='manHourRecord_man_hour', on_delete=models.CASCADE, verbose_name='所属岗位')
     start_datetime = models.DateTimeField(verbose_name="开始时间")
     end_datetime = models.DateTimeField(verbose_name="结束时间")
     verifier = models.ForeignKey(CustomTeam, related_name='manHourRecord_verifier', on_delete=models.CASCADE, verbose_name='审核组')
@@ -93,7 +93,15 @@ class ManHourRecord(models.Model):
     class Meta:
         verbose_name = '工时登记记录'
         verbose_name_plural = '工时登记记录'
-        ordering = ["-created_datetime"]
+        ordering = ["-create_datetime"]
 
     def __str__(self):
         return self.id
+
+
+class ManHourSummary(ManHourRecord):
+
+    class Meta:
+        proxy = True
+        verbose_name = '工时统计'
+        verbose_name_plural = '工时统计'

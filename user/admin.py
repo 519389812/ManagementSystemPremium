@@ -52,6 +52,6 @@ admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(EmailVerifyRecord, EmailVerifyRecordAdmin)
 admin.site.register(QuestionVerifyRecord, QuestionVerifyRecordAdmin)
 
-admin.site.site_header = '高端值机管理系统'
-admin.site.site_title = '高端值机管理系统'
-admin.site.index_title = '高端值机管理系统'
+admin.site.site_header = '值机管理系统'
+admin.site.site_title = '值机管理系统'
+admin.site.index_title = '值机管理系统'

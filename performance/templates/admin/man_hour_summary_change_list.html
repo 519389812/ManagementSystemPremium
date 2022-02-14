@@ -1,0 +1,48 @@
+{% extends 'admin/change_list.html' %}
+{% load static %}
+
+{% block content_title %}
+    <h1>工作量统计</h1>
+{% endblock %}
+
+{% block result_list %}
+    <div class="results">
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        <div class="text">
+                            <a href="#">组别</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#">姓名</a>
+                        </div>
+                    </th>
+                    {% for row in columns %}
+                        <th>
+                            <div class="text">
+                                <a href="#"><strong>{{ row }}</strong></a>
+                            </div>
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in summary %}
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td>{{ row }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block pagination %}
+    <hr><br>
+    <p style="color:gray">{{ summary | length }} 统计记录</p>
+    <hr><br>
+{% endblock %}
