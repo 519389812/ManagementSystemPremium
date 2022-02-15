@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>查看文档</title>
+
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">文档
+        <small>填写</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        {% include "route_document.html" %}
+        <li class="breadcrumb-item active">文档填写</li>
+    </ol>
+
+    <div class="row">
+
+        <!-- Post Content Column -->
+        <div class="col-lg-8">
+
+            <hr>
+
+            <p>{{ docx_dict.docx_name }}</p>
+
+            <hr>
+
+            <!-- Preview Image -->
+            <div id="docx_html_content"></div>
+            <p><button id="show_docx_html" name="show_docx_html" class="btn btn-link">点击此处</button>查看填写情况，<b>最多显示3页</b>，其余请下载查看</p>
+
+
+        </div>
+
+        <!-- Sidebar Widgets Column -->
+        <div class="col-md-4">
+
+            <!-- Search Widget -->
+            <div class="card mb-4">
+                <h5 class="card-header">填写文档</h5>
+                <div class="card-body">
+                    {% if info != "" %}
+                        <p>{{ info }}</p>
+                    {% endif %}
+                    {% if closed == False %}
+                        <form class="input-group" action="{% url 'fill_docx' docx_dict.id need_signature %}" method="post">
+                            {% csrf_token %}
+                            {% for key, value in content_variable_dict.items %}
+                                <div class="control-group form-group">
+                                    <div class="controls">
+                                        <label>{{ value.cn_name }}</label>
+                                        {% if filled == True %}
+                                            <input type="{{ value.type_text }}" class="form-control" name="{{ value.en_name }}" placeholder="您已提交" disabled="disabled"/>
+                                        {% else %}
+                                            <input type="{{ value.type_text }}" class="form-control" placeholder="请填写" name="{{ value.en_name }}" required/>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            {% if need_signature == True %}
+                                <span class="inpug-group-append">
+                                    {% if signed == True %}
+                                        <button type="submit" class="btn btn-secondary" disabled="{{ signed }}">已签名</button>
+                                    {% else %}
+                                        <button type="submit" class="btn btn-secondary">签名</button>
+                                    {% endif %}
+                                </span>
+                            {% else %}
+                                <span class="inpug-group-append">
+                                    <button type="submit" class="btn btn-secondary" disabled="{{ filled }}">确定</button>
+                                </span>
+                            {% endif %}
+                        </form>
+                    {% else %}
+                        <label><b>文档已关闭</b></label>
+                            {% if supervisor_variable_dict|length > 0 %}
+                                {% if request.user.is_superuser %}
+                                    <p><b>请补充以下签名：</b></p>
+                                    {% for key, value in supervisor_variable_dict.items %}
+                                        <a href="/document/supervise_docx/?docx_id={{ docx_dict.id }}&signature_key={{ value.origin }}" class="btn btn-secondary">{{ value.cn_name }}</a>
+                                    {% endfor%}
+                                {% else %}
+                                    <p><b>该文档含有需管理员补充的签名的字段</b></p>
+                                {% endif %}
+                            {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Side Widget -->
+            <div class="card my-4">
+                <h5 class="card-header">详细</h5>
+                <div class="card-body">
+                    <p>创建人: {{ docx_dict.user__last_name }}{{ docx_dict.user__first_name }}</p>
+                    <p>来自模板: {{ docx_dict.template_name }}</p>
+                    <p>文档名称: {{ docx_dict.docx_name }}</p>
+                    <p>版本号: {{ docx_dict.version }}</p>
+                    <p>创建时间: {{ docx_dict.create_datetime }}</p>
+                    <p>修改时间: {{ docx_dict.edit_datetime }}</p>
+                    <p>截止时间: {{ docx_dict.close_datetime }}</p>
+                    <a href="/document/download_docx/{{ docx_dict.id }}" class="btn btn-primary">下载文档</a>
+                    {% if request.user.is_superuser == True and closed == False %}
+                        <a href="/document/close_docx/{{ docx_dict.id }}" class="btn btn-danger">关闭文档</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card my-4">
+                <h5 class="card-header">分享链接</h5>
+                <div class="card-body">
+                    <div id="qrcode"></div><hr>
+                    <!-- Target -->
+                    <textarea id="share_text" style="width:100%">https://{{ request.get_host }}{{ request.get_full_path }}</textarea><br>
+                    <div id="show_copy_result" style="display: none;">已复制</div><br>
+                    <button class="btn btn-primary" id="copy_share_text" data-clipboard-target="#share_text">复制</button>
+                    <!-- Trigger -->
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+<script src="{% static 'js/clipboard.min.js' %}"></script>
+<script src="{% static 'js/qrcode.min.js' %}"></script>
+<script type="text/javascript">
+    var btn=document.getElementById('copy_share_text');
+	var clipboard=new ClipboardJS(btn);
+	clipboard.on('success', function(e){
+		$('#show_copy_result').slideDown().delay(1500).slideUp(300);
+		console.log(e);
+	});
+	clipboard.on('error', function(e){
+		$('#show_copy_result').slideDown().delay(1500).slideUp(300);
+		console.log(e);
+	});
+
+	var qrcode = new QRCode(document.getElementById("qrcode"), {
+	width : 100,
+	height : 100
+    });
+
+    function makeCode () {
+        var elText = document.getElementById("share_text");
+
+        if (!elText.value) {
+            alert("没有生成链接");
+            elText.focus();
+            return;
+        }
+
+        qrcode.makeCode(elText.value);
+    }
+
+    makeCode();
+
+    $("#share_text").
+        on("blur", function () {
+            makeCode();
+        }).
+        on("keydown", function (e) {
+            if (e.keyCode == 13) {
+                makeCode();
+            }
+        });
+
+    $(document).ready(function(){
+        $('#show_docx_html').click(function(){
+            var docx_id = {{ docx_dict.id }};
+            $.get("/document/show_docx_html/",{'docx_id':docx_id}, function(response){
+                $('#docx_html_content').html(response);
+            });
+        });
+    });
+ </script>
+
+</body>
+
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>选择模板</title>
+
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">模板
+        <small>选择</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        {% include "route_document.html" %}
+        <li class="breadcrumb-item active">模板选择</li>
+    </ol>
+
+    <div class="row">
+
+        <!-- Post Content Column -->
+        <div class="col-lg-8">
+
+            {% if info != "" %}
+                <hr>
+                <p>{{ info }}</p>
+            {% endif %}
+
+            <hr>
+
+            <p id="template_name">预览</p>
+
+            <hr>
+
+            <!-- Preview Image -->
+            <div id="template_preview"></div>
+
+
+        </div>
+
+        <!-- Sidebar Widgets Column -->
+        <div class="col-md-4">
+
+            <!-- Search Widget -->
+            <div class="card mb-4">
+                <h5 class="card-header">选择模板</h5>
+                <div class="card-body">
+                    <form class="input-group" action="{% url 'init_docx' %}" method="post">
+                        {% csrf_token %}
+                        <select class="form-control" id="select_template" name="select_template">
+                            <option value="无">请选择</option>
+                            {% for template_name in templates_list %}
+                                <option value="{{ template_name }}">{{ template_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="inpug-group-append">
+                            <button type="submit" class="btn btn-secondary" id="confirm_select">确定</button>
+                        </span>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Side Widget -->
+            <div class="card my-4">
+                <h5 class="card-header">提示</h5>
+                <div class="card-body">
+                    请在上方选择需要创建的模板文档
+                </div>
+            </div>
+
+            {% if request.user.is_superuser %}
+                <div class="card my-4">
+                    <h5 class="card-header">删除模板</h5>
+                    <div class="card-body">
+                        <form class="input-group" action="{% url 'delete_template' %}" method="post">
+                            {% csrf_token %}
+                            <select class="form-control" name="delete_template">
+                                <option value="无">请选择</option>
+                                {% for template_name in templates_list %}
+                                    <option value="{{ template_name }}">{{ template_name }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="inpug-group-append">
+                                <button type="submit" class="btn btn-danger" id="confirm_delete">删除</button>
+                            </span>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+
+</body>
+
+</html>

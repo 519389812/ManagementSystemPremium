@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>查看上传</title>
+</head>
+
+<body>
+    {% include "header.html" %}
+
+    <!-- ********** GREY SECTION / BLOG POST ********** -->
+    <div id="g">
+        <div class="container">
+            <div class="row">
+                <h2 class="centered mb">查看上传</h2>
+                {% for key,value in reader_upload.items %}
+                    <div class="col-md-5 col-md-offset-1">
+                        <div class='previwes-section active'>
+                            <!--/preview-section -->
+                            <div class='content'>
+                                <div class='profile-pic'>
+                                    <img src="{{ media_url }}{{ value }}" width="200" height="357" alt=''/>
+                                </div>
+                                <hr/>
+                            </div>
+                            <!--/content -->
+                            <div class='profile'>
+                                <div class='profiledetials'>
+                                    <h4 class='name'>{{ key }}</h4>
+                                </div>
+                            </div>
+                            <!--/profile -->
+                        </div>
+                        <!--/Previews-Section -->
+                    </div>
+                {% endfor %}
+                <!--/col-md-5-->
+
+            </div>
+            <!--/row -->
+        </div>
+        <!--/container -->
+    </div>
+    <!--/G -->
+
+    {% include "script.html" %}
+
+</body>
+</html>

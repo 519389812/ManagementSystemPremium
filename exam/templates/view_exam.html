@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>试卷</title>
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">填写
+        <small>试卷</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        {% include "route_exam.html" %}
+        <li class="breadcrumb-item active">试卷</li>
+    </ol>
+
+    <!-- Contact Form -->
+    <!-- In order to set the email address and subject line for the contact form go to the bin/contact_me.php file. -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <h3>{{ exam.title }}</h3>
+            {% include "message.html" %}
+            <form name="examForm" id="examForm" action="{% url 'view_exam' %}" method="post">
+                {% csrf_token %}
+                {% for question in exam.question %}
+                    {% if question.type == 'select' %}
+                        <div class="control-group form-group">
+                            <div class="controls">
+                                <label>{{ question.title }}:</label>
+                                <select class="form-control" id="question_{{ question.id }}" name="question_{{ question.id }}" required>
+                                    {% for product in product_list %}
+                                        <option value="{{ product.id }}">{{ product.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <p class="help-block" id="position_validate"></p>
+                            </div>
+                        </div>
+                    {% elif %}
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <input type="date" class="form-control" id="time" name="exam_time">
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>日期:</label>
+                            <input type="date" class="form-control" id="date" name="date"
+                                   placeholder="请选择日期"
+                                   required data-validation-required-message="Please select a date.">
+                            <p class="help-block" id="date_validate"></p>
+                        </div>
+                    </div>
+
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>航班:</label>
+                            <input type="text" class="form-control" id="flight_number" name="flight_number"
+                                   placeholder="请填写航班号" data-validation-required-message="Please enter flight number."/>
+                            <p class="help-block" id="flight_number_validate"></p>
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>旅客姓名:</label>
+                            <input type="text" class="form-control" id="passenger" name="passenger"
+                                   placeholder="请填写旅客姓名" data-validation-required-message="Please enter passenger name."/>
+                            <p class="help-block" id="passenger_validate"></p>
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>票号:</label>
+                            <input type="number" class="form-control" id="ticket" name="ticket" placeholder="请填写票号"
+                                      data-validation-required-message="Please enter ticket number."/>
+                            <p class="help-block" id="ticket_validate"></p>
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>emd号:</label>
+                            <input type="number" class="form-control" id="emd" name="emd" placeholder="请填写emd号"
+                                   data-validation-required-message="Please enter emd number."/>
+                            <p class="help-block" id="emd_validate"></p>
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>目的地三字码:</label>
+                            <input type="text" class="form-control" id="destination" name="destination"
+                                   placeholder="请填写目的地三字码" data-validation-required-message="Please enter destination."/>
+                            <p class="help-block" id="destination_validate"></p>
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>金额:</label>
+                            <input type="number" step = "0.01" class="form-control" id="amount" name="amount"
+                                   placeholder="请填写金额" data-validation-required-message="Please enter amount."/>
+                            <p class="help-block" id="amount_validate"></p>
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>里程:</label>
+                            <input type="number" step = "0.01" class="form-control" id="miles" name="miles"
+                                   placeholder="请填写里程数" data-validation-required-message="Please enter miles."/>
+                            <p class="help-block" id="miles_validate"></p>
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>开票人:</label>
+                            <select class="form-control" id="issue_user_id" name="issue_user_id" required>
+                                {% for user in user_list %}
+                                    <option value="{{ user.id }}">{{ user.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <p class="help-block" id="issue_user_validate"></p>
+                        </div>
+                    </div>
+                {% endfor %}
+                <!-- For success/fail messages -->
+                <button type="submit" class="btn btn-primary" id="submit">提交</button>
+            </form>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="form-floating mb-3">
+                <label id="timer"></label>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+<!--$.ajax({-->
+<!--    // 1. 数据提交url，与form表单的action属性一致-->
+<!--    url:'',-->
+<!--    // 2. 指定当前请求方式-->
+<!--    type: 'post',-->
+<!--    // 3. 提交的数据，{1标签id:$('#1标签id').val(),2标签id:$('#2标签id').val()}-->
+<!--    data: {},-->
+<!--    // 4. 异步提交回调函数，data就是异步提交的返回结果，将异步回调函数的结果通过DOM操作渲染到第三个input框中：(3标签id).val(data)-->
+<!--    success:function(data){-->
+<!--            $(3标签id).val(data)-->
+<!--        }-->
+<!--    })-->
+
+<script>
+    var times = {{ exam.exam_time }};//剩余时间,单位秒
+    var timeDiv = document.getElementById("time");
+    var timerDiv = document.getElementById("timer");
+    var timeObj = null;
+    function timer(){
+        if(times == 0){
+            //倒计时结束，提交表单
+            document.getElementById("submit").submit();
+            window.clearInterval(timeObj);
+            return;
+        }
+        var t = Math.floor(times/60) +"分"+times%60+"秒"
+        timeDiv.val = times;
+        timerDiv.innerHTML = t;
+        times --;
+    }
+    timeObj = window.setInterval(timer,1000);
+</script>
+
+</body>
+
+</html>

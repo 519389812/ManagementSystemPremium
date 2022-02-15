@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>考试</title>
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">考试
+        <small>模块</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        <li class="breadcrumb-item active">考试</li>
+    </ol>
+
+
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Sidebar Column -->
+        <div class="col-lg-3 mb-4">
+            <div class="list-group">
+                <a href="{% url 'exam' %}" class="list-group-item active">考试首页</a>
+                <a href="{% url 'add_sales' %}" class="list-group-item">销售登记</a>
+                <a href="{% url 'view_sales' %}" class="list-group-item">查看登记</a>
+            </div>
+        </div>
+        <!-- Content Column -->
+        <div class="col-lg-9 mb-4">
+            <h2>销售模块</h2>
+            <hr>
+            <b>更新日志：</b>
+            <br>
+            <!-- sector -->
+            <br>
+            <i>版本：v0.1 日期：2022.2.14</i>
+            <ul>
+                <li>测试</li>
+            </ul>
+            <br>
+        </div>
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+</body>
+
+</html>

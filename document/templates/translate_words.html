@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>模板翻译</title>
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">翻译
+        <small>模板</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        {% include "route_document.html" %}
+        <li class="breadcrumb-item active">模板翻译</li>
+    </ol>
+
+    <!-- Project One -->
+    <div class="row">
+        <div class="col-lg-8">
+            <table class="table table-hover table-bordered">
+                <tr>
+                    <th>需翻译的词</th>
+                    <th>翻译后的词</th>
+                    <th>删除?</th>
+                </tr>
+                {% for word, exchange in translate_dict.items %}
+                    <tr>
+                        <td>{{ word }}</td>
+                        <td>{{ exchange }}</td>
+                        <td><a class="btn btn-danger" href="/document/delete_translate_words?word={{ word }}">删除<span class="glyphicon glyphicon-chevron-right"></span></a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="col-md-4">
+
+            <!-- Search Widget -->
+            <div class="card mb-4">
+                <h5 class="card-header">新增/修改翻译</h5>
+                <div class="card-body">
+                    <form class="input-group" action="{% url 'translate_words' %}" method="post">
+                        {% csrf_token %}
+                        <div class="control-group form-group">
+                            <div class="controls">
+                                <label>需翻译的词</label>
+                                <input type="text" class="form-control" name="translate_before"/>
+                            </div>
+                        </div>
+                        <div class="control-group form-group">
+                            <div class="controls">
+                                <label>翻译后的词</label>
+                                <input type="text" class="form-control" name="translate_after"/>
+                            </div>
+                        </div>
+                        {% if error == "" %}
+                            <p class="help-block"></p>
+                        {% else %}
+                            <p class="help-block" id="word_validate">{{ error }}</p>
+                        {% endif %}
+                        <span class="inpug-group-append">
+                            <button type="submit" class="btn btn-secondary" id="confirm_button">确定</button>
+                        </span>
+                    </form>
+                </div>
+            </div>
+            <div class="card my-4">
+                <h5 class="card-header">提示</h5>
+                <div class="card-body">
+                    翻译的词中不能含有空格或特殊符号。
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+</body>
+
+</html>

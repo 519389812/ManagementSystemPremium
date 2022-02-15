@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" overflow="hidden">
+<head>
+    <meta charset="utf-8">
+    {% load static %}
+    <title>请签名</title>
+    <meta name="description"
+          content="Signature Pad - HTML5 canvas based smooth signature drawing using variable width spline interpolation.">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="{% static 'css/signature-pad.css' %}">
+
+    <!--[if IE]>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/ie9.css' %}">
+    <![endif]-->
+
+</head>
+<body onselectstart="return false">
+
+<div id="signature-pad" class="signature-pad">
+    <div class="signature-pad--body">
+        <canvas></canvas>
+    </div>
+    <div id="signature-pad-footer" class="signature-pad--footer">
+        <div class="description">请在上方签名</div>
+        <div class="signature-pad--actions">
+            <div>
+                <button type="button" class="button clear" data-action="clear">重签</button>
+                <button type="button" class="button" data-action="change-color" hidden>换色</button>
+                <button type="button" class="button" data-action="undo">撤销</button>
+
+            </div>
+            <div>
+                <button id="submit" type="button" class="button save" data-action="save-png" onclick="submit()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "script.html" %}
+<script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-39365077-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+    var docxId = '{{ docx_id }}';
+    var contentId = '{{ content_id }}';
+    var signatureKey = '{{ signature_key }}';
+
+    $(document).ready(function (){
+      var width = document.documentElement.clientWidth;
+      var height = document.documentElement.clientHeight;
+      if (width < height) {
+        $("#signature-pad").addClass("wrapper-pad");
+        $("#signature-pad-footer").addClass("wrapper-footer");
+      }
+    });
+
+    function submit() {
+      $("#submit").attr("disabled","disabled");
+    }
+
+    document.body.addEventListener('touchmove', function (e) {
+      e.preventDefault(); //阻止默认的处理方式(阻止下拉滑动的效果)
+    }, {passive: false}); //passive 参数不能省略，用来兼容ios和android
+
+</script>
+<script src="{% static 'js/signature_pad.umd.js' %}"></script>
+<script src="{% static 'js/app.js' %}"></script>
+<script src="{% static 'js/aes.js' %}"></script>
+<script src="{% static 'js/pad-zeropadding-min.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>公告</title>
+</head>
+
+<body>
+    {% include "header.html" %}
+
+    <!-- ********** HEADER SECTION ********** -->
+    <section id="home"></section>
+    <div id="h">
+        <div class="container">
+            <div class="row centered">
+                <h1>{{ announcement.title }}</h1>
+                <p class="big mt">作者:{{ announcement.author }} 创建时间:{{ announcement.create_datetime }} 截止时间:{{ announcement.deadline }}</p>
+                <p>{{ announcement.content|linebreaksbr }} </p>
+            </div>
+            <!--/row -->
+        </div>
+        <!-- /.container -->
+    </div>
+    <!--/H -->
+
+    <!-- ********** CTA WHITE SECTION ********** -->
+    <div id="w">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 col-md-offset-0 centered">
+                    {% if announcement.active == True %}
+                        {% if is_read == False %}
+                            <form enctype="multipart/form-data" action="{% url "read_confirm" id announcement.require_upload %}" method="POST">
+                                {% csrf_token %}
+                                {% if announcement.require_upload == True %}
+                                    <input class="form-control btn-yellow" type="file" name="img"/>
+                                {% else %}
+                                    <input class="form-control btn-yellow" type="file" disabled="disabled" about="无需上传" name="img"/>
+                                {% endif %}
+                                <button class="btn btn-lg btn-red" type="submit">确认阅读</button>
+                            </form>
+                        {% else %}
+                            <button class="btn btn-lg btn-green" type="submit" disabled="disabled">已确认</button>
+                        {% endif %}
+                    {% else %}
+                        {% if is_read == True %}
+                            <button class="btn btn-lg btn-green" type="submit" disabled="disabled">过期-已确认</button>
+                        {% else %}
+                            <button class="btn btn-lg btn-green" type="submit" disabled="disabled">过期-未确认</button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            <!--/row -->
+        </div>
+        <!--/container -->
+    </div>
+    <!--/ W -->
+
+
+    <!-- ********** WHITE SECTION / PRICES ********** -->
+    <section id="buy"></section>
+    <div class="container">
+        <div class="row mtb centered">
+            <div class="col-md-10 col-md-offset-1">
+                {% for key, values in group_dict.items %}
+                    <div class="col-md-3 prices">
+                        <h3 class="mb">{{ key }}</h3>
+                        <h4 class="mb">已读:{{ values.1|length }}</h4>
+                        <ul class="mb">
+                            {% if values.1|length == 0 %}
+                                <li>无</li>
+                            {% else %}
+                                {% for value in values.1 %}
+                                    <li>{{ value }}</li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                        <h4 class="mb">未读:{{ values.2|length }}</h4>
+                        <ul class="mb">
+                            {% if values.2|length == 0 %}
+                                <li>全员读完</li>
+                            {% else %}
+                                {% for value in values.2 %}
+                                    <li>{{ value }}</li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                        {% if announcement.require_upload %}
+                            {% if values.1|length > 0 %}
+                                <form enctype="multipart/form-data" action="{% url "show_upload" id values.1 %}" method="POST">
+                                    <button class="btn btn-lg btn-red" type="submit">查看上传</button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <br>
+                    <br>
+                    <br>
+                {% endfor %}
+
+                {% if to_people_length > 0 %}
+                    <div class="col-md-3 prices">
+                        <h3 class="mb">指定人员</h3>
+                        <h4 class="mb">已读:{{ read_names|length }}</h4>
+                        <ul class="mb">
+                            {% if read_names|length == 0 %}
+                                <li>无</li>
+                            {% else %}
+                                {% for i in read_names %}
+                                    <li>{{ i }}</li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                        <h4 class="mb">未读:{{ unread_names|length }}</h4>
+                        <ul class="mb">
+                            {% if unread_names|length == 0 %}
+                                <li>全员读完</li>
+                            {% else %}
+                                {% for i in unread_names %}
+                                    <li>{{ i }}</li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                        {% if announcement.require_upload %}
+                            {% if read_names|length > 0 %}
+                                <form enctype="multipart/form-data" action="{% url "show_upload" id read_names %}" method="POST">
+                                    {% csrf_token %}
+                                    <button class="btn btn-lg btn-red" type="submit">查看上传</button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <br>
+                    <br>
+                    <br>
+                {% endif %}
+
+            </div>
+            <!--/col-md-10 -->
+        </div>
+        <!--/row -->
+    </div>
+    <!--/container -->
+
+    <!-- ********** GREY SECTION / DOWNLOAD CHAPTER ********** -->
+    <section id="free"></section>
+    <div id="g">
+        <div class="container">
+            <div class="row centered">
+                <div class="col-md-11">
+                    <h2>我要留言</h2>
+                    <p class="mb">有什么想说的吗？</p>
+                    <form role="form" action="{% url 'feedback_confirm' id %}" method="post">
+                        {% csrf_token %}
+                        <input type="text" name="feedback" class="subscribe-input"
+                               placeholder="请输入您的留言" data-rule="maxlen:100" required>
+                        <button class='btn btn-lg btn-download subscribe-submit' type="submit">提交</button>
+                    </form>
+                </div>
+            </div>
+            <!--/row -->
+        </div>
+        <!--/container -->
+    </div>
+    <!--/G -->
+
+    <!-- ********** WHITE SECTION / CHAPTERS LIST ********** -->
+    <div class="container">
+        <div class="row mtb">
+            <h2 class="centered mb">留言板</h2>
+            <div class="col-md-10 col-md-offset-0">
+                <table class='table'>
+                    {% if feedback|length == 0 %}
+                        <tr>
+                            <td class='head pull-right'>暂无留言</td>
+                        </tr>>
+                    {% else %}
+                        {% for object in feedback %}
+                            <tr>
+                                <td class='head pull-right'>{{ object.comment }}</td>
+                                <td class=' number'>{{ object.sent_datetime }}</td>
+                                <td class='td-last'>{{ object.sender }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </table>
+            </div>
+            <!--/col-md-5-->
+        </div>
+        <!--/row -->
+    </div>
+    <!--/container -->
+
+    {% include "script.html" %}
+    {% if messages %}
+        <script>
+            {% for msg in messages %}
+                console.log('消息类型：{{ msg.tags }}，消息内容：{{ msg }}');
+            {% endfor %}
+       </script>
+    {% endif %}
+
+</body>
+</html>

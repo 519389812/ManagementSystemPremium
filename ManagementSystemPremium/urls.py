@@ -19,6 +19,7 @@ from . import views as main_views
 from user import views as user_views
 from performance import views as performance_views
 from sale import views as sales_views
+from exam import views as exam_views
 from django.shortcuts import render
 from ManagementSystemPremium.views import error_404, error_400, error_403, error_500
 import notifications.urls
@@ -88,4 +89,12 @@ urlpatterns = [
     path('sales/', sales_views.sales, name='sales'),
     path('sales/add_sales/', sales_views.add_sales, name='add_sales'),
     path('sales/view_sales/', sales_views.view_sales, name='view_sales'),
+
+    # exam
+    path('exam/', exam_views.index, name='exam'),
+    path('startExam/', exam_views.startExam, name='startExam'),  # 开始考试
+    path('calculateGrade/', exam_views.calculateGrade, name='calculateGrade'),  # 考试评分
+    path('stulogout/', exam_views.stulogout, name='stulogout'),  # 学生退出登录
+    path('userfile/', exam_views.userfile, name='userfile'),  # 个人信息
+    path('examinfo/', exam_views.examinfo, name='examinfo'),  # 考试信息
 ]

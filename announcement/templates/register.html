@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>注册</title>
+</head>
+<body>
+    {% include "header.html" %}
+    <div id="contact">
+        <div class="container">
+            <h2 class="centered mb">注册</h2>
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <form class="contact-form php-mail-form" role="form" action="{% url 'register' %}" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="username">用户名</label>
+                            <input type="text" name="username" class="form-control" id="username" placeholder="请设置至少4位数用户名">
+                            <p id="username-validate"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">密码</label>
+                            <input type="password" name="password" class="form-control" id="password" placeholder="请设置至少6位数密码">
+                            <p id="password-validate"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastname">姓</label>
+                            <input type="text" name="lastname" class="form-control" id="lastname" placeholder="请输入您的姓氏，建议输入真实姓名，以便您的团队成员更好辨认">
+                            <p id="lastname-validate"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="firstname">名</label>
+                            <input type="text" name="firstname" class="form-control" id="firstname" placeholder="请输入您的名字，建议输入真实姓名，以便您的团队成员更好辨认">
+                            <p id="firstname-validate"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="teamname">团队名称</label>
+                            <input type="text" name="teamname" class="form-control" id="teamname" placeholder="请输入1-16位数团队名称">
+                            <p id="teamname-validate"></p>
+                        </div>
+                        <div class="form-send">
+                            <button type="submit" id="submit-button" class="btn btn-large">注册</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include "script.html" %}
+    <script src='{% static "js/jquery-3.1.1.min.js" %}'></script>
+    <script>
+    $(document).ready(function(){
+        $('#username').blur(function(){
+            var username = $('#username').val();
+            $.get('/check_username_validate/',{'username':username}, function(ret){
+                $('#username-validate').html(ret);
+            });
+        });
+
+        $('#password').blur(function(){
+            var password = $('#password').val();
+            $.get('/check_password_validate/',{'password':password}, function(ret){
+                $('#password-validate').html(ret);
+            });
+        });
+
+        $('#lastname').blur(function(){
+            var lastname = $('#lastname').val();
+            $.get('/check_lastname_validate/',{'lastname':lastname}, function(ret){
+                $('#lastname-validate').html(ret);
+            });
+        });
+
+        $('#firstname').blur(function(){
+            var firstname = $('#firstname').val();
+            $.get('/check_firstname_validate/',{'firstname':firstname}, function(ret){
+                $('#firstname-validate').html(ret);
+            });
+        });
+
+        $('#teamname').blur(function(){
+            var teamname = $('#teamname').val();
+            $.get('/check_teamname_validate/',{'teamname':teamname}, function(ret){
+                $('#teamname-validate').html(ret);
+            });
+        });
+
+        $(function(){
+            $("#submit-button").click(function(event){
+                var username = $('#username').val();
+                var password = $('#password').val();
+                var lastname = $('#lastname').val();
+                var firstname = $('#firstname').val();
+                var teamname = $('#teamname').val();
+                var username_validate = $('#username-validate').text();
+                var password_validate = $('#password-validate').text();
+                var lastname_validate = $('#lastname-validate').text();
+                var firstname_validate = $('#firstname-validate').text();
+                var teamname_validate = $('#teamname-validate').text();
+                if(username == "" || password == "" || lastname == "" || firstname == "" || teamname == ""){
+                    event.preventDefault();
+                    alert("输入不能为空！")
+                } else if(username_validate != "" || password_validate != "" || lastname_validate != "" || firstname_validate != "" || teamname_validate != ""){
+                    event.preventDefault();
+                    alert("输入有误，请检查！")
+                };
+            });
+        });
+    });
+    </script>
+</body>
+</html>

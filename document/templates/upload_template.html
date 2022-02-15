@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>模板上传</title>
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">上传
+        <small>模板</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        {% include "route_document.html" %}
+        <li class="breadcrumb-item active">模板上传</li>
+    </ol>
+
+    <!-- Contact Form -->
+    <!-- In order to set the email address and subject line for the contact form go to the bin/contact_me.php file. -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <h3>模板上传</h3>
+            <form enctype="multipart/form-data" name="loginForm" id="loginForm" action="{% url 'upload_template' %}" method="post">
+                {% csrf_token %}
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>预览文档:</label>
+                        <input type="file" class="form-control" id="source" name="source" placeholder="请选择要上传的预览文档"
+                               required data-validation-required-message="Please select a docx file.">
+                        <p class="help-block" id="source_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>模板文档:</label>
+                        <input type="file" class="form-control" id="template" name="template" placeholder="请选择要上传的模板文档"
+                               required data-validation-required-message="Please select a docx file.">
+                        <p class="help-block" id="template_validate"></p>
+                    </div>
+                </div>
+                {% if error == "" %}
+                    <div></div>
+                {% else %}
+                    <div>{{ error }}</div>
+                {% endif %}
+                <!-- For success/fail messages -->
+                <button type="submit" class="btn btn-primary" id="submit">上传</button>
+            </form>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <h3>Tips</h3>
+            <p>
+                <abbr title="预览文档">预览文档</abbr>:
+                <br>
+                预览文档用于模板选择界面的文档预览
+            </p>
+            <p>
+                <abbr title="模板文档">模板文档</abbr>:
+                <br>
+                模板文档用于生成可和填写的文档
+            </p>
+                        <p>
+                <abbr title="注意">注意</abbr>:
+                <br>
+                两个文档名称必须一致，如已存在同名文档，请先删除同名文档再进行上传，如果您不知道模板文档的预设规则，请不要随意上传，否则将影响后续的使用
+            </p>
+            <p>
+                <abbr title="需要帮助?">需要帮助</abbr>?
+                <br>
+                如果您不知道如何设置模板文档，可将计划生成的模板文件发送给管理员，由管理员来生成
+                <a href="mailto:gongzuoshi@csair.com">gongzuoshi@csair.com</a>
+            </p>
+        </div>
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+<script src="js/jqBootstrapValidation.js"></script>
+<script src="js/contact_me.js"></script>
+
+</body>
+
+</html>

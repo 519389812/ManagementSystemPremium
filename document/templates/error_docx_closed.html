@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>文档已关闭</title>
+
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">文档已关闭
+        <small>该文档已无法填写</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        {% include "route_document.html" %}
+        <li class="breadcrumb-item active">文档已关闭</li>
+    </ol>
+
+    <div class="jumbotron">
+        <h1 class="display-5">该文档已超过截止时间，无法继续填写</h1>
+        <br>
+        {% include "error_redirect.html" %}
+    </div>
+    <!-- /.jumbotron -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+</body>
+
+</html>

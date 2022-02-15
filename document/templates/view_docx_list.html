@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>文档列表</title>
+
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">文档
+        <small>列表</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        {% include "route_document.html" %}
+        <li class="breadcrumb-item active">模板/文档选择</li>
+    </ol>
+
+    <!-- Content Row -->
+    <div class="row">
+        {% for docx in page_docx_list %}
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <h3 class="card-header">{{ docx.docx_name }}</h3>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">创建人：{{ docx.user__last_name }}{{ docx.user__first_name }}</li>
+                        <li class="list-group-item">版本：{{ docx.version }}</li>
+                        <li class="list-group-item">来自模板：{{ docx.template_name }}</li>
+                        <li class="list-group-item">创建时间：{{ docx.create_datetime }}</li>
+                        <li class="list-group-item">关闭时间：{{ docx.close_datetime }}</li>
+                        <li class="list-group-item">
+                            <a href="/document/view_docx/{{ docx.id }}" class="btn btn-primary">查看</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        {% endfor %}
+        共有{{ total_docx }}条记录
+
+        <!-- /.row -->
+    </div>
+    <!-- /.container -->
+
+    <!-- Pagination -->
+    <ul class="pagination justify-content-center">
+        <li class="page-item">
+            <a class="page-link" href="{% url 'view_docx_list' %}?page=1" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">首页</span>
+            </a>
+        </li>
+        {% with ''|center:total_page_num as range %}
+            {% for _ in range %}
+                <li class="page-item">
+                    {% if page_num == forloop.counter %}
+                        <a class="page-link" href="{% url 'view_docx_list' %}?page={{ page_num }}" style="pointer-events: none;cursor: default;color:gray;">{{ forloop.counter }}</a>
+                    {% else %}
+                        <a class="page-link" href="{% url 'view_docx_list' %}?page={{ page_num }}">{{ forloop.counter }}</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        {% endwith %}
+        <li class="page-item">
+            <a class="page-link" href="{% url 'view_docx_list' %}?page={{ total_page_num }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">尾页</span>
+            </a>
+        </li>
+    </ul>
+
+</div>
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+</body>
+
+</html>

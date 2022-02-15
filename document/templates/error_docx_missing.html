@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>文档丢失</title>
+
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">文档丢失
+        <small>该文档已无法获取</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        {% include "route_document.html" %}
+        <li class="breadcrumb-item active">文档丢失</li>
+    </ol>
+
+    <div class="jumbotron">
+        <h1 class="display-5">很抱歉，因某些未知原因，该文档已丢失，无法继续下载，请您截图并联系管理员寻求帮助</h1>
+        <br>
+        {% include "error_redirect.html" %}
+    </div>
+    <!-- /.jumbotron -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+</body>
+
+</html>

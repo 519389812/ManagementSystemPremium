@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>新建文档</title>
+
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">文档
+        <small>新建</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        {% include "route_document.html" %}
+        <li class="breadcrumb-item active">文档新建</li>
+    </ol>
+
+    <div class="row">
+
+        <!-- Post Content Column -->
+        <div class="col-lg-8">
+
+            <hr>
+
+            <p>{{ template_name }}</p>
+
+            <hr>
+
+            <!-- Preview Image -->
+            <div>{{ docx_html|safe }}</div>
+
+
+        </div>
+
+        <!-- Sidebar Widgets Column -->
+        <div class="col-md-4">
+
+            <!-- Search Widget -->
+            <div class="card mb-4">
+                <h5 class="card-header">新建文档</h5>
+                <div class="card-body">
+                    <form class="input-group" action="{% url 'write_init_docx' template_name %}" method="post">
+                        {% csrf_token %}
+                        <div class="control-group form-group">
+                            <div class="controls">
+                                <label>文档名</label>
+                                <input type="text" class="form-control" name="docx_name"/>
+                            </div>
+                        </div>
+                        {% for key, value in variable_dict.items %}
+                            <div class="control-group form-group">
+                                <div class="controls">
+                                    <label>{{ value.cn_name }}</label>
+                                    <input type="{{ value.type_text }}" class="form-control" name="{{ value.origin }}"/>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="control-group form-group">
+                            <div class="controls">
+                                <label>截止时间</label>
+                                <input type="datetime-local" class="form-control" name="close_datetime"/>
+                            </div>
+                        </div>
+                        <div class="control-group form-group">
+                            <label>目标组（多选）</label>
+                            {% for team in team_list %}
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" value="{{ team.id }}" title="{{ team.name }}" name="team">
+                                    {{ team.name }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <span class="inpug-group-append">
+                            <button type="submit" class="btn btn-secondary" id="confirm_button">确定</button>
+                        </span>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Side Widget -->
+            <div class="card my-4">
+                <h5 class="card-header">提示</h5>
+                <div class="card-body">
+                    请在上方填写新文档的必填字段
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+</body>
+
+</html>
