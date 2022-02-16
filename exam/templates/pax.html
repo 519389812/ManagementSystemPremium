@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>行程登记</title>
+</head>
+
+<body class="d-flex flex-column">
+    <main class="flex-shrink-0">
+
+        <!-- Page content-->
+        <section class="py-5">
+            <div class="container px-5">
+                <!-- Contact form-->
+                <div class="bg-light rounded-3 py-5 px-4 px-md-5 mb-5">
+                    <div class="text-center mb-5">
+                        <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3"><i class="bi bi-envelope"></i></div>
+                        <h1 class="fw-bolder"></h1>
+                        <p class="lead fw-normal text-muted mb-0">请填写以下信息</p>
+                        <p class="lead fw-normal text-muted mb-0">Please fill in the following form</p>
+                    </div>
+                    <div class="row gx-5 justify-content-center">
+                        <div class="col-lg-8 col-xl-6">
+                            <!-- * * * * * * * * * * * * * * *-->
+                            <!-- * * SB Forms Contact Form * *-->
+                            <!-- * * * * * * * * * * * * * * *-->
+                            <!-- This form is pre-integrated with SB Forms.-->
+                            <!-- To make this form functional, sign up at-->
+                            <!-- https://startbootstrap.com/solution/contact-forms-->
+                            <!-- to get an API token!-->
+                            <form data-sb-form-api-token="API_TOKEN" action="{% url 'collect_pax' %}" method="post">
+                                {% csrf_token %}
+                                <!-- Name input-->
+                                <div class="form-floating mb-3">
+                                    <input class="form-control" id="fullname" name="fullname" type="text" placeholder="请输入姓名 Enter your name" required/>
+                                    <label for="fullname" style="font-size: 14px">全名 Full name</label>
+                                    <div class="invalid-feedback" id="fullname-invalid-feedback"></div>
+                                </div>
+                                <!-- flight input-->
+                                <div class="row g-2">
+                                    <div class="col-md">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="flight" name="flight" type="text" placeholder="请输入航班号 Enter your flight number" required/>
+                                            <label for="flight" style="font-size: 14px">航班号 Flight number</label>
+                                            <div class="invalid-feedback" id="flight-invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md">
+                                        <div class="form-floating mb-3">
+                                            <input type="date" class="form-control" id="flightDate" name="flightDate" placeholder="起飞日期 Enter departure date" required/>
+                                            <label for="flightDate" style="font-size: 14px">起飞日期 Departure date</label>
+                                            <div class="invalid-feedback" id="flightDate-invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- city input-->
+                                <div class="row g-2">
+                                    <div class="col-md">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="departure" name="departure" placeholder="请输入始发地 Enter departure city" value="广州 GuangZhou" required/>
+                                            <label for="departure" style="font-size: 14px">始发地 Departure city</label>
+                                            <div class="invalid-feedback" id="departure-invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="arrival" name="arrival" placeholder="请输入目的地 Enter arrival city" required/>
+                                            <label for="arrival" style="font-size: 14px">目的地 Arrival city</label>
+                                            <div class="invalid-feedback" id="arrival-invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- id input-->
+                                <div class="row g-2">
+                                    <div class="col-md">
+                                        <div class="form-floating mb-3">
+                                            <select id="idType" name="idType" class="form-select" required>
+                                                <option value="身份证" style="font-size: 14px">身份证 Id card</option>
+                                                <option value="护照" style="font-size: 14px">护照 Passport</option>
+                                            </select>
+                                            <label for="idType" style="font-size: 14px">证件类型 Type of identity</label>
+                                            <div class="invalid-feedback" id="idType-invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="idNumber" name="idNumber" placeholder="证件号码 Number of identity" required/>
+                                            <label for="idNumber" style="font-size: 14px">证件号码 Number of identity</label>
+                                            <div class="invalid-feedback" id="idNumber-invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- contact input-->
+                                <div class="row g-2">
+                                    <div class="col-md">
+                                        <div class="form-floating mb-3">
+                                            <input type="number" class="form-control" id="diallingCode" name="diallingCode" placeholder="电话区号 Enter a dialling code" value="0086" required/>
+                                            <label for="diallingCode" style="font-size: 14px">电话区号 Dialling code</label>
+                                            <div class="invalid-feedback" id="diallingCode-invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md">
+                                        <div class="form-floating mb-3">
+                                            <input type="number" class="form-control" id="telephone" name="telephone" placeholder="联系电话 Enter your Phone number" required/>
+                                            <label for="telephone" style="font-size: 14px">联系电话 Phone number</label>
+                                            <div class="invalid-feedback" id="telephone-invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- inbound input-->
+                                <div class="row g-2">
+                                    <div class="col-md">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="inboundCountry" name="inboundCountry" placeholder="入境国家 Enter a inbound country" required/>
+                                            <label for="inboundCountry" style="font-size: 14px">入境国家 Inbound country</label>
+                                            <div class="invalid-feedback" id="inboundCountry-invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="inboundFlight" name="inboundFlight" placeholder="入境航班 Enter your inbound flight number" required/>
+                                            <label for="inboundFlight" style="font-size: 14px">入境航班 Inbound flight number</label>
+                                            <div class="invalid-feedback" id="inboundFlight-invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- inbound date input-->
+                                <div class="row g-2">
+                                    <div class="col-md">
+                                        <div class="form-floating mb-3">
+                                            <input type="date" class="form-control" id="inboundDate" name="inboundDate" placeholder="入境日期 Enter a inbound date" required/>
+                                            <label for="inboundDate" style="font-size: 14px">入境日期 Inbound date</label>
+                                            <div class="invalid-feedback" id="inboundDate-invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md">
+                                        <div class="form-floating mb-3">
+                                            <input type="date" class="form-control" id="quarantineEnd" name="quarantineEnd" placeholder="解除隔离日期 Date of lifting quarantine" required/>
+                                            <label for="quarantineEnd" style="font-size: 11px">解除隔离<br>Release from quarantine</label>
+                                            <div class="invalid-feedback" id="quarantineEnd-invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- body input-->
+                                <div class="row g-2">
+                                    <div class="col-md">
+                                        <div class="form-floating mb-3">
+                                            <input type="number" step="0.1" class="form-control" id="bodyTemperature" name="bodyTemperature" placeholder="体温 Enter your body temperature" required/>
+                                            <label for="bodyTemperature" style="font-size: 14px">体温 Body temperature</label>
+                                            <div class="invalid-feedback" id="bodyTemperature-invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md">
+                                        <div class="form-floating mb-3">
+                                            <select id="healthyCode" name="healthyCode" class="form-select" required>
+                                                <option value="绿码" style="font-size: 14px">绿码 Green</option>
+                                                <option value="黄码" style="font-size: 14px">黄码 Yellow</option>
+                                                <option value="红码" style="font-size: 14px">红码 Red</option>
+                                            </select>
+                                            <label for="healthyCode" style="font-size: 14px">健康码 Healthy code</label>
+                                            <div class="invalid-feedback" id="healthyCode-invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- address input-->
+                                <div class="form-floating mb-3">
+                                    <textarea class="form-control" style="height: 100px" id="address" name="address" placeholder="目的地住址 Enter your destination address" rows="3"></textarea>
+                                    <label for="bodyTemperature" style="font-size: 14px">目的地住址 Destination address</label>
+                                    <div class="invalid-feedback" id="address-invalid-feedback"></div>
+                                </div>
+                                <br/>
+                                <div class="d-grid"><button class="btn btn-warning btn-lg" id="saveButton" type="button" formnovalidate="formnovalidate">暂存 Save</button></div>
+                                <div id="save_result" style="display: none;">保存成功 Successful</div>
+                                <div id="save_error" style="display: none;">保存出错 Error</div>
+                                <br/>
+                                <p align="center" style="font-size: 12px">以下信息请移步柜台由员工填写<br/>Please move to the counter to fill in the following content with the assistance of the staff</p>
+                                <hr/>
+                                <br/>
+                                <!-- seat and baggage input-->
+                                <div class="row g-2">
+                                    <div class="col-md">
+<!--                                        style="position: relative; top: 50%; transform:translateY(-50%);"-->
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="seat" name="seat" placeholder="请输入座位号 Enter your seat number eg.30A" required/>
+                                            <label for="seat" style="font-size: 14px">座位号 Seat number&nbsp;&nbsp;eg.30A</label>
+                                            <div class="invalid-feedback" id="seat-invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md">
+                                        <div class="form-floating mb-3">
+                                            <input type="number" class="form-control" style="height: 100px" id="baggage" name="baggage" placeholder="请输入托运行李件数 Enter number of checked baggage" required/>
+                                            <label for="baggage" style="font-size: 14px">托运行李件数<br>Number of checked baggage</label>
+                                            <div class="invalid-feedback" id="baggage-invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- staff input-->
+                                <div class="form-floating mb-3">
+                                    <input type="tel" minlength="4" maxlength="4" class="form-control" id="code" name="code" placeholder="此项由员工填写 Only fill by employee" required/>
+                                    <label for="code" style="font-size: 14px">确认码 Verification code</label>
+                                    <div class="invalid-feedback" id="code-invalid-feedback"></div>
+                                </div>
+                                <!-- Submit Button-->
+                                <div style="color: red">{{ msg_cn }}</div>
+                                <div style="color: red">{{ msg_en }}</div>
+                                {% if invalid_list|length > 0 %}
+                                    <br/>
+                                    <div style="color: red">存在以下问题：</div>
+                                    {% for msg in invalid_list %}
+                                        <div style="color: red">{{ msg }}</div>
+                                    {% endfor %}
+                                {% endif %}
+                                <div class="d-grid"><button class="btn btn-primary btn-lg" id="submitButton" type="submit">提交 Submit</button></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+<script>
+$(document).ready(function(){
+    $('#fullname').blur(function(){
+        var fullname = $('#fullname').val();
+        $.get('/check_fullname_validate/',{'fullname':fullname}, function(ret){
+            if (ret != '') {
+                if ($('#fullname').hasClass('is-valid') == true) {
+                    $('#fullname').removeClass('is-valid');
+                };
+                $('#fullname').addClass('is-invalid');
+            } else {
+                if ($('#fullname').hasClass('is-invalid') == true) {
+                    $('#fullname').removeClass('is-invalid');
+                };
+                $('#fullname').addClass('is-valid');
+            };
+            $('#fullname-invalid-feedback').html(ret);
+        });
+    });
+
+    $('#flight').blur(function(){
+        var flight = $('#flight').val();
+        $.get('/check_flight_validate/',{'flight':flight}, function(ret){
+            if (ret != '') {
+                if ($('#flight').hasClass('is-valid') == true) {
+                    $('#flight').removeClass('is-valid');
+                };
+                $('#flight').addClass('is-invalid');
+            } else {
+                if ($('#flight').hasClass('is-invalid') == true) {
+                    $('#flight').removeClass('is-invalid');
+                };
+                $('#flight').addClass('is-valid');
+            };
+            $('#flight-invalid-feedback').html(ret);
+        });
+    });
+
+    $('#flightDate').blur(function(){
+        var flightDate = $('#flightDate').val();
+        $.get('/check_flight_date_validate/',{'flightDate':flightDate}, function(ret){
+            if (ret != '') {
+                if ($('#flightDate').hasClass('is-valid') == true) {
+                    $('#flightDate').removeClass('is-valid');
+                };
+                $('#flightDate').addClass('is-invalid');
+            } else {
+                if ($('#flightDate').hasClass('is-invalid') == true) {
+                    $('#flightDate').removeClass('is-invalid');
+                };
+                $('#flightDate').addClass('is-valid');
+            };
+            $('#flightDate-invalid-feedback').html(ret);
+        });
+    });
+
+    $('#departure').blur(function(){
+        var departure = $('#departure').val();
+        $.get('/check_departure_validate/',{'departure':departure}, function(ret){
+            if (ret != '') {
+                if ($('#departure').hasClass('is-valid') == true) {
+                    $('#departure').removeClass('is-valid');
+                };
+                $('#departure').addClass('is-invalid');
+            } else {
+                if ($('#departure').hasClass('is-invalid') == true) {
+                    $('#departure').removeClass('is-invalid');
+                };
+                $('#departure').addClass('is-valid');
+            };
+            $('#departure-invalid-feedback').html(ret);
+        });
+    });
+
+    $('#arrival').blur(function(){
+        var arrival = $('#arrival').val();
+        $.get('/check_arrival_validate/',{'arrival':arrival}, function(ret){
+            if (ret != '') {
+                if ($('#arrival').hasClass('is-valid') == true) {
+                    $('#arrival').removeClass('is-valid');
+                };
+                $('#arrival').addClass('is-invalid');
+            } else {
+                if ($('#arrival').hasClass('is-invalid') == true) {
+                    $('#arrival').removeClass('is-invalid');
+                };
+                $('#arrival').addClass('is-valid');
+            };
+            $('#arrival-invalid-feedback').html(ret);
+        });
+    });
+
+    $('#seat').blur(function(){
+        var seat = $('#seat').val();
+        $.get('/check_seat_validate/',{'seat':seat}, function(ret){
+            if (ret != '') {
+                if ($('#seat').hasClass('is-valid') == true) {
+                    $('#seat').removeClass('is-valid');
+                };
+                $('#seat').addClass('is-invalid');
+            } else {
+                if ($('#seat').hasClass('is-invalid') == true) {
+                    $('#seat').removeClass('is-invalid');
+                };
+                $('#seat').addClass('is-valid');
+            };
+            $('#seat-invalid-feedback').html(ret);
+        });
+    });
+
+    $('#baggage').blur(function(){
+        var baggage = $('#baggage').val();
+        $.get('/check_baggage_validate/',{'baggage':baggage}, function(ret){
+            if (ret != '') {
+                if ($('#baggage').hasClass('is-valid') == true) {
+                    $('#baggage').removeClass('is-valid');
+                };
+                $('#baggage').addClass('is-invalid');
+            } else {
+                if ($('#baggage').hasClass('is-invalid') == true) {
+                    $('#baggage').removeClass('is-invalid');
+                };
+                $('#baggage').addClass('is-valid');
+            };
+            $('#baggage-invalid-feedback').html(ret);
+        });
+    });
+
+    $('#idType').blur(function(){
+        var idType = $('#idType').val();
+        $.get('/check_id_type_validate/',{'idType':idType}, function(ret){
+            if (ret != '') {
+                if ($('#idType').hasClass('is-valid') == true) {
+                    $('#idType').removeClass('is-valid');
+                };
+                $('#idType').addClass('is-invalid');
+            } else {
+                if ($('#idType').hasClass('is-invalid') == true) {
+                    $('#idType').removeClass('is-invalid');
+                };
+                $('#idType').addClass('is-valid');
+            };
+            $('#idType-invalid-feedback').html(ret);
+        });
+    });
+
+    $('#idNumber').blur(function(){
+        var idType = $('#idType').val();
+        var idNumber = $('#idNumber').val();
+        $.get('/check_id_number_validate/',{'idNumber':idNumber, 'idType':idType}, function(ret){
+            if (ret != '') {
+                if ($('#idNumber').hasClass('is-valid') == true) {
+                    $('#idNumber').removeClass('is-valid');
+                };
+                $('#idNumber').addClass('is-invalid');
+            } else {
+                if ($('#idNumber').hasClass('is-invalid') == true) {
+                    $('#idNumber').removeClass('is-invalid');
+                };
+                $('#idNumber').addClass('is-valid');
+            };
+            $('#idNumber-invalid-feedback').html(ret);
+        });
+    });
+
+    $('#diallingCode').blur(function(){
+        var diallingCode = $('#diallingCode').val();
+        $.get('/check_dialling_code_validate/',{'diallingCode':diallingCode}, function(ret){
+            if (ret != '') {
+                if ($('#diallingCode').hasClass('is-valid') == true) {
+                    $('#diallingCode').removeClass('is-valid');
+                };
+                $('#diallingCode').addClass('is-invalid');
+            } else {
+                if ($('#diallingCode').hasClass('is-invalid') == true) {
+                    $('#diallingCode').removeClass('is-invalid');
+                };
+                $('#diallingCode').addClass('is-valid');
+            };
+            $('#diallingCode-invalid-feedback').html(ret);
+        });
+    });
+
+    $('#telephone').blur(function(){
+        var telephone = $('#telephone').val();
+        $.get('/check_telephone_validate/',{'telephone':telephone}, function(ret){
+            if (ret != '') {
+                if ($('#telephone').hasClass('is-valid') == true) {
+                    $('#telephone').removeClass('is-valid');
+                };
+                $('#telephone').addClass('is-invalid');
+            } else {
+                if ($('#telephone').hasClass('is-invalid') == true) {
+                    $('#telephone').removeClass('is-invalid');
+                };
+                $('#telephone').addClass('is-valid');
+            };
+            $('#telephone-invalid-feedback').html(ret);
+        });
+    });
+
+    $('#inboundCountry').blur(function(){
+        var inboundCountry = $('#inboundCountry').val();
+        $.get('/check_inbound_country_validate/',{'inboundCountry':inboundCountry}, function(ret){
+            if (ret != '') {
+                if ($('#inboundCountry').hasClass('is-valid') == true) {
+                    $('#inboundCountry').removeClass('is-valid');
+                };
+                $('#inboundCountry').addClass('is-invalid');
+            } else {
+                if ($('#inboundCountry').hasClass('is-invalid') == true) {
+                    $('#inboundCountry').removeClass('is-invalid');
+                };
+                $('#inboundCountry').addClass('is-valid');
+            };
+            $('#inboundCountry-invalid-feedback').html(ret);
+        });
+    });
+
+    $('#inboundFlight').blur(function(){
+        var inboundFlight = $('#inboundFlight').val();
+        $.get('/check_inbound_flight_validate/',{'inboundFlight':inboundFlight}, function(ret){
+            if (ret != '') {
+                if ($('#inboundFlight').hasClass('is-valid') == true) {
+                    $('#inboundFlight').removeClass('is-valid');
+                };
+                $('#inboundFlight').addClass('is-invalid');
+            } else {
+                if ($('#inboundFlight').hasClass('is-invalid') == true) {
+                    $('#inboundFlight').removeClass('is-invalid');
+                };
+                $('#inboundFlight').addClass('is-valid');
+            };
+            $('#inboundFlight-invalid-feedback').html(ret);
+        });
+    });
+
+    $('#inboundDate').blur(function(){
+        var inboundDate = $('#inboundDate').val();
+        $.get('/check_inbound_date_validate/',{'inboundDate':inboundDate}, function(ret){
+            if (ret != '') {
+                if ($('#inboundDate').hasClass('is-valid') == true) {
+                    $('#inboundDate').removeClass('is-valid');
+                };
+                $('#inboundDate').addClass('is-invalid');
+            } else {
+                if ($('#inboundDate').hasClass('is-invalid') == true) {
+                    $('#inboundDate').removeClass('is-invalid');
+                };
+                $('#inboundDate').addClass('is-valid');
+            };
+            $('#inboundDate-invalid-feedback').html(ret);
+        });
+    });
+
+    $('#quarantineEnd').blur(function(){
+        var quarantineEnd = $('#quarantineEnd').val();
+        $.get('/check_quarantine_end_validate/',{'quarantineEnd':quarantineEnd}, function(ret){
+            if (ret != '') {
+                if ($('#quarantineEnd').hasClass('is-valid') == true) {
+                    $('#quarantineEnd').removeClass('is-valid');
+                };
+                $('#quarantineEnd').addClass('is-invalid');
+            } else {
+                if ($('#quarantineEnd').hasClass('is-invalid') == true) {
+                    $('#quarantineEnd').removeClass('is-invalid');
+                };
+                $('#quarantineEnd').addClass('is-valid');
+            };
+            $('#quarantineEnd-invalid-feedback').html(ret);
+        });
+    });
+
+    $('#bodyTemperature').blur(function(){
+        var bodyTemperature = $('#bodyTemperature').val();
+        $.get('/check_body_temperature_validate/',{'bodyTemperature':bodyTemperature}, function(ret){
+            if (ret != '') {
+                if ($('#bodyTemperature').hasClass('is-valid') == true) {
+                    $('#bodyTemperature').removeClass('is-valid');
+                };
+                $('#bodyTemperature').addClass('is-invalid');
+            } else {
+                if ($('#bodyTemperature').hasClass('is-invalid') == true) {
+                    $('#bodyTemperature').removeClass('is-invalid');
+                };
+                $('#bodyTemperature').addClass('is-valid');
+            };
+            $('#bodyTemperature-invalid-feedback').html(ret);
+        });
+    });
+
+    $('#healthyCode').blur(function(){
+        var healthyCode = $('#healthyCode').val();
+        $.get('/check_healthy_code_validate/',{'healthyCode':healthyCode}, function(ret){
+            if (ret != '') {
+                if ($('#healthyCode').hasClass('is-valid') == true) {
+                    $('#healthyCode').removeClass('is-valid');
+                };
+                $('#healthyCode').addClass('is-invalid');
+            } else {
+                if ($('#healthyCode').hasClass('is-invalid') == true) {
+                    $('#healthyCode').removeClass('is-invalid');
+                };
+                $('#healthyCode').addClass('is-valid');
+            };
+            $('#healthyCode-invalid-feedback').html(ret);
+        });
+    });
+
+/*
+    $('#address').blur(function(){
+        var address = $('#address').val();
+        $.get('/check_address_validate/',{'address':address}, function(ret){
+            if (ret != '') {
+                if ($('#address').hasClass('is-valid') == true) {
+                    $('#address').removeClass('is-valid');
+                };
+                $('#address').addClass('is-invalid');
+            } else {
+                if ($('#address').hasClass('is-invalid') == true) {
+                    $('#address').removeClass('is-invalid');
+                };
+                $('#address').addClass('is-valid');
+            };
+            $('#address-invalid-feedback').html(ret);
+        });
+    });
+
+    $('#code').blur(function(){
+        var code = $('#code').val();
+        $.get('/check_code_validate/',{'code':code}, function(ret){
+            if (ret != '') {
+                if ($('#code').hasClass('is-valid') == true) {
+                    $('#code').removeClass('is-valid');
+                };
+                $('#code').addClass('is-invalid');
+            } else {
+                if ($('#code').hasClass('is-invalid') == true) {
+                    $('#code').removeClass('is-invalid');
+                };
+                $('#code').addClass('is-valid');
+            };
+            $('#code-invalid-feedback').html(ret);
+        });
+    });
+*/
+
+    $(function(){
+        $("#submitButton").click(function(event){
+            var fullname = $('#fullname').val();
+            var flight = $('#flight').val();
+            var flightDate = $('#flightDate').val();
+            var departure = $('#departure').val();
+            var arrival = $('#arrival').val();
+            var seat = $('#seat').val();
+            var baggage = $('#baggage').val();
+            var idType = $('#idType').val();
+            var idNumber = $('#idNumber').val();
+            var diallingCode = $('#diallingCode').val();
+            var telephone = $('#telephone').val();
+            var inboundCountry = $('#inboundCountry').val();
+            var inboundFlight = $('#inboundFlight').val();
+            var inboundDate = $('#inboundDate').val();
+            var quarantineEnd = $('#quarantineEnd').val();
+            var bodyTemperature = $('#bodyTemperature').val();
+            var healthyCode = $('#healthyCode').val();
+            if(fullname == "" || flight == "" || flightDate == "" || departure == "" || arrival == "" || seat == ""
+             || baggage == "" || idType == "" || idNumber == "" || diallingCode == "" || telephone == ""
+              || inboundCountry == "" || inboundFlight == "" || inboundDate == "" || quarantineEnd == ""
+               || bodyTemperature == "" || healthyCode == ""){
+                event.preventDefault();
+                alert("请先完善填写内容 Please fill out the form as required");
+                return;
+            };
+
+            var fullname_validate = $('#fullname-invalid-feedback').text();
+            var flight_validate = $('#flight-invalid-feedback').text();
+            var flightDate_validate = $('#flightDate-invalid-feedback').text();
+            var departure_validate = $('#departure-invalid-feedback').text();
+            var arrival_validate = $('#arrival-invalid-feedback').text();
+            var seat_validate = $('#seat-invalid-feedback').text();
+            var baggage_validate = $('#baggage-invalid-feedback').text();
+            var idType_validate = $('#idType-invalid-feedback').text();
+            var idNumber_validate = $('#idNumber-invalid-feedback').text();
+            var diallingCode_validate = $('#diallingCode-invalid-feedback').text();
+            var telephone_validate = $('#telephone-invalid-feedback').text();
+            var inboundCountry_validate = $('#inboundCountry-invalid-feedback').text();
+            var inboundFlight_validate = $('#inboundFlight-invalid-feedback').text();
+            var inboundDate_validate = $('#inboundDate-invalid-feedback').text();
+            var quarantineEnd_validate = $('#quarantineEnd-invalid-feedback').text();
+            var bodyTemperature_validate = $('#bodyTemperature-invalid-feedback').text();
+            var healthyCode_validate = $('#healthyCode-invalid-feedback').text();
+            if(fullname_validate !="" || flight_validate != "" || flightDate_validate != "" || departure_validate != ""
+             || arrival_validate != "" || seat_validate != "" || baggage_validate != "" || idType_validate != ""
+              || idNumber_validate != "" || diallingCode_validate != "" || telephone_validate != ""
+               || inboundCountry_validate != "" || inboundFlight_validate != "" || inboundDate_validate != ""
+                || quarantineEnd_validate != "" || bodyTemperature_validate != "" || healthyCode_validate != ""){
+                event.preventDefault();
+                alert("请先完善填写内容 Please fill out the form as required");
+                return
+            };
+        });
+    });
+
+    $.fn.setNow = function (onlyBlank) {
+        var now = new Date($.now())
+        , year
+        , month
+        , date
+        , hours
+        , minutes
+        , seconds
+        , formattedDateTime
+        ;
+
+        year = now.getFullYear();
+        month = (now.getMonth()+1).toString().length === 1 ? '0' + (now.getMonth() + 1).toString() : now.getMonth() + 1;
+        date = now.getDate().toString().length === 1 ? '0' + now.getDate().toString() : now.getDate();
+        hours = now.getHours().toString().length === 1 ? '0' + now.getHours().toString() : now.getHours();
+        minutes = now.getMinutes().toString().length === 1 ? '0' + now.getMinutes().toString() : now.getMinutes();
+        seconds = now.getSeconds().toString().length === 1 ? '0' + now.getSeconds().toString() : now.getSeconds();
+
+        formattedDateTime = year + '-' + month + '-' + date;
+
+        if ( onlyBlank === true && $(this).val() ) {
+            return this;
+        }
+
+        $(this).val(formattedDateTime);
+        return this;
+    }
+
+    $(function () {
+        // Handler for .ready() called.
+        $("#flightDate").setNow();
+    });
+
+    $('#saveButton').click(function(){
+        var fullname = $('#fullname').val();
+        var flight = $('#flight').val();
+        var flightDate = $('#flightDate').val();
+        var departure = $('#departure').val();
+        var arrival = $('#arrival').val();
+        var seat = $('#seat').val();
+        var baggage = $('#baggage').val();
+        var idType = $('#idType').val();
+        var idNumber = $('#idNumber').val();
+        var diallingCode = $('#diallingCode').val();
+        var telephone = $('#telephone').val();
+        var inboundCountry = $('#inboundCountry').val();
+        var inboundFlight = $('#inboundFlight').val();
+        var inboundDate = $('#inboundDate').val();
+        var quarantineEnd = $('#quarantineEnd').val();
+        var bodyTemperature = $('#bodyTemperature').val();
+        var healthyCode = $('#healthyCode').val();
+        var address = $('#address').val();
+        $("#saveButton").html('保存中');
+        $("#saveButton").attr("disabled", "true");
+        $.ajax({
+            type: "POST",
+            url: "/save_pax/",
+            async : false,
+            timeout: 5000,
+            data: {
+                'flight': flight,
+                'flightDate': flightDate,
+                'fullname': fullname,
+                'flight': flight,
+                'flightDate': flightDate,
+                'departure': departure,
+                'arrival': arrival,
+                'seat': seat,
+                'baggage': baggage,
+                'idType': idType,
+                'idNumber': idNumber,
+                'diallingCode': diallingCode,
+                'telephone': telephone,
+                'inboundCountry': inboundCountry,
+                'inboundFlight': inboundFlight,
+                'inboundDate': inboundDate,
+                'quarantineEnd': quarantineEnd,
+                'bodyTemperature': bodyTemperature,
+                'healthyCode': healthyCode,
+                'address': address,
+                'csrfmiddlewaretoken':$("[name='csrfmiddlewaretoken']").val()
+            },
+            dataType: "text",
+            success: function(data){
+                $("#saveButton").removeAttr("disabled");
+                $('#save_result').slideDown().delay(1500).slideUp(300);
+                $("#saveButton").html('暂存 Save');
+            },
+            complete : function(XMLHttpRequest,status) { //请求完成后最终执行参数
+                if(status == 'timeout') { //超时,status还有success,error等值的情况
+                    $("#saveButton").removeAttr("disabled");
+                    $('#save_error').slideDown().delay(1500).slideUp(300);
+                    $("#saveButton").html('暂存 Save');
+                } else if(status == 'error') {
+                    $("#saveButton").removeAttr("disabled");
+                    $('#save_error').slideDown().delay(1500).slideUp(300);
+                    $("#saveButton").html('暂存 Save');
+                } else if(status == 'success') {
+                    return;
+                }
+            },
+        });
+    });
+
+    function cookieToJson() {
+        let cookieArr = document.cookie.split("; ");
+        let obj = {}
+        cookieArr.forEach((i) => {
+            let arr = i.split("=");
+            obj[arr[0]] = arr[1];
+        });
+        return obj
+    }
+    // {{ request.COOKIES | safe }}
+    var ck = cookieToJson();
+    for (var k in ck)
+    {
+        if (k != 'csrftoken') {
+            var v = decodeURI(ck[k]);
+            var n = "#" + k.replace(/\_(\w)/g, function(x){return x.slice(1).toUpperCase();});
+            if (k == 'address') {
+                $(n).html(v);
+            } else {
+                $(n).val(v);
+            }
+        }
+    }
+
+});
+</script>
+</body>
+</html>
