@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>公告</title>
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">公告
+        <small>查看</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        <li class="breadcrumb-item active">公告查看</li>
+    </ol>
+
+    <!-- Intro Content -->
+    <div class="row">
+        <div class="col-lg-12">
+            <h2>{{ announcement.title }}</h2>
+            <p class="lead">作者:{{ announcement.user }} 创建时间:{{ announcement.create_datetime }} 截止时间:{{ announcement.deadline }}</p>
+            <p>{{ announcement.content|linebreaksbr }}</p>
+            {% if announcement.template_announcement_is_active == True %}
+                {% if is_read == False %}
+                    <form enctype="multipart/form-data" action="{% url 'read_confirm' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="text" class="custom-file-input" name="announcement_id" value="{{ announcement.id }}" hidden>
+                        <div class="control-group form-group">
+                            <div class="controls">
+                                {% if announcement.require_upload == True %}
+                                    <input type="file" class="custom-file-input" id="file" name="file" about="点击选择上传文件" multiple="multiple" required>
+                                    <label class="custom-file-label" for="file">选择文件（一次可选择多个）</label>
+                                {% else %}
+                                    <input type="file" class="custom-file-input" about="无需上传" disabled="disabled">
+                                    <label class="custom-file-label">选择文件（一次可选择多个）</label>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">确认</button>
+                    </form>
+                {% else %}
+                    <button type="button" class="btn btn-secondary" disabled="disabled">已确认</button>
+                {% endif %}
+            {% else %}
+                {% if is_read == True %}
+                    <button type="button" class="btn btn-secondary" disabled="disabled">过期-已确认</button>
+                {% else %}
+                    <button type="button" class="btn btn-secondary" disabled="disabled">过期-未确认</button>
+                {% endif %}
+            {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+    <!-- Team Members -->
+    <h2>确认情况</h2>
+
+    <div class="row">
+        {% for team, member in target_team_member_dict.items %}
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <h4 class="card-title">{{ team }}</h4>
+                        <h6 class="card-subtitle mb-2 text-muted"></h6>
+                        {% if member.1 == True %}
+                            <p class="card-text" style="color: green">{{ member.0 }}</p>
+                        {% else %}
+                            <p class="card-text" style="color: red">{{ member.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer">
+                        <a href="#"></a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+</body>
+
+</html>

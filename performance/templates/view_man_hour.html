@@ -41,7 +41,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for man_hour in page_man_hour_list %}
+            {% for man_hour in page_object_list %}
                 <tr>
                     <th scope="row">{{ man_hour.id }}</th>
                     <td>{{ man_hour.position.name }}</td>
@@ -58,7 +58,7 @@
             {% endfor %}
         </tbody>
     </table>
-    共有{{ total_man_hour }}条记录
+    共有{{ total_num }}条记录
 
     <!-- Pagination -->
     <ul class="pagination justify-content-center">

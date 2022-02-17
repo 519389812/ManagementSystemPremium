@@ -34,22 +34,28 @@
             {% include "message.html" %}
             <form name="examForm" id="examForm" action="{% url 'view_exam' %}" method="post">
                 {% csrf_token %}
-                {% if exam.login_required == False %}
-                    <div class="control-group form-group">
-                        <div class="controls">
-                            <input type="text" class="form-control" name="name" placeholder="请填写姓名"/>
-                            <p class="help-block" id="name_validate"></p>
-                        </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        {% if exam_record.user %}
+                            <input type="text" class="form-control" name="name" value="{{ exam_record.user }}"/>
+                        {% else %}
+                            <input type="text" class="form-control" name="name" value="{{ exam_record.anonymous }}"/>
+                        {% endif %}
+                        <p class="help-block" id="name_validate"></p>
                     </div>
-                {% endif %}
-                {% for question in exam.question %}
+                </div>
+                {% for question in exam_record.question %}
                     <div class="control-group form-group">
                         <div class="controls">
                             <label>{{ question.type }}: {{ question.title }}:</label>
                             {% if question.type == 'radio' %}
                                 {% for option in question.template_option_split %}
                                     <input type="radio" class="form-control" name="question_{{ question.id }}" value="{{ option }}" required>
-                                    <label>{{ option }}</label>
+                                    {% if option != answer% }
+                                        <label>{{ option }}</label>
+                                    {% else %}
+                                        <label style="color: green">{{ option }}</label>
+                                    {% endif %}
                                 {% endfor %}
                             {% elif question.type == 'checkbox' %}
                                 {% for option in question.template_option_split %}
@@ -63,6 +69,13 @@
                             {% elif question.type == 'textarea' %}
                                 <textarea class="form-control" name="question_{{ question.id }}" placeholder="请填写答案"></textarea>
                             {% endif %}
+                            {% with question_id|question.id%}
+                                {% if exam_record.template_load_answer_as_dict.question_id == question.answer %}
+                                    <div>你的回答：{% exam_record.template_load_answer_as_dict.question_id %}，<span style="color: green"></span></div>
+                                {% else %}
+                                    <div>你的回答：{% exam_record.template_load_answer_as_dict.question_id %}，<span style="color: red"></span></div>
+                                {% endif %}
+                            {% endwith %}
                             <p class="help-block" id="question_{{ question.id }}_validate"></p>
                         </div>
                     </div>
@@ -74,7 +87,9 @@
         </div>
         <div class="col-lg-4 mb-4">
             <div class="form-floating mb-3">
-                <label id="timer"></label>
+                <label>您的分数：{{ exam_record.score }}</label>
+                <label>总分：{{ exam_record.total_score }}</label>
+                <label>及格分数：{{ exam_record.pass_score }}</label>
             </div>
         </div>
     </div>
@@ -101,37 +116,6 @@
 <!--            $(3标签id).val(data)-->
 <!--        }-->
 <!--    })-->
-
-<script>
-    var useTime = 0;
-    var examTime = {{ exam.exam_time }};
-    var timeDiv = document.getElementById("time");
-    var timerDiv = document.getElementById("timer");
-    var timeObj = null;
-    function timer(){
-        if(useTime >= examTime){
-            //结束，提交表单
-            document.getElementById("submit").submit();
-            window.clearInterval(timeObj);
-            return;
-        }
-        var t = Math.floor(times/60) +"分"+times%60+"秒";
-        timeDiv.val = times;
-        timerDiv.innerHTML = t;
-        useTime ++;
-    }
-    timeObj = window.setInterval(timer,1000);
-
-    $(document).ready(function(){
-        $('#name').blur(function(){
-            var name = $('#name').val();
-            $.get('/check_name_validate/',{'name':name}, function(ret){
-                $('#name_validate').html(ret);
-            });
-        });
-    });
-
-</script>
 
 </body>
 

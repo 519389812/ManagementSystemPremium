@@ -36,7 +36,7 @@ if online:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': "teamworkad$default",
+            'NAME': 'teamworkad$default',
             'USER': 'teamworkad',
             'PASSWORD': 'zjss123456',
             'HOST': 'teamworkad.mysql.pythonanywhere-services.com',
@@ -48,7 +48,7 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, "db.sqlite3"),
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
 
@@ -66,9 +66,11 @@ INSTALLED_APPS = [
     'notice',
     'user',
     'team',
+    'announcement',
     'asset',
     'cost',
     'downgrade',
+    'exam',
     'performance',
     'person',
     'reward',
@@ -165,16 +167,16 @@ STATICFILES_DIRS = [
 
 AUTH_USER_MODEL = 'user.CustomUser'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
-APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"  # Default
-EMAIL_HOST = "smtp.qq.com"
+APSCHEDULER_DATETIME_FORMAT = 'N j, Y, f:s a'  # Default
+EMAIL_HOST = 'smtp.qq.com'
 EMAIL_PORT = 25
-EMAIL_HOST_USER = "xxx@qq.com"   # 邮箱
-EMAIL_HOST_PASSWORD = "vtfkyizuxeysbeif"   # 邮箱授权码
+EMAIL_HOST_USER = 'xxx@qq.com'   # 邮箱
+EMAIL_HOST_PASSWORD = 'vtfkyizuxeysbeif'   # 邮箱授权码
 EMAIL_USE_TLS = True
-EMAIL_FROM = "xxx@qq.com"  # 邮箱
+EMAIL_FROM = 'xxx@qq.com'  # 邮箱
 
 SIMPLEUI_HOME_INFO = False
 SIMPLEUI_LOGO = ''

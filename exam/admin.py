@@ -1,4 +1,4 @@
 from django.contrib import admin
-from exam.models import Course, QuestionBank
+from exam.models import Course, Question, Exam, ExamRecord
 
-admin.site.register([Academy, Major, Course, Student, QuestionBank, TestPaper, Record])
+admin.site.register([Course, Question, Exam, ExamRecord])

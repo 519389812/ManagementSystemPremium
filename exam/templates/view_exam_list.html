@@ -29,7 +29,7 @@
 
     <!-- Content Row -->
     <div class="row">
-        {% for exam in page_exam_list %}
+        {% for exam in page_object_list %}
             <div class="col-lg-4 mb-4">
                 <div class="card h-100">
                     <h3 class="card-header">{{ exam.title }}</h3>
@@ -47,7 +47,7 @@
         {% endfor %}
 
         <!-- /.row -->
-    共有{{ total_exam }}条记录
+    共有{{ total_num }}条记录
     </div>
     <!-- /.container -->
 

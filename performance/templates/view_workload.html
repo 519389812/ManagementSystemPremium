@@ -43,7 +43,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for workload in page_workload_list %}
+            {% for workload in page_object_list %}
                 <tr>
                     <th scope="row">{{ workload.id }}</th>
                     <td>{{ workload.date }}</td>
@@ -62,7 +62,7 @@
             {% endfor %}
         </tbody>
     </table>
-    共有{{ total_workload }}条记录
+    共有{{ total_num }}条记录
 
     <!-- Pagination -->
     <ul class="pagination justify-content-center">

@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, re_path, include
+from django.urls import path, include
 from . import views as main_views
 from user import views as user_views
 from performance import views as performance_views
@@ -46,55 +46,17 @@ urlpatterns = [
     path('notice/', include('notice.urls', namespace='notice')),
 
     # user
-    path('login/', user_views.login, name='login'),
-    path('logout/', user_views.logout, name='logout'),
-    path('register/', user_views.register, name='register'),
-    path('user_setting/', user_views.user_setting, name='user_setting'),
-    path('change_password/', user_views.change_password, name='change_password'),
+    path('user/', include('user.urls', namespace='user')),
 
-    path('check_username_validate/', user_views.check_username_validate, name='check_username_validate'),
-    path('check_password_validate/', user_views.check_password_validate, name='check_password_validate'),
-    path('check_name_validate/', user_views.check_name_validate, name='check_name_validate'),
-    path('check_email_validate/', user_views.check_email_validate, name='check_email_validate'),
-    path('check_question_validate/', user_views.check_question_validate, name='check_question_validate'),
-    path('check_answer_validate/', user_views.check_answer_validate, name='check_answer_validate'),
-    path('check_post_validate/', user_views.check_post_validate, name='check_post_validate'),
-
-    path('set_email_verify/', user_views.set_email_verify, name='set_email_verify'),
-    path('send_verify_email/', user_views.send_verify_email, name='send_verify_email'),
-    re_path(r'check_verify_email/(.*)/$', user_views.check_verify_email, name='check_verify_email'),
-
-    path(r'pre_reset_password/', user_views.pre_reset_password, name='pre_reset_password'),
-
-    path('pre_reset_password_by_question/', user_views.pre_reset_password_by_question, name='pre_reset_password_by_question'),
-    path('show_reset_password_question/', user_views.show_reset_password_question, name='show_reset_password_question'),
-    path('check_reset_password_answer/', user_views.check_reset_password_answer, name='check_reset_password_answer'),
-    re_path(r'reset_password_by_question/(.*)/$', user_views.reset_password_by_question, name='reset_password_by_question'),
-
-    path('pre_reset_password_by_email/', user_views.pre_reset_password_by_email, name='pre_reset_password_by_email'),
-    path('send_reset_password_email/', user_views.send_reset_password_email, name='send_reset_password_email'),
-    re_path(r'reset_password_by_email/(.*)/$', user_views.reset_password_by_email, name='reset_password_by_email'),
-
-    # performance
-    path('performance/', performance_views.performance, name='performance'),
-    path('performance/reward_charts', performance_views.reward_penalty_charts, name='reward_penalty_charts'),
-    path('performance/add_workload/', performance_views.add_workload, name='add_workload'),
-    path('performance/view_workload/', performance_views.view_workload, name='view_workload'),
-    path('performance/add_man_hour/', performance_views.add_man_hour, name='add_man_hour'),
-    path('performance/view_man_hour/', performance_views.view_man_hour, name='view_man_hour'),
-    path('performance/workload_summary_export/', performance_views.workload_summary_export, name='workload_summary_export'),
-    path('performance/get_workload_item/', performance_views.get_workload_item, name='get_workload_item'),
-
-    # sales
-    path('sales/', sales_views.sales, name='sales'),
-    path('sales/add_sales/', sales_views.add_sales, name='add_sales'),
-    path('sales/view_sales/', sales_views.view_sales, name='view_sales'),
+    # announcement
+    path('announcement/', include('announcement.urls', namespace='announcement')),
 
     # exam
-    path('exam/', exam_views.index, name='exam'),
-    path('startExam/', exam_views.startExam, name='startExam'),  # 开始考试
-    path('calculateGrade/', exam_views.calculateGrade, name='calculateGrade'),  # 考试评分
-    path('stulogout/', exam_views.stulogout, name='stulogout'),  # 学生退出登录
-    path('userfile/', exam_views.userfile, name='userfile'),  # 个人信息
-    path('examinfo/', exam_views.examinfo, name='examinfo'),  # 考试信息
+    path('exam/', include(exam_views.exam, namespace='exam')),
+
+    # performance
+    path('performance/', include('performance.urls', namespace='announcement')),
+
+    # sales
+    path('sales/', include(sales_views.sales, namespace='sales')),
 ]

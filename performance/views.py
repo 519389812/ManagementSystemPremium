@@ -221,8 +221,8 @@ def view_workload(request):
         workload_list = WorkloadRecord.objects.filter(user=request.user, create_datetime__gte=create_datetime)
         paginator = Paginator(workload_list, 30)
         page = paginator.get_page(int(page_num))
-        return render(request, 'view_workload.html', {'page_workload_list': list(page.object_list),
-                                                      'total_workload': paginator.count,
+        return render(request, 'view_workload.html', {'page_object_list': list(page.object_list),
+                                                      'total_num': paginator.count,
                                                       'total_page_num': paginator.num_pages,
                                                       'page_num': page.number})
     else:
@@ -282,8 +282,8 @@ def view_man_hour(request):
         man_hour_list = ManHourRecord.objects.filter(user=request.user, create_datetime__gte=create_datetime)
         paginator = Paginator(man_hour_list, 30)
         page = paginator.get_page(int(page_num))
-        return render(request, 'view_man_hour.html', {'page_man_hour_list': list(page.object_list),
-                                                      'total_man_hour': paginator.count,
+        return render(request, 'view_man_hour.html', {'page_object_list': list(page.object_list),
+                                                      'total_num': paginator.count,
                                                       'total_page_num': paginator.num_pages,
                                                       'page_num': page.number})
     else:

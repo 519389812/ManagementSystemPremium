@@ -25,8 +25,8 @@ def view_exam_list(request):
                 exam_list[i].append(('is_passed', False))
         paginator = Paginator(exam_list, 30)
         page = paginator.get_page(int(page_num))
-        return render(request, 'view_exam_list.html', {'page_exam_list': list(page.object_list),
-                                                       'total_exam': paginator.count,
+        return render(request, 'view_exam_list.html', {'page_object_list': list(page.object_list),
+                                                       'total_num': paginator.count,
                                                        'total_page_num': paginator.num_pages,
                                                        'page_num': page.number})
     else:
@@ -89,6 +89,7 @@ def view_exam(request):
             total_score += question.score
         is_passed = True if score >= exam.pass_score else False
         exam_record.update(answer=json.dumps(answer_dict), times=times, exam_time=exam.exam_time, total_score=total_score, pass_score=exam.pass_score, score=score, is_passed=is_passed)
+        return render(request, 'view_exam_list.html')
     else:
         exam_id = request.GET.get('id')
         exam = Exam.objects.get(id=exam_id)
@@ -102,18 +103,22 @@ def review_exam_list(request):
         exam_record = ExamRecord.objects.filter(user=request.user).order_by('-submit_datetime')
         paginator = Paginator(exam_record, 15)
         page = paginator.get_page(int(page_num))
-        return render(request, 'review_exam_list.html', {'page_exam_record_list': list(page.object_list),
-                                                         'total_exam': paginator.count,
+        return render(request, 'review_exam_list.html', {'page_object_list': list(page.object_list),
+                                                         'total_num': paginator.count,
                                                          'total_page_num': paginator.num_pages,
                                                          'page_num': page.number})
     else:
         return render(request, 'error_400.html', status=400)
 
 
+@check_authority
 def review_exam(request):
-    if request.Method == 'GET':  # 若session认证为真
-        username = request.GET.get('exam_record_id', '')
-        Exam
-        return render(request, 'examinfo.html', {'student': student, 'grade': grade})
+    if request.Method == 'GET':
+        exam_record_id = request.GET.get('exam_record_id', '')
+        try:
+            exam_record = ExamRecord.objects.get(id=exam_record_id)
+            return render(request, 'review_exam.html', {'exam_record': exam_record})
+        except:
+            return render(request, 'error_500.html', status=500)
     else:
         return render(request, 'error_400.html', status=400)

@@ -1,3 +1,5 @@
+import json
+
 from django.db import models
 from user.models import CustomUser
 import random
@@ -58,9 +60,6 @@ class Exam(models.Model):
     def __str__(self):
         return '<%s:%s>' % (self.course.name, self.title)
 
-    def template_option_split(self):
-        return [i for i in random.shuffle(self.option.split(' ')) if i != '']
-
 
 # 学生成绩表
 class ExamRecord(models.Model):
@@ -85,3 +84,6 @@ class ExamRecord(models.Model):
 
     def __str__(self):
         return '<%s:%s>' % (self.user.name, self.score)
+
+    def template_load_answer_as_dict(self):
+        return json.loads(self.answer)

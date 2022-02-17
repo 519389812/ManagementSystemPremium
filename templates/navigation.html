@@ -26,6 +26,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'contact' %}">联系我们</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'feedback' %}">问题反馈</a>
+                </li>
                 {% if user.is_authenticated == True %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownPortfolio2" data-toggle="dropdown"

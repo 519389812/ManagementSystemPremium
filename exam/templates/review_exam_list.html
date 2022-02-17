@@ -29,7 +29,7 @@
 
     <!-- Blog Post -->
     <div class="card mb-4">
-        {% for exam_record in page_exam_record_list %}
+        {% for exam_record in page_object_list %}
             <div class="card-body">
                 <div class="row">
                     <div class="col-lg-6">
@@ -47,6 +47,7 @@
                 {% endif %}
             </div>
         {% endfor %}
+    共有{{ total_num }}条记录
     </div>
 
     <!-- Pagination -->

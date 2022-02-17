@@ -1,103 +1,113 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from user.models import User
+from user.models import CustomUser
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth import login as login_admin
 import os
 from announcement.models import Announcement, AnnouncementRecord, Feedback
 from django.http import HttpResponse
 from PIL import Image
-from announcement.models import image_path
-from ManagementSystem import settings
-from ManagementSystem.settings import MEDIA_URL
+from announcement.models import file_path
+from ManagementSystemPremium import settings
 from django.views.decorators.csrf import csrf_exempt
 import re
 from user.views import check_authority
+from django.core.paginator import Paginator
+from django.utils import timezone
 
 
 @check_authority
-def make_announcement(request, id):
-    if request.user.team_id != team_id:
-        return HttpResponse("无权限查看!")
-    current_username = request.user
-    announcement = Announcement.objects.get(id=id)
-    feedback = Feedback.objects.filter(aid=id)
-    to_group_obj = announcement.to_group.all()
-    to_people_obj = announcement.to_people.all()
-    to_people = [i.full_name for i in to_people_obj] if len(to_people_obj) != 0 else []
-    to_people_extend = to_people.copy()
-    group_dict = {}
-    if len(to_group_obj) != 0:
-        for group_obj in to_group_obj:
-            group_mamber = [i.full_name for i in group_obj.member.all()]
-            group_dict[group_obj.name] = [group_mamber]
-            to_people_extend += group_mamber
-    if len(to_people_extend) != 0:
-        to_people_extend = list(set(to_people_extend))
-    read_names_extend = AnnouncementRecord.objects.filter(aid=id)
-    read_names_extend = list(read_names_extend.values_list("reader", flat=True))
-    if current_username not in to_people_extend:
-        is_read = True
-    else:
-        is_read = True if current_username in read_names_extend else False
-    if len(read_names_extend) != 0:
-        if len(group_dict) != 0:
-            for name, member in group_dict.items():
-                group_dict[name].append([i for i in read_names_extend if i in member[0]])
-                group_dict[name].append([i for i in member[0] if i not in member[1]])
-        read_names = [name for name in to_people if name in read_names_extend]
-        unread_names = [name for name in to_people if name not in read_names_extend]
-    else:
-        if len(group_dict) != 0:
-            for name, member in group_dict.items():
-                group_dict[name].append([])
-                group_dict[name].append(member[0])
-        read_names = []
-        unread_names = to_people
-    to_people_length = (len(to_people))
-    values = {'id': id, 'announcement': announcement, 'group_dict': group_dict, 'read_names': read_names,
-              'unread_names': unread_names, 'is_read': is_read, 'to_people_length': to_people_length,
-              'feedback': feedback}
-    return render(request, 'announcement.html', values)
+def announcement(request):
+    return render(request, 'announcement.html')
 
 
 @check_authority
-def read_confirm(request, id, require_upload):
-    # 对应action中 <form action = "{% url 'confirm' id %}" method = "post"> 的 {% url 'confirm' id %} 方法，
-    # confirm指向urls.py中name=confirm的url
-    user = request.session.get("login_user", "")
-    user = User.objects.get(username=user)
-    if len(AnnouncementRecord.objects.filter(aid=id, reader=user.full_name)) > 0:
-        return HttpResponse("您已经提交确认，请勿重复提交！")
+def view_announcement_list(request):
+    if request.method == 'GET':
+        page_num = request.GET.get('page', '1')
+        announcement = Announcement.objects.all()
+        paginator = Paginator(announcement, 20)
+        page = paginator.get_page(int(page_num))
+        return render(request, 'view_announcement_list.html', {'page_object_list': list(page.object_list),
+                                                               'total_num': paginator.count,
+                                                               'total_page_num': paginator.num_pages,
+                                                               'page_num': page.number})
     else:
-        if require_upload == "True":
-            try:
-                img = request.FILES["img"]
-            except:
-                img = None
-            if img is not None:
-                img_name = img.name.lower()
-                if img_name.endswith("jpg") or img_name.endswith("jpeg") or img_name.endswith("png"):
-                    try:
-                        img_type = img_name.split(".")[-1]
-                        img = Image.open(img)
-                        x, y = img.size
-                        if x > y:
-                            img = img.rotate(90, expand=True)
-                        img = img.resize((392, 700))
-                        img.save(os.path.join(settings.MEDIA_ROOT, image_path, (id + '_' + user.full_name + '.' + img_type)))
-                    except:
-                        return HttpResponse("图片格式错误，请尝试重新上传或更换图片！")
-                    AnnouncementRecord.objects.create(aid=id, reader=user.full_name, image=os.path.join(image_path, (
+        return render(request, 'error_400.html', status=400)
+
+
+@check_authority
+def view_announcement(request):
+    if request.Method == 'GET':
+        announcement_id = request.GET.get('announcement_id', '')
+    else:
+        return render(request, 'error_400.html', status=400)
+    try:
+        announcement = Announcement.objects.get(id=announcement_id)
+    except:
+        return render(request, 'error_500.html', status=500)
+    if request.user.team not in announcement.team:
+        return render(request, 'error_custom.html', {'msg': '您不在该通知的可见用户范围内'}, status=200)
+    read_times = AnnouncementRecord.objects.filter(announcement=announcement, user=request.user).count()
+    is_read = True if read_times > 0 else False
+    target_team_name = announcement.team.all().values_list('name', flat=True)
+    target_user = list(announcement.people.all().values_list('full_name', flat=True))
+    target_team_member_dict = {}
+    for team in target_team_name:
+        user = list(CustomUser.objects.filter(team__name=team).values_list('full_name', flat=True))
+        target_user = list(set(target_user).difference(set(user)))
+        target_team_member_dict[team] = user
+    read_user_list = AnnouncementRecord.objects.filter(announcement=announcement).values_list('user__full_name', flat=True)
+    for _, user_list in target_team_member_dict.items():
+        for i in range(len(user_list)):
+            read_status = True if user_list[i] in read_user_list else False
+            user_list[i] = (user_list[i], read_status)
+    return render(request, 'view_announcement.html', {'announcement': announcement, 'target_team_member_dict': target_team_member_dict, 'is_read': is_read})
+
+
+@check_authority
+def confirm_announcement(request):
+    if request.Method == 'POST':
+        announcement_id = request.POST.get('announcement_id', '')
+        try:
+            announcement = Announcement.objects.get(id=announcement_id)
+        except:
+            return render(request, 'error_500.html', status=500)
+        if AnnouncementRecord.objects.filter(announcement=announcement, user=request.user).count() > 0:
+            return render(request, 'error_custom.html', {'msg': '请勿重复提交'}, status=200)
+        else:
+            if announcement.require_upload == "True":
+                image_list = request.FILES.getlist('file', [])
+                transform_image_list = []
+                if len(image_list) > 0:
+                    for image in image_list:
+                        image_name = image.name.lower()
+                        if image_name.endswith("jpg") or image_name.endswith("jpeg") or image_name.endswith("png"):
+                            try:
+                                image_type = image_name.split(".")[-1]
+                                image = Image.open(image)
+                                x, y = image.size
+                                if x > y:
+                                    image = image.rotate(90, expand=True)
+                                image = image.resize((392, 700))
+                                transform_image_list.append((image, image_type))
+                            except:
+                                return render(request, 'error_custom.html', {'msg': '图片格式错误，请更换图片重新上传！'}, status=200)
+                        else:
+                            return render(request, 'error_custom.html', {'msg': '图片格式错误，请更换图片重新上传！'}, status=200)
+                    for image, image_type in transform_image_list:
+                        timestamp = timezone.now().timestamp()
+                        image.save(os.path.join(file_path, (request.user.id + '_' + announcement_id + '_' + timestamp + '.' + image_type)))
+                        AnnouncementRecord.objects.create(aid=id, reader=user.full_name, image=os.path.join(image_path, (
                                 id + '_' + user.full_name + '.' + img_type)), team_id=user.team_id)
                     return redirect(request.META['HTTP_REFERER'])
                 else:
-                    return HttpResponse("图片格式错误，，请尝试重新上传或更换图片！")
+                    return render(request, 'error_500.html', status=500)
             else:
-                return HttpResponse("图片未上传！")
-        else:
-            AnnouncementRecord.objects.create(aid=id, reader=user.full_name, team_id=user.team_id)
-            return redirect(request.META['HTTP_REFERER'])
+                AnnouncementRecord.objects.create(aid=id, reader=user.full_name, team_id=user.team_id)
+                return redirect(request.META['HTTP_REFERER'])
+    else:
+        return render(request, 'error_400.html', status=400)
 
 
 @check_authority

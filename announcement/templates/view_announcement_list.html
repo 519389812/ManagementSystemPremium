@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>公告</title>
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">公告
+        <small>列表</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        <li class="breadcrumb-item active">公告列表</li>
+    </ol>
+
+    <div class="row">
+        {% for announcement in page_object_list %}
+            <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{% url 'view_announcement' %}?announcement_id={{ announcement.id }}">{{ announcement.title }}</a>
+                        </h5>
+                        <p class="card-text">有效期：{{ announcement.close_datetime }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    共有{{ total_num }}条记录
+
+    <!-- Pagination -->
+    <ul class="pagination justify-content-center">
+        <li class="page-item">
+            <a class="page-link" href="{% url 'view_announcement_list' %}?page=1" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">首页</span>
+            </a>
+        </li>
+        {% with ''|center:total_page_num as range %}
+            {% for _ in range %}
+                <li class="page-item">
+                    {% if page_num == forloop.counter %}
+                        <a class="page-link" href="{% url 'view_announcement_list' %}?page={{ page_num }}" style="pointer-events: none;cursor: default;color:gray;">{{ forloop.counter }}</a>
+                    {% else %}
+                        <a class="page-link" href="{% url 'view_announcement_list' %}?page={{ page_num }}">{{ forloop.counter }}</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        {% endwith %}
+        <li class="page-item">
+            <a class="page-link" href="{% url 'view_announcement_list' %}?page={{ total_page_num }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">尾页</span>
+            </a>
+        </li>
+    </ul>
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+</body>
+
+</html>

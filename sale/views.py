@@ -58,8 +58,8 @@ def view_sales(request):
         sales_list = SalesRecord.objects.filter(user=request.user, create_datetime__gte=create_datetime)
         paginator = Paginator(sales_list, 30)
         page = paginator.get_page(int(page_num))
-        return render(request, 'view_sales.html', {'page_sales_list': list(page.object_list),
-                                                   'total_sales': paginator.count,
+        return render(request, 'view_sales.html', {'page_object_list': list(page.object_list),
+                                                   'total_num': paginator.count,
                                                    'total_page_num': paginator.num_pages,
                                                    'page_num': page.number})
     else:
