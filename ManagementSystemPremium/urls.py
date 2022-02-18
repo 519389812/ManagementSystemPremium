@@ -52,7 +52,10 @@ urlpatterns = [
     path('announcement/', include('announcement.urls', namespace='announcement')),
 
     # exam
-    path('exam/', include(exam_views.exam, namespace='exam')),
+    path('exam/', include('exam.urls', namespace='exam')),
+
+    # feedback
+    path('feedback/', include('feedback.urls', namespace='feedback')),
 
     # performance
     path('performance/', include('performance.urls', namespace='announcement')),
