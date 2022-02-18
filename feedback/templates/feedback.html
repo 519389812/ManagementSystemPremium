@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>留言</title>
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">留言
+        <small>提交</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        <li class="breadcrumb-item active">提交留言</li>
+    </ol>
+
+    <!-- Contact Form -->
+    <!-- In order to set the email address and subject line for the contact form go to the bin/contact_me.php file. -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <h3>感谢您的留言</h3>
+            <form action="{% url 'feedback' %}" method="post">
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>您的留言:</label>
+                        <textarea rows="10" cols="100" class="form-control" name="content" required maxlength="10000" style="resize:none"></textarea>
+                    </div>
+                </div>
+                {% if not request.user %}
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>您的姓名（可不填写）:</label>
+                            <input type="text" class="form-control" name="fullname" placeholder="请填写姓名"/>
+                            <p class="help-block" id="fullname-invalid-feedback"></p>
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>电子邮箱（如需回复，请留下联系方式，登录用户可不填写）:</label>
+                        <input type="text" class="form-control" id="email" name="email" placeholder="请填写电子邮箱"/>
+                        <p class="help-block" id="email-invalid-feedback"></p>
+                    </div>
+                </div>
+                <!-- For success/fail messages -->
+                <button type="submit" class="btn btn-primary">提交</button>
+            </form>
+        </div>
+
+        <!-- Sidebar Widgets Column -->
+        <div class="col-md-4">
+
+            <div class="col-lg-4 mb-4">
+                <h3>Tips</h3>
+                <p>
+                    <abbr title="提交">查看</abbr>
+                    <br>
+                    <a href="{% url 'feedback' %}">帖子</a>
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+<script>
+$(document).ready(function(){
+    $('#name').blur(function(){
+        var name = $('#name').val();
+        $.get('/check_name_validate/',{'name':name}, function(ret){
+            $('#name_validate').html(ret);
+        });
+    });
+});
+
+$('#fullname').blur(function(){
+    var fullname = $('#fullname').val();
+    $.get('/check_fullname_validate/',{'fullname':fullname}, function(ret){
+        if (ret != '') {
+            if ($('#fullname').hasClass('is-valid') == true) {
+                $('#fullname').removeClass('is-valid');
+            };
+            $('#fullname').addClass('is-invalid');
+        } else {
+            if ($('#fullname').hasClass('is-invalid') == true) {
+                $('#fullname').removeClass('is-invalid');
+            };
+            $('#fullname').addClass('is-valid');
+        };
+        $('#fullname-invalid-feedback').html(ret);
+    });
+});
+
+$('#email').blur(function(){
+    var email = $('#email').val();
+    $.get('/check_email_validate/',{'email':email}, function(ret){
+        if (ret != '') {
+            if ($('#email').hasClass('is-valid') == true) {
+                $('#email').removeClass('is-valid');
+            };
+            $('#email').addClass('is-invalid');
+        } else {
+            if ($('#email').hasClass('is-invalid') == true) {
+                $('#email').removeClass('is-invalid');
+            };
+            $('#email').addClass('is-valid');
+        };
+        $('#email-invalid-feedback').html(ret);
+    });
+});
+</script>
+
+</body>
+
+</html>

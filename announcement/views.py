@@ -4,7 +4,7 @@ from user.models import CustomUser
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth import login as login_admin
 import os
-from announcement.models import Announcement, AnnouncementRecord, Feedback
+from announcement.models import Announcement, AnnouncementRecord, UploadFile
 from django.http import HttpResponse
 from PIL import Image
 from announcement.models import file_path
@@ -95,16 +95,16 @@ def confirm_announcement(request):
                                 return render(request, 'error_custom.html', {'msg': '图片格式错误，请更换图片重新上传！'}, status=200)
                         else:
                             return render(request, 'error_custom.html', {'msg': '图片格式错误，请更换图片重新上传！'}, status=200)
+                    AnnouncementRecord.objects.create(announcement=announcement, user=request.user)
                     for image, image_type in transform_image_list:
                         timestamp = timezone.now().timestamp()
                         image.save(os.path.join(file_path, (request.user.id + '_' + announcement_id + '_' + timestamp + '.' + image_type)))
-                        AnnouncementRecord.objects.create(aid=id, reader=user.full_name, image=os.path.join(image_path, (
-                                id + '_' + user.full_name + '.' + img_type)), team_id=user.team_id)
+                        UploadFile.objects.create(announcement=announcement, file=os.path.join(file_path, (request.user.id + '_' + announcement_id + '_' + timestamp + '.' + image_type)))
                     return redirect(request.META['HTTP_REFERER'])
                 else:
                     return render(request, 'error_500.html', status=500)
             else:
-                AnnouncementRecord.objects.create(aid=id, reader=user.full_name, team_id=user.team_id)
+                AnnouncementRecord.objects.create(announcement=announcement, user=request.user)
                 return redirect(request.META['HTTP_REFERER'])
     else:
         return render(request, 'error_400.html', status=400)

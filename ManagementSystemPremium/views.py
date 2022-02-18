@@ -49,6 +49,42 @@ def parse_url_param(url):
     return query_dict
 
 
+# 根据parent object追溯上级数据生成id列表
+def create_related_list(node_id, parent_object):
+    related_list = [node_id]
+    while True:
+        try:
+            related_list.insert(0, parent_object.id)
+            parent_object = parent_object.parent
+        except:
+            return related_list
+
+
+# 解析[{},{}]格式数据为树结构
+def create_related_tree(data, root_value, parent_field, node_field):
+    """
+    :param data:  被解析的数据
+    :param root_value: 根节点值
+    :param parent_field: 上级节点字段名称
+    :param node_field: 当前节点字段名称
+    :return: list
+    """
+
+    related_tree = []
+    for i in data:
+        if i.get(parent_field) == root_value:
+            related_tree.append(i)
+    for i in data:
+        node = i.get(node_field)
+        children = []
+        for j in data:
+            parent = j.get(parent_field)
+            if node == parent:
+                children.append(j)
+        i['children'] = children
+    return related_tree
+
+
 def check_username_validate(request, username_tag):
     if request.method == 'GET':
         username = request.GET.get(username_tag)

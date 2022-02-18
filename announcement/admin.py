@@ -1,5 +1,5 @@
 from django.contrib import admin
-from announcement.models import Announcement, AnnouncementRecord, Feedback
+from announcement.models import Announcement, AnnouncementRecord
 import datetime
 from io import BytesIO
 import pandas as pd

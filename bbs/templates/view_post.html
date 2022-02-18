@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>论坛</title>
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">帖子
+        <small>查看</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        <li class="breadcrumb-item active">查看帖子</li>
+    </ol>
+
+    <div class="row">
+
+        <!-- Post Content Column -->
+        <div class="col-lg-8">
+
+            <!-- Preview Image -->
+            <h2>{{ post.title }}</h2>
+
+            <hr>
+
+            <!-- Date/Time -->
+            <p>{{ post.user.full_name }},发表于<i>{{ post.submit_datetime }}</i></p>
+
+            <hr>
+
+            <!-- Post Content -->
+            <p>{{ post.content }}</p>
+
+            <hr>
+
+            <!-- Comments Form -->
+            <div class="card my-4">
+                <h5 class="card-header">留言:</h5>
+                <div class="card-body">
+                    <form action="{% url 'add_comment' %}" method="post">
+                        <input name="post_id" value="{{ post.id }}" hidden/>
+                        <div class="form-group">
+                            <textarea id="content" class="form-control" rows="5" name="content"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">提交</button>
+                    </form>
+                </div>
+            </div>
+
+            {% for related_post in related_post_list %}
+                <!-- Comment with nested comments -->
+                <div class="media mb-4">
+                    <div class="media-body">
+                        <h5 class="mt-0">{{ related_post.user__full_name }}</h5>
+                        {{ related_post.content }}<a href="{{ related_post.id }}" type="button" id="reply_btn">回复</a>
+                        {% if related_post.children|length > 0 %}
+                            {% for related_post_children in related_post.children %}
+                                <div class="media mt-4">
+                                    <div class="media-body">
+                                        <h5 class="mt-0">{{ related_post_children.user__full_name }}</h5>
+                                        {{ related_post_children.content }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Sidebar Widgets Column -->
+        <div class="col-md-4">
+
+            <div class="col-lg-4 mb-4">
+                <h3>Tips</h3>
+                <p>
+                    <abbr title="发布">发布</abbr>
+                    <br>
+                    <a href="{% url 'new_post' %}">新帖</a>
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+<script>
+    $('#reply_btn').click(function(){
+        var reply_post_id = $('#reply_btn').attr('href');
+        var reply_text = 'Reply' + reply_post_id + ':';
+        $("#content").val(reply_text);
+        $('html,body').animate({ scrollTop: $("#content").offset().top - 100 }, 500)
+    });
+
+</script>
+
+</body>
+
+</html>

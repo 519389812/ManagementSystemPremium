@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>论坛</title>
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">论坛
+        <small>主页</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        <li class="breadcrumb-item active">论坛</li>
+    </ol>
+
+    <div class="row">
+
+        <!-- Blog Entries Column -->
+        <div class="col-md-8">
+
+            <!-- Blog Post -->
+            {% for post in page_object_list %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title">{{ post.title }}</h2>
+                        <p class="card-text">{{ post.content }}</p>
+                        <a href="{% url 'view_post' %}?post_id={{ post.id }}" class="btn btn-primary">查看 &rarr;</a>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <a href="#">{{ post.user.full_name }}</a>,发表于<i>{{ post.submit_datetime }}</i>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <!-- Pagination -->
+            <ul class="pagination justify-content-center">
+                <li class="page-item">
+                    <a class="page-link" href="{% url 'view_exam' %}?page=1" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="sr-only">首页</span>
+                    </a>
+                </li>
+                {% with ''|center:total_page_num as range %}
+                {% for _ in range %}
+                <li class="page-item">
+                    {% if page_num == forloop.counter %}
+                    <a class="page-link" href="{% url 'view_exam' %}?page={{ page_num }}"
+                       style="pointer-events: none;cursor: default;color:gray;">{{ forloop.counter }}</a>
+                    {% else %}
+                    <a class="page-link" href="{% url 'view_exam' %}?page={{ page_num }}">{{ forloop.counter }}</a>
+                    {% endif %}
+                </li>
+                {% endfor %}
+                {% endwith %}
+                <li class="page-item">
+                    <a class="page-link" href="{% url 'view_exam' %}?page={{ total_page_num }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only">尾页</span>
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+
+        <!-- Sidebar Widgets Column -->
+        <div class="col-md-4">
+
+            <div class="col-lg-4 mb-4">
+                <h3>Tips</h3>
+                <p>
+                    <abbr title="发布">发布</abbr>
+                    <br>
+                    <a href="{% url 'new_post' %}">新帖</a>
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+</body>
+
+</html>
