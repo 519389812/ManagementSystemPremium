@@ -5,8 +5,7 @@ app_name = 'bbs'
 
 urlpatterns = [
     path('/', views.bbs, name='bbs'),
-    path('view_exam_list/', views.view_exam_list, name='view_exam_list'),
-    path('view_exam/', views.view_exam, name='view_exam'),
-    path('review_exam_list/', views.review_exam_list, name='review_exam_list'),
-    path('review_exam/', views.review_exam, name='review_exam'),
+    path('view_post/', views.view_post, name='view_post'),
+    path('add_post/', views.add_post, name='add_post'),
+    path('add_comment/', views.add_comment, name='add_comment'),
 ]

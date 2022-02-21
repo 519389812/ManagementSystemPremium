@@ -4,6 +4,7 @@ from user.models import CustomUser
 from django.utils import timezone
 from ManagementSystemPremium.settings import BASE_DIR
 import os
+from django.contrib import admin
 
 
 file_dir = 'files'
@@ -21,6 +22,7 @@ class Announcement(models.Model):
     issue_datetime = models.DateTimeField(auto_now_add=True, verbose_name='发布时间')
     edit_datetime = models.DateTimeField(auto_now=True, verbose_name='最新修改时间')
     close_datetime = models.DateTimeField(blank=True, verbose_name='截止时间')
+    repeat = models.TextField(max_length=300, null=True, blank=True, choices=(('', '无'), ('every day', '每天'), ('every week', '每周'), ('every month', '每月'), ('every year', '每年'), ('custom', '自定义/天')), verbose_name='重复规则')
 
     class Meta:
         verbose_name = '公告'
@@ -50,9 +52,17 @@ class AnnouncementRecord(models.Model):
         return self.id
 
 
+class AnnouncementRecordSummary(AnnouncementRecord):
+
+    class Meta:
+        proxy = True
+        verbose_name = '确认统计'
+        verbose_name_plural = '确认统计'
+
+
 class UploadFile(models.Model):
     id = models.AutoField(primary_key=True)
-    announcement = models.ForeignKey(AnnouncementRecord, related_name='announcement_team', on_delete=models.CASCADE, verbose_name='通知')
+    announcement_record = models.ForeignKey(AnnouncementRecord, related_name='announcement_team', on_delete=models.CASCADE, verbose_name='通知')
     file = models.FileField(upload_to=file_dir, verbose_name='上传文件')
 
     class Meta:

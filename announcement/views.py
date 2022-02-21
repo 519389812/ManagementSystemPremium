@@ -95,11 +95,11 @@ def confirm_announcement(request):
                                 return render(request, 'error_custom.html', {'msg': '图片格式错误，请更换图片重新上传！'}, status=200)
                         else:
                             return render(request, 'error_custom.html', {'msg': '图片格式错误，请更换图片重新上传！'}, status=200)
-                    AnnouncementRecord.objects.create(announcement=announcement, user=request.user)
+                    announcement_record = AnnouncementRecord.objects.create(announcement=announcement, user=request.user)
                     for image, image_type in transform_image_list:
                         timestamp = timezone.now().timestamp()
                         image.save(os.path.join(file_path, (request.user.id + '_' + announcement_id + '_' + timestamp + '.' + image_type)))
-                        UploadFile.objects.create(announcement=announcement, file=os.path.join(file_path, (request.user.id + '_' + announcement_id + '_' + timestamp + '.' + image_type)))
+                        UploadFile.objects.create(announcement_record=announcement_record, file=os.path.join(file_path, (request.user.id + '_' + announcement_id + '_' + timestamp + '.' + image_type)))
                     return redirect(request.META['HTTP_REFERER'])
                 else:
                     return render(request, 'error_500.html', status=500)
@@ -108,20 +108,6 @@ def confirm_announcement(request):
                 return redirect(request.META['HTTP_REFERER'])
     else:
         return render(request, 'error_400.html', status=400)
-
-
-@check_authority
-def feedback_confirm(request, id):
-    # 对应action中 <form action = "{% url 'feedback_confirm' id %}" method = "post"> 的 {% url 'feedback_confirm' id %} 方法，
-    # confirm指向urls.py中name=confirm的url
-    user = request.session.get("login_user", "")
-    user = User.objects.get(username=user)
-    comment = request.POST.get("feedback")
-    if len(Feedback.objects.filter(aid=id, sender=user.full_name)) > 3:
-        return HttpResponse("您的评论次数过多，已经限制评论，请勿刷屏！")
-    else:
-        Feedback.objects.create(aid=id, sender=user.full_name, comment=comment, team_id=user.team_id)
-        return redirect(request.META['HTTP_REFERER'])
 
 
 @csrf_exempt
