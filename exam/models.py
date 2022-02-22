@@ -67,7 +67,7 @@ class ExamRecord(models.Model):
     user = models.ForeignKey(CustomUser, related_name='examRecord_user', null=True, on_delete=models.CASCADE, verbose_name='用户')
     anonymous = models.CharField(max_length=300, null=True, blank=True, verbose_name='未登录用户')
     exam = models.ForeignKey(Exam, related_name='examRecord_exam', on_delete=models.CASCADE, verbose_name='试卷')
-    question = models.ManyToManyField(Question, null=True, blank=True, related_name='examRecord_question', verbose_name='题目')
+    question = models.ManyToManyField(Question, blank=True, related_name='examRecord_question', verbose_name='题目')
     answer = models.JSONField(max_length=100000, null=True, blank=True, verbose_name='答案')
     times = models.IntegerField(null=True, blank=True, verbose_name='参与次数')
     exam_time = models.IntegerField(null=True, blank=True, verbose_name='考试时长')
@@ -79,11 +79,18 @@ class ExamRecord(models.Model):
     submit_datetime = models.DateTimeField(auto_now_add=True, verbose_name='提交时间')
 
     class Meta:
-        verbose_name = '学生成绩'
-        verbose_name_plural = '学生成绩'
+        verbose_name = '成绩记录'
+        verbose_name_plural = '成绩记录'
 
     def __str__(self):
         return '<%s:%s>' % (self.user.name, self.score)
 
     def template_load_answer_as_dict(self):
         return json.loads(self.answer)
+
+
+class ExamSummary(ExamRecord):
+
+    class Meta:
+        verbose_name = '成绩统计'
+        verbose_name_plural = '成绩统计'

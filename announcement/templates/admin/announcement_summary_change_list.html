@@ -1,0 +1,60 @@
+{% extends 'admin/change_list.html' %}
+{% load static %}
+
+{% block content_title %}
+    <h1>阅读统计</h1>
+{% endblock %}
+
+{% block result_list %}
+    <div class="results">
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        <div class="text">
+                            <a href="#">姓名</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#">总量</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#">已读</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#">未读</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#">阅读率</a>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in summary %}
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td>{{ row.index }}</td>
+                        <td>{{ row.总数 }}</td>
+                        <td>{{ row.已读 }}</td>
+                        <td>{{ row.未读 }}</td>
+                        <td>{{ row.阅读率 }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block pagination %}
+    <hr><br>
+    <p style="color:gray">{{ summary | length }} 统计记录</p>
+    <hr><br>
+{% endblock %}

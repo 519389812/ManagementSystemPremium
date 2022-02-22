@@ -1,0 +1,72 @@
+{% extends 'admin/change_list.html' %}
+{% load static %}
+
+{% block content_title %}
+    <h1>测验统计</h1>
+{% endblock %}
+
+{% block result_list %}
+    <div class="results">
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        <div class="text">
+                            <a href="#">姓名</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#">总分</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#">得分</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#">总次数</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#">通过次数</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#">得分率</a>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="text">
+                            <a href="#">通过率</a>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in summary %}
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td>{{ row.index }}</td>
+                        <td>{{ row.总分 }}</td>
+                        <td>{{ row.得分 }}</td>
+                        <td>{{ row.总次数 }}</td>
+                        <td>{{ row.通过次数 }}</td>
+                        <td>{{ row.得分率 }}</td>
+                        <td>{{ row.通过率 }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block pagination %}
+    <hr><br>
+    <p style="color:gray">{{ summary | length }} 统计记录</p>
+    <hr><br>
+{% endblock %}

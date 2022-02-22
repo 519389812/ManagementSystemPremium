@@ -22,6 +22,7 @@
 
     <ol class="breadcrumb">
         {% include "route.html" %}
+        {% include "route_bbs.html" %}
         <li class="breadcrumb-item active">查看帖子</li>
     </ol>
 
@@ -35,24 +36,27 @@
 
             <hr>
 
-            <!-- Date/Time -->
-            <p>{{ post.user.full_name }},发表于<i>{{ post.submit_datetime }}</i></p>
-
-            <hr>
-
             <!-- Post Content -->
             <p>{{ post.content }}</p>
 
             <hr>
 
+            <!-- Date/Time -->
+            <footer class="blockquote-footer" style="text-align: right">
+                <cite title="Source Title">
+                    <a href="#">{{ post.user.full_name }}</a>,发表于<i>{{ post.submit_datetime }}</i>
+                </cite>
+            </footer>
+
             <!-- Comments Form -->
             <div class="card my-4">
                 <h5 class="card-header">留言:</h5>
                 <div class="card-body">
-                    <form action="{% url 'add_comment' %}" method="post">
+                    <form action="{% url 'bbs:add_comment' %}" method="post">
+                        {% csrf_token %}
                         <input name="post_id" value="{{ post.id }}" hidden/>
                         <div class="form-group">
-                            <textarea id="content" class="form-control" rows="5" name="content"></textarea>
+                            <textarea id="content" class="form-control" rows="3" name="content"></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">提交</button>
                     </form>
@@ -64,7 +68,8 @@
                 <div class="media mb-4">
                     <div class="media-body">
                         <h5 class="mt-0">{{ related_post.user__full_name }}</h5>
-                        {{ related_post.content }}<a href="{{ related_post.id }}" type="button" id="reply_btn">回复</a>
+                        {{ related_post.content }}
+                        <a href="javascript:void(0);" type="button" id="reply_btn" style="text-align: right" onclick="set_reply_target({{ related_post.id }})">回复</a>
                         {% if related_post.children|length > 0 %}
                             {% for related_post_children in related_post.children %}
                                 <div class="media mt-4">
@@ -75,6 +80,9 @@
                                 </div>
                             {% endfor %}
                         {% endif %}
+                        <footer class="blockquote-footer" style="text-align: right">
+                            <cite title="Source Title">{{ related_post.submit_datetime }}</cite>
+                        </footer>
                     </div>
                 </div>
             {% endfor %}
@@ -84,11 +92,11 @@
         <div class="col-md-4">
 
             <div class="col-lg-4 mb-4">
-                <h3>Tips</h3>
+                <h3>发帖</h3>
                 <p>
                     <abbr title="发布">发布</abbr>
                     <br>
-                    <a href="{% url 'new_post' %}">新帖</a>
+                    <a href="{% url 'bbs:add_post' %}">新帖</a>
                 </p>
             </div>
 
@@ -106,12 +114,11 @@
 <!-- Bootstrap core JavaScript -->
 {% include "script.html" %}
 <script>
-    $('#reply_btn').click(function(){
-        var reply_post_id = $('#reply_btn').attr('href');
-        var reply_text = 'Reply' + reply_post_id + ':';
+    function set_reply_target(target_post_id){
+        var reply_text = 'Reply' + target_post_id + ':';
         $("#content").val(reply_text);
         $('html,body').animate({ scrollTop: $("#content").offset().top - 100 }, 500)
-    });
+    };
 
 </script>
 

@@ -23,24 +23,61 @@
     <div class="row">
         <div class="col-lg-4 mb-4">
             <div class="card h-100">
-                <h4 class="card-header">绩效管理</h4>
+                <h4 class="card-header">通知公告</h4>
                 <div class="card-body">
-                    <p class="card-text">工作量登记、审核</p>
+                    <p class="card-text">通知公告阅读确认、统计</p>
                 </div>
                 <div class="card-footer">
-                    <a href="{% url 'performance' %}" class="btn btn-primary" style="btn btn-primary">进入</a>
+                    <a href="{% url 'announcement:announcement' %}" class="btn btn-primary" style="btn btn-primary">进入</a>
 <!--                    <a href="javascript:return false" class="btn btn-primary" style="opacity: 0.2">敬请期待</a>-->
                 </div>
             </div>
         </div>
         <div class="col-lg-4 mb-4">
             <div class="card h-100">
-                <h4 class="card-header">后台管理</h4>
+                <h4 class="card-header">电子文档</h4>
                 <div class="card-body">
-                    <p class="card-text">登录后台管理数据</p>
+                    <p class="card-text">电子文档查看、签名</p>
                 </div>
                 <div class="card-footer">
-                    <a href="admin/" class="btn btn-primary" style="btn btn-primary">进入</a>
+                    <a href="{% url 'document:document' %}" class="btn btn-primary" style="btn btn-primary">进入</a>
+<!--                    <a href="javascript:return false" class="btn btn-primary" style="opacity: 0.2">敬请期待</a>-->
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <h4 class="card-header">在线测验</h4>
+                <div class="card-body">
+                    <p class="card-text">在线测验、成绩管理</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'exam:exam' %}" class="btn btn-primary" style="btn btn-primary">进入</a>
+<!--                    <a href="javascript:return false" class="btn btn-primary" style="opacity: 0.2">敬请期待</a>-->
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <h4 class="card-header">绩效管理</h4>
+                <div class="card-body">
+                    <p class="card-text">绩效登记、审核结果查询</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'performance:performance' %}" class="btn btn-primary" style="btn btn-primary">进入</a>
+<!--                    <a href="javascript:return false" class="btn btn-primary" style="opacity: 0.2">敬请期待</a>-->
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <h4 class="card-header">在线测验</h4>
+                <div class="card-body">
+                    <p class="card-text">在线测验、成绩管理</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'exam:exam' %}" class="btn btn-primary" style="btn btn-primary">进入</a>
+<!--                    <a href="javascript:return false" class="btn btn-primary" style="opacity: 0.2">敬请期待</a>-->
                 </div>
             </div>
         </div>

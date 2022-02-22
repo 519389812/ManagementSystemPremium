@@ -16,13 +16,15 @@ class Announcement(models.Model):
     user = models.ForeignKey(CustomUser, related_name='announcement_user', on_delete=models.CASCADE, verbose_name='作者')
     title = models.TextField(max_length=100, verbose_name='标题')
     content = models.TextField(max_length=800, verbose_name='内容')
-    team = models.ManyToManyField(CustomTeam, related_name='announcement_team', null=True, blank=True, verbose_name='目标组')
-    people = models.ManyToManyField(CustomTeam, related_name='announcement_people', null=True, blank=True, verbose_name='目标用户')
+    team = models.ManyToManyField(CustomTeam, related_name='announcement_team', blank=True, verbose_name='目标组')
+    people = models.ManyToManyField(CustomTeam, related_name='announcement_people', blank=True, verbose_name='目标用户')
     require_upload = models.BooleanField(default=False, verbose_name='需要上传')
     issue_datetime = models.DateTimeField(auto_now_add=True, verbose_name='发布时间')
     edit_datetime = models.DateTimeField(auto_now=True, verbose_name='最新修改时间')
     close_datetime = models.DateTimeField(blank=True, verbose_name='截止时间')
     repeat = models.TextField(max_length=300, null=True, blank=True, choices=(('', '无'), ('every day', '每天'), ('every week', '每周'), ('every month', '每月'), ('every year', '每年'), ('custom', '自定义/天')), verbose_name='重复规则')
+    period_close_datetime = models.DateTimeField(null=True, blank=True, verbose_name='子阶段截止时间')
+    parent_id = models.IntegerField(null=True, blank=True, verbose_name='父id')
 
     class Meta:
         verbose_name = '公告'
@@ -32,7 +34,13 @@ class Announcement(models.Model):
         return self.title
 
     def template_announcement_is_active(self):
-        return True if self.close_datetime <= timezone.now() else False
+        if self.period_close_datetime:
+            if self.period_close_datetime >= timezone.now() and self.close_datetime >= timezone.now():
+                return True
+            else:
+                return False
+        else:
+            return True if self.close_datetime >= timezone.now() else False
 
     def template_content_preview(self):
         return self.content[:20]
@@ -52,7 +60,7 @@ class AnnouncementRecord(models.Model):
         return self.id
 
 
-class AnnouncementRecordSummary(AnnouncementRecord):
+class AnnouncementRecordSummary(Announcement):
 
     class Meta:
         proxy = True

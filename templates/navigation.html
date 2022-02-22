@@ -14,10 +14,13 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownPortfolio1" data-toggle="dropdown"
-                       aria-haspopup="true" aria-expanded="false">模块</a>
+                       aria-haspopup="true" aria-expanded="false">业务模块</a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownPortfolio1">
-                        <a class="dropdown-item" href="{% url 'performance' %}">绩效管理</a>
-                        <a class="dropdown-item" href="{% url 'sales' %}">销售管理</a>
+                        <a class="dropdown-item" href="{% url 'announcement:announcement' %}">通知公告</a>
+                        <a class="dropdown-item" href="{% url 'document:document' %}">电子文档</a>
+                        <a class="dropdown-item" href="{% url 'exam:exam' %}">在线测验</a>
+                        <a class="dropdown-item" href="{% url 'performance:performance' %}">绩效管理</a>
+                        <a class="dropdown-item" href="{% url 'sale:sale' %}">销售管理</a>
                     </div>
                 </li>
                 <li class="nav-item">
@@ -27,7 +30,10 @@
                     <a class="nav-link" href="{% url 'contact' %}">联系我们</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'feedback' %}">问题反馈</a>
+                    <a class="nav-link" href="{% url 'bbs:bbs' %}">论坛</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'feedback:feedback' %}">问题反馈</a>
                 </li>
                 {% if user.is_authenticated == True %}
                     <li class="nav-item dropdown">
@@ -54,16 +60,16 @@
                                     <span class="badge badge-danger">{{ unread_count }}</span>
                                 {% endif %}
                             </a>
-                            <a class="dropdown-item" href="{% url 'user_setting' %}">个人信息</a>
-                            <a class="dropdown-item" href="{% url 'logout' %}">登出</a>
+                            <a class="dropdown-item" href="{% url 'user:user_setting' %}">个人信息</a>
+                            <a class="dropdown-item" href="{% url 'user:logout' %}">登出</a>
                         </div>
                     </li>
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'register' %}">注册</a>
+                        <a class="nav-link" href="{% url 'user:register' %}">注册</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'login' %}">登录</a>
+                        <a class="nav-link active" href="{% url 'user:login' %}">登录</a>
                     </li>
                 {% endif %}
             </ul>

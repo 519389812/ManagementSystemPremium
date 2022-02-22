@@ -9,7 +9,7 @@ from document.translate import translate_en_to_cn, translate_type
 import base64
 import datetime
 from PIL import Image
-from ManagementSystem.settings import BASE_DIR
+from ManagementSystemPremium.settings import BASE_DIR
 
 
 source_dir = os.path.join(BASE_DIR, "document/static/document/docs/source/")

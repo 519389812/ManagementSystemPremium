@@ -51,6 +51,12 @@ urlpatterns = [
     # announcement
     path('announcement/', include('announcement.urls', namespace='announcement')),
 
+    # bbs
+    path('bbs/', include('bbs.urls', namespace='bbs')),
+
+    # document
+    path('document/', include('document.urls', namespace='document')),
+
     # exam
     path('exam/', include('exam.urls', namespace='exam')),
 
@@ -58,8 +64,8 @@ urlpatterns = [
     path('feedback/', include('feedback.urls', namespace='feedback')),
 
     # performance
-    path('performance/', include('performance.urls', namespace='announcement')),
+    path('performance/', include('performance.urls', namespace='performance')),
 
-    # sales
-    path('sales/', include(sales_views.sales, namespace='sales')),
+    # sale
+    path('sale/', include('sale.urls', namespace='sale')),
 ]

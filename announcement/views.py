@@ -14,6 +14,7 @@ import re
 from user.views import check_authority
 from django.core.paginator import Paginator
 from django.utils import timezone
+from django.db.models import Q
 
 
 @check_authority
@@ -25,7 +26,7 @@ def announcement(request):
 def view_announcement_list(request):
     if request.method == 'GET':
         page_num = request.GET.get('page', '1')
-        announcement = Announcement.objects.all()
+        announcement = Announcement.objects.filter(parent_id__isnull=True)
         paginator = Paginator(announcement, 20)
         page = paginator.get_page(int(page_num))
         return render(request, 'view_announcement_list.html', {'page_object_list': list(page.object_list),
@@ -37,8 +38,24 @@ def view_announcement_list(request):
 
 
 @check_authority
+def view_sub_announcement_list(request):
+    if request.method == 'GET':
+        page_num = request.GET.get('page', '1')
+        announcement_id = request.GET.get('announcement_id', '')
+        announcement = Announcement.objects.filter(Q(id=announcement_id) | Q(parent_id=announcement_id)).order_by('-issue_datetime')
+        paginator = Paginator(announcement, 15)
+        page = paginator.get_page(int(page_num))
+        return render(request, 'view_sub_announcement_list.html', {'page_object_list': list(page.object_list),
+                                                                   'total_num': paginator.count,
+                                                                   'total_page_num': paginator.num_pages,
+                                                                   'page_num': page.number})
+    else:
+        return render(request, 'error_400.html', status=400)
+
+
+@check_authority
 def view_announcement(request):
-    if request.Method == 'GET':
+    if request.method == 'GET':
         announcement_id = request.GET.get('announcement_id', '')
     else:
         return render(request, 'error_400.html', status=400)
@@ -61,13 +78,13 @@ def view_announcement(request):
     for _, user_list in target_team_member_dict.items():
         for i in range(len(user_list)):
             read_status = True if user_list[i] in read_user_list else False
-            user_list[i] = (user_list[i], read_status)
+            user_list[i] = {'user': user_list[i], 'read_status': read_status}
     return render(request, 'view_announcement.html', {'announcement': announcement, 'target_team_member_dict': target_team_member_dict, 'is_read': is_read})
 
 
 @check_authority
 def confirm_announcement(request):
-    if request.Method == 'POST':
+    if request.method == 'POST':
         announcement_id = request.POST.get('announcement_id', '')
         try:
             announcement = Announcement.objects.get(id=announcement_id)

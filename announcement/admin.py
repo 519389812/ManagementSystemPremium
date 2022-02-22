@@ -169,12 +169,10 @@ class AnnouncementRecordAdmin(admin.ModelAdmin):
 
 
 class AnnouncementRecordSummaryAdmin(admin.ModelAdmin):
-    change_list_template = "admin/reward_penalty_summary_change_list.html"
+    change_list_template = "admin/announcement_summary_change_list.html"
 
-    search_fields = ('user__full_name', 'reward_penalty__name', 'reward_penalty__type__name', 'title', 'content', 'level_rule__name')
-    list_filter = (
-        'date', 'user__team', 'reward_penalty__name', 'reward_penalty__type__name',
-    )
+    search_fields = ('user__full_name', 'title', 'content')
+    list_filter = ('date',)
 
     def changelist_view(self, request, extra_context=None):
         response = super().changelist_view(request, extra_context=extra_context)
@@ -182,60 +180,43 @@ class AnnouncementRecordSummaryAdmin(admin.ModelAdmin):
             qs = response.context_data['cl'].queryset
         except (AttributeError, KeyError):
             return response
-        target_team_name = Announcement.objects.all().values_list('team__name', flat=True)
-        target_user = list(Announcement.objects.all().values_list('people__full_name', flat=True))
-        for team in target_team_name:
-            user = list(CustomUser.objects.filter(team__name=team).values_list('full_name', flat=True))
-            
-            target_user.append(user)
-
-
-        read_user_list = AnnouncementRecord.objects.filter(announcement=announcement).values_list('user__full_name',
-                                                                                                  flat=True)
-        for i in range(len(qs)):
-            RewardPenaltyRecord.objects.filter(id=qs[i].id).update(score=value_list[i])
-        metrics = {
-            'count': Count('user'),
-            'score': Sum('score'),
-        }
-        data = list(qs.values('user__team__name', 'user__full_name').annotate(**metrics).order_by('-score'))
+        # 获取页面传递的筛选参数，并从其他model中查询
+        # filters_params = response.context_data['cl'].get_filters_params()
+        # filter_string = ''
+        # if len(filters_params) > 0:
+        #     for k, v in filters_params.items():
+        #         filter_string += "%s='%s'," % (k, v)
+        #     announcement_queryset = eval('%s.objects.filter(%s)' % (Model, filter_string))
+        data = {}
+        announcement_record = AnnouncementRecord.objects.all()
+        for announcement in qs:
+            target_names = announcement.people.all().values_list('people__full_name', flat=True)
+            team_name_list = announcement.team.all().values_list('team__name', flat=True)
+            for team_name in team_name_list:
+                target_user = list(CustomUser.objects.filter(team__name=team_name).values_list('full_name', flat=True))
+                target_names += target_user
+            read_names = announcement_record.filter(announcement=announcement)
+            if read_names.count() > 0:
+                read_names = list(set(read_names.values_list('user__full_name', flat=True)))
+            else:
+                read_names = []
+            unread_names = list(set(read_names).difference(set(target_names)))
+            for name in read_names:
+                if data.get(name, '') == '':
+                    data.setdefault(name, {'read': 1, 'unread': 0})
+                else:
+                    data[name]['read'] += 1
+            for name in unread_names:
+                if data.get(name, '') == '':
+                    data.setdefault(name, {'read': 0, 'unread': 1})
+                else:
+                    data[name]['unread'] += 1
+        data = pd.DataFrame(data).T
+        data.rename(columns={'read': '已读', 'unread': '未读'}, replace=True)
+        data['总数'] = data['已读'] + data['未读']
+        data['阅读率'] = data['已读'] / data['总数']
         response.context_data['summary'] = data
         return response
-
-
-class FeedbackAdmin(admin.ModelAdmin):
-    list_display = ('id', 'announcement', 'sender', 'sent_datetime', 'comment', 'reply_to')
-    list_display_links = ('id',)
-    readonly_fields = ('id', 'announcement', 'sender', 'sent_datetime', 'comment', 'reply_to')
-    search_fields = ('announcement__name', 'sender', 'comment')
-    date_hierarchy = 'sent_datetime'  # 详细时间分层筛选
-    actions = ['export_directly']
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        if not request.user.is_superuser:
-            try:
-                team_id = request.user.team.id
-                qs = qs.filter(announcement__team__related_parent__iregex=r'\D%s\D' % str(team_id))
-            except:
-                pass
-        return qs
-
-    def export_directly(self, request, queryset):
-        outfile = BytesIO()
-        data = pd.DataFrame(queryset.values())
-        data = data.rename(columns={'announcement': '公告', 'sender': '评论人', 'sent_datetime': '评论时间', 'comment': '评论'})
-        data = data[['公告', '评论人', '评论时间', '评论']]
-        data['评论时间'] = (data['评论时间'] + datetime.timedelta(hours=8)).dt.strftime('%Y-%m-%d %H:%M:%S')
-        data = data.sort_values(by=['公告', '评论时间'], ascending=True)
-        data = data.fillna('')
-        filename = datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')
-        response = HttpResponse(content_type='application/vnd.ms-excel')
-        response['Content-Disposition'] = "attachment;filename='{}'".format('Export_Directly ' + filename + '.xlsx')
-        data.to_excel(outfile, index=False)
-        response.write(outfile.getvalue())
-        return response
-    export_directly.short_description = '直接导出'
 
 
 class UploadFileAdmin(admin.ModelAdmin):

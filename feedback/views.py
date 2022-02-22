@@ -3,7 +3,7 @@ from feedback.models import Feedback
 
 
 def feedback(request):
-    if request.Method == 'GET':
+    if request.method == 'GET':
         return render(request, 'feedback.html')
     else:
         content = request.POST.get('content', '')

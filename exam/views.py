@@ -34,7 +34,7 @@ def view_exam_list(request):
 
 
 def view_exam(request):
-    if request.Method == 'POST':
+    if request.method == 'POST':
         post_data = request.POST.dict()
         exam_id = post_data['exam_id']
         answer_time = post_data['answer_time']
@@ -113,7 +113,7 @@ def review_exam_list(request):
 
 @check_authority
 def review_exam(request):
-    if request.Method == 'GET':
+    if request.method == 'GET':
         exam_record_id = request.GET.get('exam_record_id', '')
         try:
             exam_record = ExamRecord.objects.get(id=exam_record_id)

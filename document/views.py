@@ -10,7 +10,7 @@ import json
 import math
 from urllib import parse
 from django.utils import timezone
-from ManagementSystem.settings import TIME_ZONE
+from ManagementSystemPremium.settings import TIME_ZONE
 from user.views import check_authority, check_is_touch_capable, check_accessible
 # from django_apscheduler.jobstores import DjangoJobStore, register_events, register_job
 from django.views.decorators.csrf import csrf_exempt
@@ -19,7 +19,7 @@ import pandas as pd
 import numpy as np
 import base64
 import hashlib
-from Cryptodome.Cipher import AES
+from Crypto.Cipher import AES
 from team.models import CustomTeam
 from django.db.models import Q
 from django.utils.safestring import mark_safe

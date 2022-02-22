@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>公告</title>
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">公告
+        <small>子列表</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        {% include "route_announcement.html" %}
+        <li class="breadcrumb-item active">公告子列表</li>
+    </ol>
+
+    <div class="jumbotron">
+        <h1 class="display-5">{{ announcement.0.title }}</h1>
+        <p>{{ announcement.0.template_content_preview }}</p>
+        <ul style="text-align: center">
+            {% for announcement in page_object_list %}
+                <li>
+                    <a href="{% url 'view_announcement' %}?announcement_id={{ announcement.id }}">{{ announcement.issue_datetime }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <!-- /.jumbotron -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+</body>
+
+</html>

@@ -2,7 +2,7 @@ from django.contrib import admin
 from document.models import DocxInit, ContentStorage, SignatureStorage
 from document.docx_handler import *
 import json
-from ManagementSystem.admin import return_get_queryset_by_parent_team
+from ManagementSystemPremium.admin import return_get_queryset_by_parent_team
 
 
 class DocxInitAdmin(admin.ModelAdmin):
