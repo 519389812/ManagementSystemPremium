@@ -58,7 +58,7 @@ class AnnouncementRecord(models.Model):
         verbose_name_plural = '公告确认明细'
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class AnnouncementRecordSummary(Announcement):
@@ -79,4 +79,4 @@ class UploadFile(models.Model):
         verbose_name_plural = '上传文件明细'
 
     def __str__(self):
-        return self.id
+        return str(self.id)

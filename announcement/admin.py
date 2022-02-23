@@ -1,5 +1,5 @@
 from django.contrib import admin
-from announcement.models import Announcement, AnnouncementRecord
+from announcement.models import Announcement, AnnouncementRecord, AnnouncementRecordSummary, UploadFile
 import datetime
 from io import BytesIO
 import pandas as pd
@@ -181,7 +181,7 @@ class AnnouncementRecordSummaryAdmin(admin.ModelAdmin):
     change_list_template = "admin/announcement_summary_change_list.html"
 
     search_fields = ('user__full_name', 'title', 'content')
-    list_filter = ('date',)
+    list_filter = ('issue_datetime',)
 
     def changelist_view(self, request, extra_context=None):
         response = super().changelist_view(request, extra_context=extra_context)
@@ -199,8 +199,8 @@ class AnnouncementRecordSummaryAdmin(admin.ModelAdmin):
         data = {}
         announcement_record = AnnouncementRecord.objects.all()
         for announcement in qs:
-            target_names = announcement.people.all().values_list('people__full_name', flat=True)
-            team_name_list = announcement.team.all().values_list('team__name', flat=True)
+            target_names = list(announcement.people.all().values_list('full_name', flat=True))
+            team_name_list = list(announcement.team.all().values_list('name', flat=True))
             for team_name in team_name_list:
                 target_user = list(CustomUser.objects.filter(team__name=team_name).values_list('full_name', flat=True))
                 target_names += target_user
@@ -209,7 +209,10 @@ class AnnouncementRecordSummaryAdmin(admin.ModelAdmin):
                 read_names = list(set(read_names.values_list('user__full_name', flat=True)))
             else:
                 read_names = []
+            print(target_names)
+            print(read_names)
             unread_names = list(set(read_names).difference(set(target_names)))
+            print(unread_names)
             for name in read_names:
                 if data.get(name, '') == '':
                     data.setdefault(name, {'read': 1, 'unread': 0})
@@ -221,22 +224,22 @@ class AnnouncementRecordSummaryAdmin(admin.ModelAdmin):
                 else:
                     data[name]['unread'] += 1
         data = pd.DataFrame(data).T
-        data.rename(columns={'read': '已读', 'unread': '未读'}, replace=True)
+        data.rename(columns={'read': '已读', 'unread': '未读'}, inplace=True)
         data['总数'] = data['已读'] + data['未读']
         data['阅读率'] = data['已读'] / data['总数']
+        print(data)
         response.context_data['summary'] = data
         return response
 
 
 class UploadFileAdmin(admin.ModelAdmin):
-    list_display = ('id', 'announcement_record', 'user', 'read_datetime')
+    list_display = ('id', 'announcement_record', 'file')
     list_display_links = ('id',)
-    readonly_fields = ('announcement_record', 'user', 'read_datetime')
-    actions = ['export_directly', 'export_pivot_by_count']
-    search_fields = ('announcement_record__announcement__title', 'announcement_record__announcement__content')
-    date_hierarchy = 'read_datetime'  # 详细时间分层筛选
-    list_filter = ('read_status',)
+    search_fields = ('announcement_record__announcement__title', 'announcement_record__announcement__content', 'announcement_record__user__full_name')
+    list_filter = ('announcement_record__read_datetime',)
 
 
 admin.site.register(Announcement, AnnouncementAdmin)
 admin.site.register(AnnouncementRecord, AnnouncementRecordAdmin)
+admin.site.register(AnnouncementRecordSummary, AnnouncementRecordSummaryAdmin)
+admin.site.register(UploadFile, UploadFileAdmin)
