@@ -12,6 +12,7 @@ urlpatterns = [
 
     path('check_username_validate/', views.check_username_validate, name='check_username_validate'),
     path('check_password_validate/', views.check_password_validate, name='check_password_validate'),
+    path('check_password_repeat_validate/', views.check_password_repeat_validate, name='check_password_repeat_validate'),
     path('check_name_validate/', views.check_name_validate, name='check_name_validate'),
     path('check_email_validate/', views.check_email_validate, name='check_email_validate'),
     path('check_question_validate/', views.check_question_validate, name='check_question_validate'),

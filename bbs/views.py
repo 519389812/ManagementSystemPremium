@@ -50,14 +50,8 @@ def add_comment(request):
         related_list = json.dumps(create_related_list(comment.id, comment.parent_post))
         comment.related_post = related_list
         comment.save()
-        comment_post_list = list(
-            Post.objects.filter(post__isnull=False, related_post__iregex=r'\D%s\D' % post_id).values('id', 'content',
-                                                                                                     'user__full_name',
-                                                                                                     'submit_datetime',
-                                                                                                     'parent_post__id'))
-        # 将多级结构转成树形结构
-        related_post_list = create_related_tree(comment_post_list, post_id, 'parent_post__id', 'id')
-        return render(request, 'view_post.html', {'post': post, 'related_post_list': related_post_list})
+        # return redirect(reverse('bbs:view_post', kwargs={'post_id': post_id}))  # 传递url/参数值
+        return redirect(reverse('bbs:view_post') + '?%s=%s' % ('post_id', post_id))  # 传递url?参数=参数值
     else:
         return render(request, 'error_400.html', status=400)
 

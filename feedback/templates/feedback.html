@@ -30,19 +30,22 @@
     <div class="row">
         <div class="col-lg-8 mb-4">
             <h3>感谢您的留言</h3>
-            <form action="{% url 'feedback' %}" method="post">
+            {% include "message.html" %}
+            <form action="{% url 'feedback:feedback' %}" method="post">
+                {% csrf_token %}
                 <div class="control-group form-group">
                     <div class="controls">
                         <label>您的留言:</label>
-                        <textarea rows="10" cols="100" class="form-control" name="content" required maxlength="10000" style="resize:none"></textarea>
+                        <textarea rows="10" cols="100" class="form-control" id="content" name="content" required maxlength="10000" style="resize:none" placeholder="请填写您的评价"></textarea>
+                        <p style="color:red;font-size:14px" class="help-block" id="content-invalid-feedback"></p>
                     </div>
                 </div>
                 {% if not request.user %}
                     <div class="control-group form-group">
                         <div class="controls">
                             <label>您的姓名（可不填写）:</label>
-                            <input type="text" class="form-control" name="fullname" placeholder="请填写姓名"/>
-                            <p class="help-block" id="fullname-invalid-feedback"></p>
+                            <input type="text" class="form-control" id="fullname" name="fullname" placeholder="请填写姓名"/>
+                            <p style="color:red;font-size:14px" class="help-block" id="fullname-invalid-feedback"></p>
                         </div>
                     </div>
                 {% endif %}
@@ -50,7 +53,7 @@
                     <div class="controls">
                         <label>电子邮箱（如需回复，请留下联系方式，登录用户可不填写）:</label>
                         <input type="text" class="form-control" id="email" name="email" placeholder="请填写电子邮箱"/>
-                        <p class="help-block" id="email-invalid-feedback"></p>
+                        <p style="color:red;font-size:14px" class="help-block" id="email-invalid-feedback"></p>
                     </div>
                 </div>
                 <!-- For success/fail messages -->
@@ -64,9 +67,14 @@
             <div class="col-lg-4 mb-4">
                 <h3>Tips</h3>
                 <p>
-                    <abbr title="提交">查看</abbr>
+                    <abbr title="注册">注册</abbr>
                     <br>
-                    <a href="{% url 'feedback' %}">帖子</a>
+                    <a href="{% url 'user:register' %}">我要注册</a>
+                </p>
+                <p>
+                    <abbr title="登录">登录</abbr>
+                    <br>
+                    <a href="{% url 'user:login' %}">我要登录</a>
                 </p>
             </div>
 
@@ -85,49 +93,21 @@
 {% include "script.html" %}
 
 <script>
-$(document).ready(function(){
-    $('#name').blur(function(){
-        var name = $('#name').val();
-        $.get('/check_name_validate/',{'name':name}, function(ret){
-            $('#name_validate').html(ret);
-        });
-    });
-});
-
-$('#fullname').blur(function(){
-    var fullname = $('#fullname').val();
-    $.get('/check_fullname_validate/',{'fullname':fullname}, function(ret){
-        if (ret != '') {
-            if ($('#fullname').hasClass('is-valid') == true) {
-                $('#fullname').removeClass('is-valid');
-            };
-            $('#fullname').addClass('is-invalid');
-        } else {
-            if ($('#fullname').hasClass('is-invalid') == true) {
-                $('#fullname').removeClass('is-invalid');
-            };
-            $('#fullname').addClass('is-valid');
+$('#content').blur(function(){
+    var content = $('#content').val();
+    if (content == '') {
+        if ($('#content').hasClass('is-valid') == true) {
+            $('#content').removeClass('is-valid');
         };
-        $('#fullname-invalid-feedback').html(ret);
-    });
-});
-
-$('#email').blur(function(){
-    var email = $('#email').val();
-    $.get('/check_email_validate/',{'email':email}, function(ret){
-        if (ret != '') {
-            if ($('#email').hasClass('is-valid') == true) {
-                $('#email').removeClass('is-valid');
-            };
-            $('#email').addClass('is-invalid');
-        } else {
-            if ($('#email').hasClass('is-invalid') == true) {
-                $('#email').removeClass('is-invalid');
-            };
-            $('#email').addClass('is-valid');
+        $('#content').addClass('is-invalid');
+        $('#content-invalid-feedback').html('内容不能为空');
+    } else {
+        if ($('#content').hasClass('is-invalid') == true) {
+            $('#content').removeClass('is-invalid');
         };
-        $('#email-invalid-feedback').html(ret);
-    });
+        $('#content').addClass('is-valid');
+        $('#content-invalid-feedback').html('');
+    };
 });
 </script>
 

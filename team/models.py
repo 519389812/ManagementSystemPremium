@@ -6,7 +6,7 @@ class CustomTeam(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=20, verbose_name='名称', unique=False)
     parent = models.ForeignKey('self', related_name='self', on_delete=models.CASCADE, null=True, blank=True, verbose_name='上级部门')
-    related_parent = models.JSONField(max_length=300, verbose_name='组织关系')
+    related_parent = models.JSONField(null=True, blank=True, max_length=300, verbose_name='组织关系')
 
     class Meta:
         verbose_name = '分组'

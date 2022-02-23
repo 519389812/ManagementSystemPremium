@@ -13,13 +13,16 @@ class AnnouncementAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'title', 'content', 'require_upload', 'get_team', 'get_people', 'get_unread_count',
                     'issue_datetime', 'edit_datetime', 'close_datetime')
     list_display_links = ('id',)
-    fields = ('id', 'user', 'title', 'content', 'require_upload', 'team', 'people', 'get_read_names', 'get_read_count',
-              'get_unread_names', 'get_unread_count', 'issue_datetime', 'edit_datetime')  # 设置添加/修改详细信息时，哪些字段显示，在这里 remark 字段将不显示
-    readonly_fields = ('get_team', 'get_people', 'get_read_names', 'get_read_count', 'get_unread_names',
-                       'get_unread_count', 'issue_datetime', 'edit_datetime')
+    fieldsets = (
+        ('基础信息', {'fields': ('id', 'user', 'title', 'content', 'require_upload', 'close_datetime', 'team', 'people')}),
+        ('重复规则', {'fields': ('parent_id', 'repeat', 'repeat_number', 'period_close_datetime')}),
+        ('其他', {'fields': ('get_read_names', 'get_read_count', 'get_unread_names', 'get_unread_count', 'issue_datetime', 'edit_datetime')}),
+    )
+    readonly_fields = ('id', 'user', 'get_team', 'get_people', 'get_read_names', 'get_read_count', 'get_unread_names',
+                       'get_unread_count', 'issue_datetime', 'edit_datetime', 'parent_id')
     # actions = ['export_directly', ]  # 导出
     autocomplete_fields = ('user', )
-    search_fields = ('user__full_name', 'title', 'content',)
+    search_fields = ('title', 'content',)
     # date_hierarchy = 'issue_datetime'  # 详细时间分层筛选
     list_filter = ('issue_datetime', 'require_upload')
     filter_horizontal = ('team', 'people')  # 设置多对多字段的筛选器
@@ -29,8 +32,8 @@ class AnnouncementAdmin(admin.ModelAdmin):
     get_team.short_description = '阅读组'
 
     def get_people(self, obj):
-        return ' '.join([i.name for i in obj.people.all()])
-    get_people.short_description = '阅读组'
+        return ' '.join([i.full_name for i in obj.people.all()])
+    get_people.short_description = '阅读人员'
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -42,33 +45,34 @@ class AnnouncementAdmin(admin.ModelAdmin):
                 pass
         return qs
 
-    def formfield_for_manytomany(self, db_field, request, **kwargs):
-        """
-        Get a form Field for a ManyToManyField.
-        """
-        # db_field.name 本模型下的字段名称
-        if db_field.name == 'team':
-            # 过滤
-            kwargs['queryset'] = CustomTeam.objects.filter(team__in=request.user.team.all())
-            # filter_horizontal 保持横向展示
-            from django.contrib.admin import widgets
-            kwargs['widget'] = widgets.FilteredSelectMultiple(
-                db_field.verbose_name,
-                db_field.name in self.filter_vertical
-            )
-        return super(AnnouncementAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
+    # def formfield_for_manytomany(self, db_field, request, **kwargs):
+    #     """
+    #     Get a form Field for a ManyToManyField.
+    #     """
+    #     # db_field.name 本模型下的字段名称
+    #     if db_field.name == 'team':
+    #         # 过滤
+    #         kwargs['queryset'] = CustomTeam.objects.filter(team__in=request.user.team.all())
+    #         # filter_horizontal 保持横向展示
+    #         from django.contrib.admin import widgets
+    #         kwargs['widget'] = widgets.FilteredSelectMultiple(
+    #             db_field.verbose_name,
+    #             db_field.name in self.filter_vertical
+    #         )
+    #     return super(AnnouncementAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
     def get_names(self, obj):
         target_team = obj.team.all()
         target_user = []
-        if len(target_team) != 0:
-            for group_obj in target_team:
-                group_mamber = [i.full_name for i in group_obj.member.all()]
-                target_user += group_mamber
-        if len(target_user) != 0:
+        if target_team.count() > 0:
+            for team_obj in target_team:
+                team_mamber = [i.full_name for i in CustomUser.objects.filter(team=team_obj)]
+                target_user += team_mamber
+        target_user += obj.people.all().values_list('full_name', flat=True)
+        if len(target_user) > 0:
             target_user = list(set(target_user))
-        read_names = AnnouncementRecord.objects.filter(aid=obj.id)
-        read_names = list(read_names.values_list('user', flat=True))
+        read_names = AnnouncementRecord.objects.filter(announcement=obj)
+        read_names = list(read_names.values_list('user__full_name', flat=True))
         unread_names = [name for name in target_user if name not in read_names] if len(read_names) != 0 else target_user
         return read_names, unread_names
 
@@ -113,6 +117,11 @@ class AnnouncementAdmin(admin.ModelAdmin):
     #     response.write(outfile.getvalue())
     #     return response
     # export_directly.short_description = '导出'
+
+    def save_model(self, request, obj, form, change):
+        if form.is_valid():
+            obj.user = request.user
+            super(AnnouncementAdmin, self).save_model(request, obj, form, change)
 
 
 class AnnouncementRecordAdmin(admin.ModelAdmin):

@@ -31,14 +31,14 @@
         <div class="col-lg-8 mb-4">
             {% include "message.html" %}
             <h3>用户登录</h3>
-            <form name="loginForm" id="loginForm" action="{% url 'login' %}?next={{ next }}" method="post">
+            <form name="loginForm" id="loginForm" action="{% url 'user:login' %}?next={{ next }}" method="post">
                 {% csrf_token %}
                 <div class="control-group form-group">
                     <div class="controls">
                         <label>用户名:</label>
                         <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名"
                                required data-validation-required-message="Please enter your username.">
-                        <p style="color:red font-size:14px" class="help-block" id="username_validate"></p>
+                        <p style="color:red;font-size:14px" class="help-block" id="username_validate"></p>
                     </div>
                 </div>
                 <div class="control-group form-group">
@@ -46,7 +46,7 @@
                         <label>密码:</label>
                         <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码"
                                required data-validation-required-message="Please enter your password.">
-                        <p style="color:red font-size:14px" class="help-block" id="password_validate"></p>
+                        <p style="color:red;font-size:14px" class="help-block" id="password_validate"></p>
                     </div>
                 </div>
                 <!-- For success/fail messages -->
@@ -58,7 +58,7 @@
             <p>
                 <abbr title="还未注册?">还未注册</abbr>?
                 <br>
-                点击<a href="{% url 'register' %}">此处</a>注册
+                点击<a href="{% url 'user:register' %}">此处</a>注册
             </p>
             {% include "login_register_tips.html" %}
         </div>

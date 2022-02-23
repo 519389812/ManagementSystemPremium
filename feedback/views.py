@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from feedback.models import Feedback
+from ManagementSystemPremium.views import check_post_validate, check_fullname_validate, check_email_validate
 
 
 def feedback(request):
@@ -18,3 +19,4 @@ def feedback(request):
                 Feedback.objects.create(content=content, contact=contact)
             else:
                 Feedback.objects.create(anonymous=anonymous, content=content, contact=contact)
+        return render(request, 'feedback.html', {'msg': '提交成功！'})

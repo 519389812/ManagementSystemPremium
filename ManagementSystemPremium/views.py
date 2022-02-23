@@ -85,7 +85,7 @@ def create_related_tree(data, root_value, parent_field, node_field):
     return related_tree
 
 
-def check_username_validate(request, username_tag):
+def check_username_validate(request, username_tag='username'):
     if request.method == 'GET':
         username = request.GET.get(username_tag)
     else:
@@ -99,7 +99,7 @@ def check_username_validate(request, username_tag):
     return HttpResponse('')
 
 
-def check_password_validate(request, password_tag):
+def check_password_validate(request, password_tag='password'):
     if request.method == 'GET':
         password = request.GET.get(password_tag)
     else:
@@ -113,7 +113,25 @@ def check_password_validate(request, password_tag):
     return HttpResponse('')
 
 
-def check_name_validate(request, name_tag):
+def check_password_repeat_validate(request):
+    if request.method == 'GET':
+        password = request.GET.get('password')
+        password_repeat = request.GET.get('password_repeat')
+    else:
+        password = request.POST.get('password')
+        password_repeat = request.POST.get('password_repeat')
+    if password_repeat == '':
+        return HttpResponse('密码不能为空')
+    if len(password_repeat) < 6 or len(password_repeat) > 16:
+        return HttpResponse('密码不能少于6个字符或超过16个字符')
+    if not re.search(r'^\S+$', password_repeat):
+        return HttpResponse('密码包含非法字符(‘ ’)')
+    if password != password_repeat:
+        return HttpResponse('输入密码不一致')
+    return HttpResponse('')
+
+
+def check_name_validate(request, name_tag='name'):
     if request.method == 'GET':
         name = request.GET.get(name_tag)
     else:
@@ -127,7 +145,7 @@ def check_name_validate(request, name_tag):
     return HttpResponse('')
 
 
-def check_question_validate(request, question_tag):
+def check_question_validate(request, question_tag='question'):
     if request.method == 'GET':
         question = request.GET.get(question_tag)
     else:
@@ -141,7 +159,7 @@ def check_question_validate(request, question_tag):
     return HttpResponse('')
 
 
-def check_answer_validate(request, answer_tag):
+def check_answer_validate(request, answer_tag='answer'):
     if request.method == 'GET':
         answer = request.GET.get(answer_tag)
     else:
@@ -155,7 +173,7 @@ def check_answer_validate(request, answer_tag):
     return HttpResponse('')
 
 
-def check_email_validate(request, email_tag):
+def check_email_validate(request, email_tag='email'):
     if request.method == 'GET':
         email = request.GET.get(email_tag)
     else:
@@ -167,7 +185,7 @@ def check_email_validate(request, email_tag):
     return HttpResponse('')
 
 
-def check_fullname_validate(request, fullname_tag):
+def check_fullname_validate(request, fullname_tag='fullname'):
     if request.method == 'GET':
         fullname = request.GET.get(fullname_tag)
     else:
@@ -181,7 +199,7 @@ def check_fullname_validate(request, fullname_tag):
     return HttpResponse('')
 
 
-def check_flight_validate(request, flight_tag):
+def check_flight_validate(request, flight_tag='flight'):
     if request.method == 'GET':
         flight = request.GET.get(flight_tag)
     else:
@@ -195,7 +213,7 @@ def check_flight_validate(request, flight_tag):
     return HttpResponse('')
 
 
-def check_airport_code_validate(request, airport_code_tag):
+def check_airport_code_validate(request, airport_code_tag='airport_code'):
     if request.method == 'GET':
         departure = request.GET.get(airport_code_tag)
     else:
@@ -209,7 +227,7 @@ def check_airport_code_validate(request, airport_code_tag):
     return HttpResponse('')
 
 
-def check_seat_validate(request, seat_tag):
+def check_seat_validate(request, seat_tag='seat'):
     if request.method == 'GET':
         seat = request.GET.get(seat_tag)
     else:
@@ -223,7 +241,7 @@ def check_seat_validate(request, seat_tag):
     return HttpResponse('')
 
 
-def check_baggage_validate(request, baggage_tag):
+def check_baggage_validate(request, baggage_tag='baggage'):
     if request.method == 'GET':
         baggage = request.GET.get(baggage_tag)
     else:
@@ -237,7 +255,7 @@ def check_baggage_validate(request, baggage_tag):
     return HttpResponse('')
 
 
-def check_id_type_validate(request, id_type_tag):
+def check_id_type_validate(request, id_type_tag='id_type'):
     if request.method == 'GET':
         id_type = request.GET.get(id_type_tag)
     else:
@@ -253,11 +271,11 @@ def check_id_type_validate(request, id_type_tag):
 
 def check_id_number_validate(request):
     if request.method == 'GET':
-        id_type = request.GET.get('idType')
-        id_number = request.GET.get('idNumber')
+        id_type = request.GET.get('id_type')
+        id_number = request.GET.get('id_number')
     else:
-        id_type = request.POST.get('idType')
-        id_number = request.POST.get('idNumber')
+        id_type = request.POST.get('id_type')
+        id_number = request.POST.get('id_number')
     if id_type == '':
         return HttpResponse('请选择证件类别 An id type is required')
     if id_number == '':
@@ -275,7 +293,7 @@ def check_id_number_validate(request):
     return HttpResponse('')
 
 
-def check_ticket_validate(request, ticket_tag):
+def check_ticket_validate(request, ticket_tag='ticket'):
     if request.method == 'GET':
         ticket = request.GET.get(ticket_tag)
     else:
@@ -289,7 +307,7 @@ def check_ticket_validate(request, ticket_tag):
     return HttpResponse('')
 
 
-def check_amount_validate(request, amount_tag):
+def check_amount_validate(request, amount_tag='amount'):
     if request.method == 'GET':
         ticket = request.GET.get(amount_tag)
     else:
@@ -303,7 +321,7 @@ def check_amount_validate(request, amount_tag):
     return HttpResponse('')
 
 
-def check_dialling_code_validate(request, dialling_code_tag):
+def check_dialling_code_validate(request, dialling_code_tag='dialling_code'):
     if request.method == 'GET':
         dialling_code = request.GET.get(dialling_code_tag)
     else:
@@ -317,7 +335,7 @@ def check_dialling_code_validate(request, dialling_code_tag):
     return HttpResponse('')
 
 
-def check_telephone_validate(request, telephone_tag):
+def check_telephone_validate(request, telephone_tag='telephone'):
     if request.method == 'GET':
         telephone = request.GET.get(telephone_tag)
     else:
@@ -331,7 +349,7 @@ def check_telephone_validate(request, telephone_tag):
     return HttpResponse('')
 
 
-def check_country_validate(request, country_tag):
+def check_country_validate(request, country_tag='country'):
     if request.method == 'GET':
         inbound_country = request.GET.get(country_tag)
     else:
@@ -345,7 +363,7 @@ def check_country_validate(request, country_tag):
     return HttpResponse('')
 
 
-def check_date_validate(request, date_tag):
+def check_date_validate(request, date_tag='date'):
     if request.method == 'GET':
         inbound_date = request.GET.get(date_tag)
     else:
@@ -355,7 +373,7 @@ def check_date_validate(request, date_tag):
     return HttpResponse('')
 
 
-def check_body_temperature_validate(request, body_temperature_tag):
+def check_body_temperature_validate(request, body_temperature_tag='body_temperature'):
     if request.method == 'GET':
         body_temperature = request.GET.get(body_temperature_tag)
     else:
@@ -369,7 +387,7 @@ def check_body_temperature_validate(request, body_temperature_tag):
     return HttpResponse('')
 
 
-def check_healthy_code_validate(request, healthy_code_tag):
+def check_healthy_code_validate(request, healthy_code_tag='healthy_code'):
     if request.method == 'GET':
         healthy_code = request.GET.get(healthy_code_tag)
     else:
@@ -383,7 +401,7 @@ def check_healthy_code_validate(request, healthy_code_tag):
     return HttpResponse('')
 
 
-def check_address_validate(request, address_tag):
+def check_address_validate(request, address_tag='address'):
     if request.method == 'GET':
         address = request.GET.get(address_tag)
     else:
@@ -397,7 +415,7 @@ def check_address_validate(request, address_tag):
     return HttpResponse('')
 
 
-def check_code_validate(request, code):
+def check_code_validate(request, code='code'):
     if request.method == 'GET':
         code = request.GET.get(code)
     else:

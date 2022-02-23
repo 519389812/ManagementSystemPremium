@@ -32,7 +32,7 @@
         <ul style="text-align: center">
             {% for announcement in page_object_list %}
                 <li>
-                    <a href="{% url 'view_announcement' %}?announcement_id={{ announcement.id }}">{{ announcement.issue_datetime }}</a>
+                    <a href="{% url 'announcement:view_announcement' %}?announcement_id={{ announcement.id }}">{{ announcement.issue_datetime }}</a>
                 </li>
             {% endfor %}
         </ul>

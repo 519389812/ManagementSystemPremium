@@ -29,7 +29,7 @@ def check_authority(func):
         if not args[0].user.is_authenticated:
             if "X-Requested_With" in args[0].headers:
                 return JsonResponse('请先登录', safe=False)
-            return redirect('/login/?next=%s' % args[0].path)
+            return redirect('/user/login/?next=%s' % args[0].path)
         return func(*args, **kwargs)
     return wrapper
 
@@ -66,7 +66,7 @@ def check_accessible(model_object):
                     for team_id in accessible_team_id:
                         if team_id in json.loads(args[0].user.team.related_parent):
                             return func(*args, **kwargs)
-            return redirect('/error_not_accessible')
+            return redirect(reverse('error_not_accessible'))
         return args_wrapper
     return func_wrapper
 
@@ -226,12 +226,12 @@ def check_reset_password_answer(request):
             return render(request, 'reset_password_by_question_answer.html', {'msg': '输入为空'})
         try:
             user = CustomUser.objects.get(id=user_id)
-            if check_password(answer, user.answer):
+            if answer == user.answer:
                 code = random_str(16)
                 QuestionVerifyRecord.objects.create(user=user, code=code, close_datetime=timezone.localtime(timezone.now()) + datetime.timedelta(minutes=5))
-                return render(request, 'reset_password_by_question.html', {'code': code})
+                return render(request, 'reset_password_by_question.html', {'code': code, 'msg': '验证成功，请输入新密码'})
             else:
-                return render(request, 'reset_password_by_question_answer.html', {'msg': '答案不匹配，请检查'})
+                return render(request, 'pre_reset_password_by_question.html', {'msg': '答案不匹配，请检查'})
         except:
             return render(request, 'pre_reset_password_by_question.html', {'msg': '用户不存在'})
     else:

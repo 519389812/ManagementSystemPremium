@@ -31,14 +31,14 @@
         <div class="col-lg-8 mb-4">
             <h3>用户注册</h3>
             {% include "message.html" %}
-            <form name="loginForm" id="loginForm" action="{% url 'register' %}" method="post">
+            <form name="loginForm" id="loginForm" action="{% url 'user:register' %}" method="post">
                 {% csrf_token %}
                 <div class="control-group form-group">
                     <div class="controls">
                         <label>用户名:</label>
                         <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名"
                                required data-validation-required-message="Please enter your username.">
-                        <p style="color:red font-size:14px" class="help-block" id="username_validate"></p>
+                        <p style="color:red;font-size:14px" class="help-block" id="username_validate"></p>
                     </div>
                 </div>
                 <div class="control-group form-group">
@@ -46,7 +46,7 @@
                         <label>密码:</label>
                         <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码"
                                required data-validation-required-message="Please enter your password.">
-                        <p style="color:red font-size:14px" class="help-block" id="password_validate"></p>
+                        <p style="color:red;font-size:14px" class="help-block" id="password_validate"></p>
                     </div>
                 </div>
                 <div class="control-group form-group">
@@ -54,7 +54,7 @@
                         <label>姓氏:</label>
                         <input type="text" class="form-control" id="lastname" name="lastname" placeholder="请输入姓氏"
                                required data-validation-required-message="Please enter your lastname.">
-                        <p style="color:red font-size:14px" class="help-block" id="lastname_validate"></p>
+                        <p style="color:red;font-size:14px" class="help-block" id="lastname_validate"></p>
                     </div>
                 </div>
                 <div class="control-group form-group">
@@ -62,7 +62,7 @@
                         <label>名字:</label>
                         <input type="text" class="form-control" id="firstname" name="firstname" placeholder="请输入名字"
                                required data-validation-required-message="Please enter your firstname.">
-                        <p style="color:red font-size:14px" class="help-block" id="firstname_validate"></p>
+                        <p style="color:red;font-size:14px" class="help-block" id="firstname_validate"></p>
                     </div>
                 </div>
                 <div class="control-group form-group">
@@ -70,7 +70,7 @@
                         <label>邮箱:</label>
                         <input type="email" class="form-control" id="email" name="email" placeholder="请输入邮箱"
                                required data-validation-required-message="Please enter your email.">
-                        <p style="color:red font-size:14px" class="help-block" id="email_validate"></p>
+                        <p style="color:red;font-size:14px" class="help-block" id="email_validate"></p>
                     </div>
                 </div>
                 <div class="control-group form-group">
@@ -78,7 +78,7 @@
                         <label>密保问题:</label>
                         <input type="text" class="form-control" id="question" name="question" placeholder="请输入密保问题（用于找回密码）"
                                required data-validation-required-message="Please enter a question.">
-                        <p style="color:red font-size:14px" class="help-block" id="question_validate"></p>
+                        <p style="color:red;font-size:14px" class="help-block" id="question_validate"></p>
                     </div>
                 </div>
                 <div class="control-group form-group">
@@ -86,7 +86,7 @@
                         <label>密保答案:</label>
                         <input type="text" class="form-control" id="answer" name="answer" placeholder="请输入密保答案"
                                required data-validation-required-message="Please enter an answer.">
-                        <p style="color:red font-size:14px" class="help-block" id="answer_validate"></p>
+                        <p style="color:red;font-size:14px" class="help-block" id="answer_validate"></p>
                     </div>
                 </div>
                 <!-- For success/fail messages -->
@@ -98,7 +98,7 @@
             <p>
                 <abbr title="已有账号?">已有账号</abbr>?
                 <br>
-                点击<a href="{% url 'login' %}">此处</a>登录
+                点击<a href="{% url 'user:login' %}">此处</a>登录
             </p>
             {% include "login_register_tips.html" %}
         </div>
@@ -117,49 +117,49 @@
 $(document).ready(function(){
     $('#username').blur(function(){
         var username = $('#username').val();
-        $.get('/check_username_validate/',{'username':username}, function(ret){
+        $.get('/user/check_username_validate/',{'username':username}, function(ret){
             $('#username_validate').html(ret);
         });
     });
 
     $('#password').blur(function(){
         var password = $('#password').val();
-        $.get('/check_password_validate/',{'password':password}, function(ret){
+        $.get('/user/check_password_validate/',{'password':password}, function(ret){
             $('#password_validate').html(ret);
         });
     });
 
     $('#lastname').blur(function(){
         var lastname = $('#lastname').val();
-        $.get('/check_lastname_validate/',{'lastname':lastname}, function(ret){
+        $.get('/user/check_name_validate/',{'name':lastname}, function(ret){
             $('#lastname_validate').html(ret);
         });
     });
 
     $('#firstname').blur(function(){
         var firstname = $('#firstname').val();
-        $.get('/check_firstname_validate/',{'firstname':firstname}, function(ret){
+        $.get('/user/check_name_validate/',{'name':firstname}, function(ret){
             $('#firstname_validate').html(ret);
         });
     });
 
     $('#email').blur(function(){
         var email = $('#email').val();
-        $.get('/check_email_validate/',{'email':email}, function(ret){
+        $.get('/user/check_email_validate/',{'email':email}, function(ret){
             $('#email_validate').html(ret);
         });
     });
 
     $('#question').blur(function(){
         var question = $('#question').val();
-        $.get('/check_question_validate/',{'question':question}, function(ret){
+        $.get('/user/check_question_validate/',{'question':question}, function(ret){
             $('#question_validate').html(ret);
         });
     });
 
     $('#answer').blur(function(){
         var answer = $('#answer').val();
-        $.get('/check_answer_validate/',{'answer':answer}, function(ret){
+        $.get('/user/check_answer_validate/',{'answer':answer}, function(ret){
             $('#answer_validate').html(ret);
         });
     });

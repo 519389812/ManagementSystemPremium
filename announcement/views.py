@@ -63,7 +63,7 @@ def view_announcement(request):
         announcement = Announcement.objects.get(id=announcement_id)
     except:
         return render(request, 'error_500.html', status=500)
-    if request.user.team not in announcement.team:
+    if request.user.team not in announcement.team.all():
         return render(request, 'error_custom.html', {'msg': '您不在该通知的可见用户范围内'}, status=200)
     read_times = AnnouncementRecord.objects.filter(announcement=announcement, user=request.user).count()
     is_read = True if read_times > 0 else False
@@ -74,6 +74,7 @@ def view_announcement(request):
         user = list(CustomUser.objects.filter(team__name=team).values_list('full_name', flat=True))
         target_user = list(set(target_user).difference(set(user)))
         target_team_member_dict[team] = user
+    target_team_member_dict['其他'] = target_user
     read_user_list = AnnouncementRecord.objects.filter(announcement=announcement).values_list('user__full_name', flat=True)
     for _, user_list in target_team_member_dict.items():
         for i in range(len(user_list)):
@@ -93,7 +94,7 @@ def confirm_announcement(request):
         if AnnouncementRecord.objects.filter(announcement=announcement, user=request.user).count() > 0:
             return render(request, 'error_custom.html', {'msg': '请勿重复提交'}, status=200)
         else:
-            if announcement.require_upload == "True":
+            if announcement.require_upload:
                 image_list = request.FILES.getlist('file', [])
                 transform_image_list = []
                 if len(image_list) > 0:
@@ -114,9 +115,9 @@ def confirm_announcement(request):
                             return render(request, 'error_custom.html', {'msg': '图片格式错误，请更换图片重新上传！'}, status=200)
                     announcement_record = AnnouncementRecord.objects.create(announcement=announcement, user=request.user)
                     for image, image_type in transform_image_list:
-                        timestamp = timezone.now().timestamp()
-                        image.save(os.path.join(file_path, (request.user.id + '_' + announcement_id + '_' + timestamp + '.' + image_type)))
-                        UploadFile.objects.create(announcement_record=announcement_record, file=os.path.join(file_path, (request.user.id + '_' + announcement_id + '_' + timestamp + '.' + image_type)))
+                        timestamp = timezone.now().strftime("%Y%m%d%H%M%S%f")
+                        image.save(os.path.join(file_path, (str(request.user.id) + '_' + announcement_id + '_' + timestamp + '.' + image_type)))
+                        UploadFile.objects.create(announcement_record=announcement_record, file=os.path.join(file_path, (str(request.user.id) + '_' + announcement_id + '_' + timestamp + '.' + image_type)))
                     return redirect(request.META['HTTP_REFERER'])
                 else:
                     return render(request, 'error_500.html', status=500)

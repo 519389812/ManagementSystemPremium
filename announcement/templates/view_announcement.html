@@ -30,64 +30,70 @@
     <div class="row">
         <div class="col-lg-12">
             <h2>{{ announcement.title }}</h2>
-            <p class="lead">作者:{{ announcement.user }} 创建时间:{{ announcement.create_datetime }}
+            <hr>
+            <p class="lead" style="font-size: 15px"><i>作者:{{ announcement.user }},创建时间:{{ announcement.issue_datetime }},
                 {% if announcement.period_close_datetime %}
                     截止时间:{{ announcement.period_close_datetime }}
                 {% else %}
                     截止时间:{{ announcement.close_datetime }}
-            </p>
+                {% endif %}
+            </i></p>
+            <hr>
             <p>{{ announcement.content|linebreaksbr }}</p>
-            {% if announcement.template_announcement_is_active == True %}
-                {% if is_read == False %}
-                    <form enctype="multipart/form-data" action="{% url 'read_confirm' %}" method="POST">
-                        {% csrf_token %}
-                        <input type="text" class="custom-file-input" name="announcement_id" value="{{ announcement.id }}" hidden>
-                        <div class="control-group form-group">
-                            <div class="controls">
-                                {% if announcement.require_upload == True %}
-                                    <input type="file" class="custom-file-input" id="file" name="file" about="点击选择上传文件" multiple="multiple" required>
-                                    <label class="custom-file-label" for="file">选择文件（一次可选择多个）</label>
-                                {% else %}
-                                    <input type="file" class="custom-file-input" about="无需上传" disabled="disabled">
-                                    <label class="custom-file-label">选择文件（一次可选择多个）</label>
-                                {% endif %}
+            <div class="custom-file">
+                {% if announcement.template_announcement_is_active == True %}
+                    {% if is_read == False %}
+                        <form enctype="multipart/form-data" action="{% url 'announcement:confirm_announcement' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="text" class="custom-file-input" name="announcement_id" value="{{ announcement.id }}" hidden>
+                            <div class="control-group form-group">
+                                <div class="custom-file">
+                                    {% if announcement.require_upload == True %}
+                                        <input type="file" class="custom-file-input" id="file" name="file" about="点击选择上传文件" multiple="multiple" required>
+                                        <label class="custom-file-label" for="file">选择文件（一次可选择多个）</label>
+                                    {% else %}
+                                        <input type="file" class="custom-file-input" about="无需上传" disabled="disabled">
+                                        <label class="custom-file-label">选择文件（一次可选择多个）</label>
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary">确认</button>
-                    </form>
+                            <div align="center"><button type="submit" class="btn btn-secondary btn-block">确认</button></div>
+                        </form>
+                    {% else %}
+                        <div align="center"><button type="button" class="btn btn-secondary btn-block" style="align:center" disabled="disabled">已确认</button></div>
+                    {% endif %}
                 {% else %}
-                    <button type="button" class="btn btn-secondary" disabled="disabled">已确认</button>
+                    {% if is_read == True %}
+                        <div align="center"><button type="button" class="btn btn-secondary btn-block" style="align:center" disabled="disabled">过期-已确认</button></div>
+                    {% else %}
+                        <div align="center"><button type="button" class="btn btn-secondary btn-block" style="align:center" disabled="disabled">过期-未确认</button></div>
+                    {% endif %}
                 {% endif %}
-            {% else %}
-                {% if is_read == True %}
-                    <button type="button" class="btn btn-secondary" disabled="disabled">过期-已确认</button>
-                {% else %}
-                    <button type="button" class="btn btn-secondary" disabled="disabled">过期-未确认</button>
-                {% endif %}
-            {% endif %}
             </div>
         </div>
     </div>
     <!-- /.row -->
-
+    <br>
     <!-- Team Members -->
-    <h2>确认情况</h2>
+    <h3>确认情况</h3>
 
     <div class="row">
-        {% for team, member in target_team_member_dict.items %}
+        {% for team, member_list in target_team_member_dict.items %}
             <div class="col-lg-4 mb-4">
                 <div class="card h-100 text-center">
                     <div class="card-body">
                         <h4 class="card-title">{{ team }}</h4>
                         <h6 class="card-subtitle mb-2 text-muted"></h6>
-                        {% if member.read_status == True %}
-                            <p class="card-text" style="color: green">{{ member.name }}</p>
-                        {% else %}
-                            <p class="card-text" style="color: red">{{ member.name }}</p>
-                        {% endif %}
+                        {% for member in member_list %}
+                            {% if member.read_status == True %}
+                                <a href="#" class="card-text" style="color: green">{{ member.user }}</a>
+                            {% else %}
+                                <a href="#" class="card-text" style="color: red">{{ member.user }}</a>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                     <div class="card-footer">
-                        <a href="#"></a>
+                        <span>共{{ member_list|length }}人</span>
                     </div>
                 </div>
             </div>
@@ -103,6 +109,11 @@
 
 <!-- Bootstrap core JavaScript -->
 {% include "script.html" %}
+<script>
+$(document).ready(function () {
+    bsCustomFileInput.init()
+})
+</script>
 
 </body>
 
