@@ -209,10 +209,7 @@ class AnnouncementRecordSummaryAdmin(admin.ModelAdmin):
                 read_names = list(set(read_names.values_list('user__full_name', flat=True)))
             else:
                 read_names = []
-            print(target_names)
-            print(read_names)
-            unread_names = list(set(read_names).difference(set(target_names)))
-            print(unread_names)
+            unread_names = list(set(target_names) - (set(read_names)))  # 集合差集 交集& 并集|
             for name in read_names:
                 if data.get(name, '') == '':
                     data.setdefault(name, {'read': 1, 'unread': 0})
@@ -227,7 +224,8 @@ class AnnouncementRecordSummaryAdmin(admin.ModelAdmin):
         data.rename(columns={'read': '已读', 'unread': '未读'}, inplace=True)
         data['总数'] = data['已读'] + data['未读']
         data['阅读率'] = data['已读'] / data['总数']
-        print(data)
+        data['阅读率'] = data['阅读率'].apply(lambda x: '%.2f%%' % (x*100))
+        data.sort_values(['阅读率'], ascending=False, inplace=True)
         response.context_data['summary'] = data
         return response
 

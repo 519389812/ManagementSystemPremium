@@ -72,7 +72,7 @@ def view_announcement(request):
     target_team_member_dict = {}
     for team in target_team_name:
         user = list(CustomUser.objects.filter(team__name=team).values_list('full_name', flat=True))
-        target_user = list(set(target_user).difference(set(user)))
+        target_user = list(set(target_user).difference(set(user)))  # 第一个集合中的差集
         target_team_member_dict[team] = user
     target_team_member_dict['其他'] = target_user
     read_user_list = AnnouncementRecord.objects.filter(announcement=announcement).values_list('user__full_name', flat=True)

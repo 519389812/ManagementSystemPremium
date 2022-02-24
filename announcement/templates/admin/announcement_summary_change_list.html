@@ -39,9 +39,9 @@
             </thead>
 
             <tbody>
-                {% for row in summary %}
+                {% for index, row in summary.iterrows %}
                     <tr class="{% cycle 'row1' 'row2' %}">
-                        <td>{{ row.index }}</td>
+                        <td>{{ index }}</td>
                         <td>{{ row.总数 }}</td>
                         <td>{{ row.已读 }}</td>
                         <td>{{ row.未读 }}</td>
