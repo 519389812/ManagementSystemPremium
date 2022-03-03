@@ -15,5 +15,5 @@ class Feedback(models.Model):
         verbose_name_plural = '留言'
 
     def __str__(self):
-        return self.id
+        return self.content
 

@@ -20,7 +20,7 @@ class DocxInit(models.Model):
         verbose_name_plural = "文档"
 
     def __str__(self):
-        return self.id
+        return self.template_name
 
 
 class ContentStorage(models.Model):
@@ -37,7 +37,7 @@ class ContentStorage(models.Model):
         verbose_name_plural = "文档内容"
 
     def __str__(self):
-        return self.id
+        return self.content
 
 
 class SignatureStorage(models.Model):
@@ -53,4 +53,4 @@ class SignatureStorage(models.Model):
         verbose_name_plural = "签名"
 
     def __str__(self):
-        return self.id
+        return self.content

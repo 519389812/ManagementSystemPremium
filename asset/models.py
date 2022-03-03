@@ -135,4 +135,4 @@ class CurrentStorage(models.Model):
         verbose_name_plural = '流动资产库存'
 
     def __str__(self):
-        return self.id
+        return self.current.name

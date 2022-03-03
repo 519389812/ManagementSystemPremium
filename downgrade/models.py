@@ -60,7 +60,7 @@ class DowngradeRecord(models.Model):
         ordering = ['-fill_datetime']
 
     def __str__(self):
-        return self.id
+        return self.flight_number
 
 
 class DowngradeSummary(DowngradeRecord):

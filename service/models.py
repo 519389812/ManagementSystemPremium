@@ -28,7 +28,7 @@ class ServiceRecord(models.Model):
         verbose_name_plural = '服务满意度得分'
 
     def __str__(self):
-        return self.id
+        return self.user.name
 
 
 class ServiceRecordSummary(ServiceRecord):

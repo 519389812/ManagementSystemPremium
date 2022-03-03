@@ -48,7 +48,7 @@ class SalesRecord(models.Model):
         verbose_name_plural = '产品记录'
 
     def __str__(self):
-        return self.id
+        return self.flight_number
 
 
 class SalesSummary(SalesRecord):
