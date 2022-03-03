@@ -32,7 +32,7 @@
         <div class="col-lg-8 mb-4">
             <h3>新增工时记录</h3>
             {% include "message.html" %}
-            <form name="addManHourForm" id="addManHourForm" action="{% url 'add_man_hour' %}" method="post">
+            <form name="addManHourForm" id="addManHourForm" action="{% url 'performance:add_man_hour' %}" method="post">
                 {% csrf_token %}
                 <div class="control-group form-group">
                     <div class="controls">
@@ -105,7 +105,7 @@
             <p>
                 <abbr title="查询审核状态">查询审核状态</abbr>
                 <br>
-                请点击<a href="{% url 'view_performance' %}">此处</a>
+                请点击<a href="{% url 'performance:view_man_hour' %}">此处</a>
             </p>
         </div>
     </div>

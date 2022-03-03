@@ -56,7 +56,7 @@
                         <p>{{ info }}</p>
                     {% endif %}
                     {% if closed == False %}
-                        <form class="input-group" action="{% url 'fill_docx' docx_dict.id need_signature %}" method="post">
+                        <form class="input-group" action="{% url 'document:fill_docx' docx_dict.id need_signature %}" method="post">
                             {% csrf_token %}
                             {% for key, value in content_variable_dict.items %}
                                 <div class="control-group form-group">

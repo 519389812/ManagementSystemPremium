@@ -68,4 +68,7 @@ urlpatterns = [
 
     # sale
     path('sale/', include('sale.urls', namespace='sale')),
+
+    # flexible
+    path('flexible/', include('flexible.urls', namespace='flexible')),
 ]

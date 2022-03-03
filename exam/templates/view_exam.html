@@ -32,7 +32,7 @@
         <div class="col-lg-8 mb-4">
             <h3>{{ exam.title }}</h3>
             {% include "message.html" %}
-            <form name="examForm" id="examForm" action="{% url 'view_exam' %}" method="post">
+            <form name="examForm" id="examForm" action="{% url 'exam:view_exam' %}" method="post">
                 {% csrf_token %}
                 {% if exam.login_required == False %}
                     <div class="control-group form-group">

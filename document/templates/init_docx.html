@@ -51,7 +51,7 @@
             <div class="card mb-4">
                 <h5 class="card-header">新建文档</h5>
                 <div class="card-body">
-                    <form class="input-group" action="{% url 'write_init_docx' template_name %}" method="post">
+                    <form class="input-group" action="{% url 'document:write_init_docx' template_name %}" method="post">
                         {% csrf_token %}
                         <div class="control-group form-group">
                             <div class="controls">

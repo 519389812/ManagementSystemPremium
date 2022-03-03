@@ -56,7 +56,7 @@
             <div class="card mb-4">
                 <h5 class="card-header">选择模板</h5>
                 <div class="card-body">
-                    <form class="input-group" action="{% url 'init_docx' %}" method="post">
+                    <form class="input-group" action="{% url 'document:init_docx' %}" method="post">
                         {% csrf_token %}
                         <select class="form-control" id="select_template" name="select_template">
                             <option value="无">请选择</option>
@@ -83,7 +83,7 @@
                 <div class="card my-4">
                     <h5 class="card-header">删除模板</h5>
                     <div class="card-body">
-                        <form class="input-group" action="{% url 'delete_template' %}" method="post">
+                        <form class="input-group" action="{% url 'document:delete_template' %}" method="post">
                             {% csrf_token %}
                             <select class="form-control" name="delete_template">
                                 <option value="无">请选择</option>

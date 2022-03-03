@@ -32,7 +32,7 @@
         <div class="col-lg-8 mb-4">
             <h3>新增工作量记录</h3>
             {% include "message.html" %}
-            <form name="addWorkloadForm" id="addWorkloadForm" action="{% url 'add_workload' %}" method="post">
+            <form name="addWorkloadForm" id="addWorkloadForm" action="{% url 'performance:add_workload' %}" method="post">
                 {% csrf_token %}
                 <div class="control-group form-group">
                     <div class="controls">
@@ -90,7 +90,7 @@
             <p>
                 <abbr title="查询审核状态">查询审核状态</abbr>
                 <br>
-                请点击<a href="{% url 'view_performance' %}">此处</a>
+                请点击<a href="{% url 'performance:view_workload' %}">此处</a>
             </p>
         </div>
     </div>

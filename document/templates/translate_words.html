@@ -50,7 +50,7 @@
             <div class="card mb-4">
                 <h5 class="card-header">新增/修改翻译</h5>
                 <div class="card-body">
-                    <form class="input-group" action="{% url 'translate_words' %}" method="post">
+                    <form class="input-group" action="{% url 'document:translate_words' %}" method="post">
                         {% csrf_token %}
                         <div class="control-group form-group">
                             <div class="controls">

@@ -54,7 +54,7 @@
     <!-- Pagination -->
     <ul class="pagination justify-content-center">
         <li class="page-item">
-            <a class="page-link" href="{% url 'view_exam' %}?page=1" aria-label="Previous">
+            <a class="page-link" href="{% url 'exam:view_exam' %}?page=1" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
                 <span class="sr-only">首页</span>
             </a>
@@ -63,15 +63,15 @@
             {% for _ in range %}
                 <li class="page-item">
                     {% if page_num == forloop.counter %}
-                        <a class="page-link" href="{% url 'view_exam' %}?page={{ page_num }}" style="pointer-events: none;cursor: default;color:gray;">{{ forloop.counter }}</a>
+                        <a class="page-link" href="{% url 'exam:view_exam' %}?page={{ page_num }}" style="pointer-events: none;cursor: default;color:gray;">{{ forloop.counter }}</a>
                     {% else %}
-                        <a class="page-link" href="{% url 'view_exam' %}?page={{ page_num }}">{{ forloop.counter }}</a>
+                        <a class="page-link" href="{% url 'exam:view_exam' %}?page={{ page_num }}">{{ forloop.counter }}</a>
                     {% endif %}
                 </li>
             {% endfor %}
         {% endwith %}
         <li class="page-item">
-            <a class="page-link" href="{% url 'view_exam' %}?page={{ total_page_num }}" aria-label="Next">
+            <a class="page-link" href="{% url 'exam:view_exam' %}?page={{ total_page_num }}" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
                 <span class="sr-only">尾页</span>
             </a>

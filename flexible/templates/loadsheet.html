@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>舱单</title>
+
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">舱单
+        <small>填写测验</small>
+    </h1>
+
+    <ol class="breadcrumb">
+    </ol>
+
+    <!-- Team Members -->
+    <div class="row">
+        <div class="col-lg-12 mb-12">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div style="float:left">LMC版本号</div><div align="right">1</div>
+                    <hr>
+                    <div style="float:left">舱单版本号</div><div align="right">1</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12 mb-12">
+            <div class="card h-100 text-center">
+                <form action="{% url 'flexible:add_loadsheet' %}" method="post">
+                    {% csrf_token %}
+                    <input name="load_sheet_id" value="{{ load_sheet.id }}" hidden/>
+                    <div id="fixPaxForm">
+                        <div class="card-header">
+                            <div style="float:left">旅客修正</div>
+                            <div align="right">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-plus-square" viewBox="0 0 16 16" onclick="addFixPax()">
+                                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div id="fixPax-0">
+                            <div class="card-body">
+                                <div style="float:left">目的地</div><div align="right"><input name="fixPax_0_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ load_sheet.destination }}" disabled="disabled"/></div>
+                                <hr>
+                                <div style="float:left">旅客人数</div><div align="right"><input name="fixPax_0_paxNumber" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="-1" onblur="onFixPaxBlur.call(this)" required/></div>
+                                <hr>
+                                <div style="float:left">乘客类型</div>
+                                <div align="right">
+                                    <select name="fixPax_0_paxType" style="width: 60px;height:30px; border-style: none; text-align: right" onblur="onFixPaxBlur.call(this)" required>
+                                        <option value="成人" selected>成人</option>
+                                        <option value="儿童">儿童</option>
+                                        <option value="婴儿">婴儿</option>
+                                        <option value="机组">机组</option>
+                                    </select>
+                                </div>
+                                <hr>
+                                <div style="float:left">舱位</div>
+                                <div align="right">
+                                    <select name="fixPax_0_paxClass" style="width: 60px;height:30px; border-style: none; text-align: right" required>
+                                        <option value="Y" selected>Y</option>
+                                        <option value="W">W</option>
+                                        <option value="C">C</option>
+                                        <option value="F">F</option>
+                                    </select>
+                                </div>
+                                <hr>
+                                <div style="float:left">重量</div><div align="right"><input id="fixPax_0_paxWeight" name="fixPax_0_paxWeight" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="-0 KG" required/></div>
+                                <hr>
+                            </div>
+                            <div style="float:left"><button type="button" onclick="deleteFixPax('fixPax-0')">删除</button></div>
+                        </div>
+                    </div>
+                    <br/><br/>
+                    <div id="fixBaggageForm">
+                        <div class="card-header">
+                            <div style="float:left">行李修正</div>
+                            <div align="right">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-plus-square" viewBox="0 0 16 16" onclick="addFixBaggage()">
+                                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div id="fixBaggage-0">
+                            <div class="card-body">
+                                <div style="float:left">目的地</div><div align="right"><input name="fixBaggage_0_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ load_sheet.destination }}" disabled="disabled"/></div>
+                                <hr>
+                                <div style="float:left">件数</div><div align="right"><input name="fixBaggage_0_baggageNumber" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" value="-1" required/></div>
+                                <hr>
+                                <div style="float:left">位置</div><div align="right"><input name="fixBaggage_0_baggageLocation" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="请输入" required/></div>
+                                <hr>
+                                <div style="float:left">重量</div><div align="right"><input name="fixBaggage_0_baggageWeight" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="-0 KG" required/></div>
+                                <hr>
+                            </div>
+                            <div style="float:left"><button type="button" onclick="deleteFixPax('fixBaggage-0')">删除</button></div>
+                        </div>
+                    </div>
+                    <br/><br/>
+                    <div id="fixOtherForm">
+                        <div class="card-header">
+                            <div style="float:left">其他修正</div>
+                            <div align="right">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-plus-square" viewBox="0 0 16 16" onclick="addFixOther()">
+                                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div id="fixOther-0">
+                            <div class="card-body">
+                                <div style="float:left">目的地</div><div align="right"><input name="fixOther_0_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ load_sheet.destination }}" disabled="disabled"/></div>
+                                <hr>
+                                <div style="float:left">类型</div>
+                                <div align="right">
+                                    <select name="fixOther_0_type" style="width: 60px;height:30px; border-style: none; text-align: right" required>
+                                        <option value="货" selected>货</option>
+                                        <option value="邮">邮</option>
+                                        <option value="压舱物">压舱物</option>
+                                    </select>
+                                </div>
+                                <hr>
+                                <div style="float:left">位置</div><div align="right"><input name="fixOther_0_location" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="请输入" required/></div>
+                                <hr>
+                                <div style="float:left">重量</div><div align="right"><input name="fixOther_0_weight" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="+0 KG" required/></div>
+                            </div>
+                            <div style="float:left"><button type="button" onclick="deleteFixPax('fixOther-0')">删除</button></div>
+                        </div>
+                    </div>
+                    <br><br>
+                    <hr>
+                    <input class="btn btn-primary" type="submit" value="完成提交"/>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+<script>
+    var i = 0
+    function addFixPax() {
+        ++i;
+        var content = '<div id="fixPax-' + i + '">'
+        content +=
+        '<br/><br/>' +
+        '<ol class="breadcrumb"></ol>' +
+        '    <div class="card-body">'+
+        '        <div style="float:left">目的地</div><div align="right"><input name="fixPax_' + i + '_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ destination }}" disabled="disabled"/></div>' +
+        '        <hr>' +
+        '        <div style="float:left">旅客人数</div><div align="right"><input name="fixPax_' + i + '_paxNumber" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="-1" onblur="onFixPaxBlur.call(this)" required/></div>' +
+        '        <hr>' +
+        '        <div style="float:left">乘客类型</div>' +
+        '        <div align="right">' +
+        '            <select name="fixPax_' + i + '_paxType" style="width: 60px;height:30px; border-style: none; text-align: right" onblur="onFixPaxBlur.call(this)" required>' +
+        '                <option value="成人" selected>成人</option>' +
+        '                <option value="儿童">儿童</option>' +
+        '                <option value="婴儿">婴儿</option>' +
+        '                <option value="机组">机组</option>' +
+        '            </select>' +
+        '        </div>' +
+        '        <hr>' +
+        '        <div style="float:left">舱位</div>' +
+        '        <div align="right">' +
+        '            <select name="fixPax_' + i + '_paxClass" style="width: 60px;height:30px; border-style: none; text-align: right" required>' +
+        '                <option value="Y" selected>Y</option>' +
+        '                <option value="W">W</option>' +
+        '                <option value="C">C</option>' +
+        '                <option value="F">F</option>' +
+        '            </select>' +
+        '        </div>' +
+        '        <hr>' +
+        '        <div style="float:left">重量</div><div align="right"><input id="fixPax_' + i + '_paxWeight" name="fixPax_' + i + '_paxWeight" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="-0 KG" required/></div>' +
+        '        <hr>' +
+        '    </div>'
+        content += '<div style="float:left"><button type="button" onClick="deleteFixPax(\'fixPax-' + i + '\')">删除</button></div></div>';
+        $('#fixPaxForm').append(content);
+    }
+
+    function deleteFixPax(id) {
+        divId = '#' + id;
+        $(divId).remove();
+    }
+
+    function addFixBaggage() {
+        ++i;
+        var content = '<div id="fixBaggage-' + i + '">'
+        content +=
+        '<br/><br/>' +
+        '<ol class="breadcrumb"></ol>' +
+        '    <div class="card-body">' +
+        '    <div style="float:left">目的地</div><div align="right"><input name="fixBaggage_' + i + '_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ destination }}" disabled="disabled" required/></div>' +
+        '    <hr>' +
+        '    <div style="float:left">件数</div><div align="right"><input name="fixBaggage_' + i + '_baggageNumber" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" value="-1" required/></div>' +
+        '    <hr>' +
+        '    <div style="float:left">位置</div><div align="right"><input name="fixBaggage_' + i + '_baggageLocation" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="请输入" required/></div>' +
+        '    <hr>' +
+        '    <div style="float:left">重量</div><div align="right"><input name="fixBaggage_' + i + '_baggageWeight" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="-0 KG" required/></div>' +
+        '    </div>'
+        content += '<div style="float:left"><button type="button" onClick="deleteFixBaggage(\'fixBaggage-' + i + '\')">删除</button></div></div>';
+        $('#fixBaggageForm').append(content);
+    }
+
+    function deleteFixBaggage(id) {
+        divId = '#' + id;
+        $(divId).remove();
+    }
+
+    function addFixOther() {
+        ++i;
+        var content = '<div id="fixOther-' + i + '">'
+        content +=
+            '<br/><br/>' +
+            '<ol class="breadcrumb"></ol>' +
+            '    <div class="card-body">'+
+            '    <div style="float:left">目的地</div><div align="right"><input name="fixOther_' + i + '_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ destination }}" disabled="disabled" required/></div>' +
+            '    <hr>' +
+            '    <div style="float:left">类型</div>' +
+            '    <div align="right">' +
+            '        <select name="fixOther_' + i + '_type" style="width: 60px;height:30px; border-style: none; text-align: right" required>' +
+            '            <option value="货" selected>货</option>' +
+            '           <option value="邮">邮</option>' +
+            '           <option value="压舱物">压舱物</option>' +
+            '       </select>' +
+            '    </div>' +
+            '    <hr>' +
+            '    <div style="float:left">位置</div><div align="right"><input name="fixOther_' + i + '_location" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="请输入" required/></div>' +
+            '    <hr>' +
+            '    <div style="float:left">重量</div><div align="right"><input name="fixOther_' + i + '_weight" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="+0 KG" required/></div>' +
+            '    </div>'
+        content += '<div style="float:left"><button type="button" onClick="deleteFixPax(\'fixOther-' + i + '\')">删除</button></div></div>';
+        $('#fixOtherForm').append(content);
+    }
+
+    function deleteFixOther(id) {
+        divId = '#' + id;
+        $(divId).remove();
+    }
+
+    function onFixPaxBlur() {
+        var id_ = $(this).attr('name').split('_')[1];
+        var type_name = 'select[name=\"fixPax_' + id_ + '_paxType\"]';
+        var type = $(type_name).val();
+        var number_name = 'input[name=\"fixPax_' + id_ + '_paxNumber\"]';
+        var number = $(number_name).val();
+        var weight_name = 'input[name=\"fixPax_' + id_ + '_paxWeight\"]';
+        if (type == '成人') {
+            $(weight_name).val(number * 75)
+        } else if (type == '儿童') {
+            $(weight_name).val(number * 38)
+        } else if (type == '婴儿') {
+            $(weight_name).val(number * 10)
+        } else {
+            $(weight_name).val(number * 80)
+        }
+    }
+</script>
+
+</body>
+
+</html>

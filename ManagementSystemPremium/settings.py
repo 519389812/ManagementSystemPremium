@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     'downgrade',
     'exam',
     'feedback',
+    'flexible',
     'performance',
     'person',
     'reward',
@@ -109,6 +110,7 @@ TEMPLATES = [
             os.path.join(BASE_DIR, 'sale', 'templates'),
             os.path.join(BASE_DIR, 'service', 'templates'),
             os.path.join(BASE_DIR, 'training', 'templates'),
+            os.path.join(BASE_DIR, 'flexible', 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {

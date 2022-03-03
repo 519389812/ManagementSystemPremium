@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>舱单</title>
+
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">舱单
+        <small>填写测验</small>
+    </h1>
+
+    <ol class="breadcrumb">您的答卷</ol>
+
+    <!-- Team Members -->
+    <div class="row">
+        <div class="col-lg-12 mb-12">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div style="float:left">LCM Total</div><div align="right">{{ lcm_total }}</div>
+                    <hr>
+                    <div style="float:left">分数</div><div align="right">{{ total_score }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12 mb-12">
+            <div class="card h-100 text-center">
+                {% if passenger|length > 0 %}
+                    <div class="card-header">
+                        <div style="float:left">旅客修正</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div class="text">舱位</div>
+                                </th>
+                                <th>
+                                    <div class="text">类型</div>
+                                </th>
+                                <th>
+                                    <div class="text">人数</div>
+                                </th>
+                                <th>
+                                    <div class="text">重量</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for index, row in passenger.iterrows %}
+                                <tr class="{% cycle 'row1' 'row2' %}">
+                                    {% if index.0 != 'total' %}
+                                        <td>{{ index.0 }}</td>
+                                        <td>{{ index.1 }}</td>
+                                    {% else %}
+                                        <td>合计</td>
+                                        <td></td>
+                                    {% endif %}
+                                    <td>{{ row.paxNumber }}</td>
+                                    <td>{{ row.paxWeight }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <br/><br/>
+                {% endif %}
+                {% if baggage|length > 0 %}
+                    <div class="card-header">
+                        <div style="float:left">行李修正</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div class="text">位置</div>
+                                </th>
+                                <th>
+                                    <div class="text">数量</div>
+                                </th>
+                                <th>
+                                    <div class="text">重量</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for index, row in baggage.iterrows %}
+                                <tr class="{% cycle 'row1' 'row2' %}">
+                                    {% if index != 'total' %}
+                                        <td>{{ index }}</td>
+                                    {% else %}
+                                        <td>合计</td>
+                                    {% endif %}
+                                    <td>{{ row.baggageNumber }}</td>
+                                    <td>{{ row.baggageWeight }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <br/><br/>
+                {% endif %}
+                {% if other|length > 0 %}
+                    <div class="card-header">
+                        <div style="float:left">其他修正</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div class="text">位置</div>
+                                </th>
+                                <th>
+                                    <div class="text">类型</div>
+                                </th>
+                                <th>
+                                    <div class="text">重量</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for index, row in other.iterrows %}
+                                <tr class="{% cycle 'row1' 'row2' %}">
+                                    {% if index.0 != 'total' %}
+                                        <td>{{ index.0 }}</td>
+                                        <td>{{ index.1 }}</td>
+                                    {% else %}
+                                        <td>合计</td>
+                                        <td></td>
+                                    {% endif %}
+                                    <td>{{ row.weight }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <br/><br/>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+</body>
+
+</html>
