@@ -26,22 +26,36 @@ SECRET_KEY = '^gj4*l7^c75mhlsrgmby=!!ro^%2%+2o41sg)hh0r=qe$k&tqd'
 # SECURITY WARNING: don't run with debug turned on in production!
 
 online = True
+ad = False
 # SECURITY WARNING: don't run with debug turned on in production!
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 if online:
-    DEBUG = False
-    ALLOWED_HOSTS = ['teamworkad.pythonanywhere.com']
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'teamworkad$default',
-            'USER': 'teamworkad',
-            'PASSWORD': 'zjss123456',
-            'HOST': 'teamworkad.mysql.pythonanywhere-services.com',
+    if not ad:
+        DEBUG = False
+        ALLOWED_HOSTS = ['teamwork.pythonanywhere.com']
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.mysql',
+                'NAME': 'teamwork$default',
+                'USER': 'teamwork',
+                'PASSWORD': 'zjss123456',
+                'HOST': 'teamwork.mysql.pythonanywhere-services.com',
+            }
         }
-    }
+    else:
+        DEBUG = False
+        ALLOWED_HOSTS = ['teamworkad.pythonanywhere.com']
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.mysql',
+                'NAME': 'teamworkad$default',
+                'USER': 'teamworkad',
+                'PASSWORD': 'zjss123456',
+                'HOST': 'teamworkad.mysql.pythonanywhere-services.com',
+            }
+        }
 else:
     DEBUG = True
     ALLOWED_HOSTS = []
