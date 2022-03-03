@@ -93,7 +93,7 @@ def register(request):
         if not check_post_validate(request, check_register_username_validate, check_password_validate, check_name_validate,
                                    check_name_validate, check_email_validate, check_question_validate,
                                    check_answer_validate, ['username', 'password', 'lastname', 'firstname', 'email', 'question', 'answer']):
-            return render(request, 'register.html', {'msg': '存在未按规定要求填写的字段！'})
+            return render(request, 'register.html', {'msg': '用户名已存在，或存在未按规定要求填写的字段！'})
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
         last_name = request.POST.get('lastname', '')
