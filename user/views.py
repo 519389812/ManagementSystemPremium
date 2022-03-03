@@ -346,9 +346,9 @@ def logout(request):
 
 
 def check_register_username_validate(request, username_tag):
-    try:
+    if request.method == 'GET':
         username = request.GET.get(username_tag)
-    except MultiValueDictKeyError:
+    else:
         username = request.POST.get(username_tag)
     if username == '':
         return HttpResponse('用户名不能为空')
