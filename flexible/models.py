@@ -30,4 +30,4 @@ class LoadSheetContent(models.Model):
         verbose_name_plural = '舱单内容'
 
     def __str__(self):
-        return self.load_sheet.name
+        return self.load_sheet.flight
