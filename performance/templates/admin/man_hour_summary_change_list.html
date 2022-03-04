@@ -10,17 +10,14 @@
         <table>
             <thead>
                 <tr>
-                    <th>
-                        <div class="text">
-                            <a href="#">组别</a>
-                        </div>
-                    </th>
-                    <th>
-                        <div class="text">
-                            <a href="#">姓名</a>
-                        </div>
-                    </th>
-                    {% for row in columns %}
+                    {% for row in summary.index.names %}
+                        <th>
+                            <div class="text">
+                                <a href="#"><strong>{{ row }}</strong></a>
+                            </div>
+                        </th>
+                    {% endfor %}
+                    {% for row in summary.columns %}
                         <th>
                             <div class="text">
                                 <a href="#"><strong>{{ row }}</strong></a>
@@ -31,9 +28,14 @@
             </thead>
 
             <tbody>
-                {% for row in summary %}
+                {% for index, row in summary.iterrows %}
                     <tr class="{% cycle 'row1' 'row2' %}">
-                        <td>{{ row }}</td>
+                        {% for i in index %}
+                            <td>{{ i }}</td>
+                        {% endfor %}
+                        {% for r in row %}
+                            <td>{{ r }}</td>
+                        {% endfor %}
                     </tr>
                 {% endfor %}
             </tbody>

@@ -142,7 +142,6 @@ $('#position_id').change(function(){
         return;
     }
     $('#man-hour-loading').html('工时项目加载中...');
-    $("#saveButton").attr("hidden", "false");
     $.ajax({
         type: "POST",
         url: "/performance/get_man_hour_item/",
@@ -152,14 +151,13 @@ $('#position_id').change(function(){
             'position_id': position_id,
             'csrfmiddlewaretoken':$("[name='csrfmiddlewaretoken']").val()
         },
-        dataType: "text",
+        dataType: "json",
         success: function(data){
             $('#man-hour-loading').html('');
-            $("#saveButton").attr("hidden", "true");
             manHourDiv.empty();
             var content = "";
             for (var i = 0; i <= data.length - 1; i++) {
-                content += '<option value="data[i].id">data[i].name</option>';
+                content += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
             }
             manHourDiv.append(content);
         },

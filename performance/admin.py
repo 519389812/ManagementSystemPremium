@@ -12,6 +12,7 @@ import math
 import json
 from django.db.models import Count, Sum, DateTimeField, DateField, Min, Max, Avg, F, ExpressionWrapper, fields, Value, Func
 import pandas as pd
+import numpy as np
 
 
 def half_ceil(x):
@@ -36,7 +37,7 @@ class WorkloadItemAdmin(admin.ModelAdmin):
 
 
 class WorkloadRecordAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'date', 'position', 'workload_exchange', 'output', 'verifier', 'remark', 'create_datetime', 'verify', 'verify_user', 'verify_datetime')
+    list_display = ('id', 'user', 'date', 'position', 'workload_item', 'workload_output', 'output', 'verifier', 'remark', 'create_datetime', 'verify', 'verify_user', 'verify_datetime')
     list_editable = ('verify',)
     autocomplete_fields = ['user', 'position', 'verifier', 'verify_user']
     search_fields = ('user__full_name', 'date', 'position__name', 'verifier__name', 'remark')
@@ -44,14 +45,18 @@ class WorkloadRecordAdmin(admin.ModelAdmin):
         ('基本信息', {'fields': ['id', 'user', 'position', 'verifier', 'verify', 'remark']}),
         ('操作信息', {'fields': ['create_datetime', 'verify_user', 'verify_datetime']}),
     )
-    readonly_fields = ('id', 'user', 'position', 'workload_exchange', 'output', 'create_datetime', 'verify_user', 'verify_datetime')
+    readonly_fields = ('id', 'user', 'position', 'workload_item', 'workload_output', 'output', 'create_datetime', 'verify_user', 'verify_datetime')
     list_filter = (
         'date', 'create_datetime', 'position__name', 'verifier'
     )
 
-    def workload_exchange(self, obj):
-        return obj.workload.replace('\"', '').replace('{', '').replace('}', '')
-    workload_exchange.short_description = '工作量'
+    def workload_item(self, obj):
+        return list(json.loads(obj.workload).keys())[0]
+    workload_item.short_description = '项目'
+
+    def workload_output(self, obj):
+        return list(json.loads(obj.workload).values())[0]
+    workload_output.short_description = '工作量'
 
     def output(self, obj):
         workload_item = list(WorkloadItem.objects.filter(position=obj.position).values('name', 'weight'))
@@ -115,13 +120,13 @@ class WorkloadSummaryAdmin(admin.ModelAdmin):
             qs = response.context_data['cl'].queryset
         except (AttributeError, KeyError):
             return response
-        qs = pd.DataFrame(qs.values('user__team__name', 'user__full_name', 'position__name', 'workload'))
+        qs = pd.DataFrame(qs.filter(verify=True).values('user__team__name', 'user__full_name', 'position__name', 'workload'))
         if qs.shape[0] > 0:
             qs.rename(columns={'user__team__name': '组别', 'user__full_name': '姓名', 'position__name': '岗位'}, inplace=True)
             qs = flatten_json(qs, 'workload')
-            qs = pd.pivot_table(qs, index=['组别', '姓名'], columns=['岗位'], margins=True, margins_name='总计')
-            response.context_data['columns'] = qs.columns
-            response.context_data['summary'] = qs.values.tolist()
+            # margins 必须加dropna=False参数才能生效
+            qs = pd.pivot_table(qs, index=['组别', '姓名'], values=[c for c in qs.columns if c not in ['组别', '姓名', '岗位']], dropna=False, aggfunc=np.sum, margins=True, margins_name='总计')
+            response.context_data['summary'] = qs
         return response
 
 
@@ -200,13 +205,12 @@ class ManHourSummaryAdmin(admin.ModelAdmin):
             return response
         qs = pd.DataFrame(qs.values('user__team__name', 'man_hour__name', 'man_hour__weight', 'user__full_name', 'start_datetime', 'end_datetime'))
         if qs.shape[0] > 0:
-            qs['working_hours'] = max(round((pd.to_datetime(qs['end_datetime']) - pd.to_datetime(qs['start_datetime'])).dt.seconds/3600, 2), 0)
+            qs['working_hours'] = ((qs['end_datetime'] - qs['start_datetime']).dt.seconds/3600).apply(lambda x: max(round(x, 2), 0))
             qs['output'] = qs['working_hours'] * qs['man_hour__weight']
             qs.drop(columns=['start_datetime', 'end_datetime', 'man_hour__weight'], inplace=True)
             qs.rename(columns={'user__team__name': '组别', 'user__full_name': '姓名', 'man_hour__name': '工时项目', 'working_hours': '工作时长', 'output': '产出'}, inplace=True)
-            qs = pd.pivot_table(qs, index=['组别', '姓名'], columns=['工时项目'], values=['工作时长', '产出'], margins=True, margins_name='总计')
-            response.context_data['columns'] = qs.columns
-            response.context_data['summary'] = qs.values.tolist()
+            qs = pd.pivot_table(qs, index=['组别', '姓名'], values=['工作时长', '产出'], dropna=False, margins=True, margins_name='总计')
+            response.context_data['summary'] = qs
         return response
 
 

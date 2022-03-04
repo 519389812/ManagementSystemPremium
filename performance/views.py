@@ -178,6 +178,7 @@ def get_workload_item(request):
         return JsonResponse(workload_item, safe=False)
 
 
+@check_grouping
 @check_authority
 def add_workload(request):
     if request.user.team.parent:
@@ -239,6 +240,7 @@ def get_man_hour_item(request):
         return JsonResponse(man_hour_item, safe=False)
 
 
+@check_grouping
 @check_authority
 def add_man_hour(request):
     if request.user.team.parent:
@@ -263,9 +265,9 @@ def add_man_hour(request):
             start_datetime = timezone.datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M")
             end_datetime = timezone.datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M")
             verifier = CustomTeam.objects.get(id=int(verifier_team_id))
-            WorkloadRecord.objects.create(user=request.user, position=position, man_hour=man_hour,
-                                          start_datetime=start_datetime, end_datetime=end_datetime,
-                                          verifier=verifier, remark=remark)
+            ManHourRecord.objects.create(user=request.user, position=position, man_hour=man_hour,
+                                         start_datetime=start_datetime, end_datetime=end_datetime,
+                                         verifier=verifier, remark=remark)
             msg = '登记成功！您可以继续登记下一条记录！'
             return render(request, 'add_man_hour.html', {'position_list': position_list, 'team_list': team_list, 'msg': msg})
         except:
