@@ -3,7 +3,7 @@ from flexible.models import LoadSheet, LoadSheetContent
 
 
 class LoadSheetAdmin(admin.ModelAdmin):
-    fields = ('id', 'flight', 'date', 'destination')
+    fields = ('flight', 'date', 'destination')
     list_display = ('id', 'flight', 'date', 'destination')
 
 
