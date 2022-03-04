@@ -26,7 +26,7 @@ SECRET_KEY = '^gj4*l7^c75mhlsrgmby=!!ro^%2%+2o41sg)hh0r=qe$k&tqd'
 # SECURITY WARNING: don't run with debug turned on in production!
 
 online = True
-ad = False
+ad = True
 # SECURITY WARNING: don't run with debug turned on in production!
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
