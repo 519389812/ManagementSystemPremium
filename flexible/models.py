@@ -18,11 +18,12 @@ class LoadSheet(models.Model):
 class LoadSheetContent(models.Model):
     id = models.AutoField(primary_key=True)
     load_sheet = models.ForeignKey(LoadSheet, related_name='loadSheet_load_sheet', on_delete=models.CASCADE, verbose_name='舱单')
-    project = models.CharField(max_length=300, choices=(('旅客', '旅客'), ('行李', '行李'), ('其他', '其他')), verbose_name='项目')
+    destination = models.CharField(max_length=30, null=True, blank=True, verbose_name='目的地')
+    project = models.CharField(max_length=30, choices=(('旅客', '旅客'), ('行李', '行李'), ('其他', '其他')), verbose_name='项目')
     number = models.IntegerField(verbose_name='数量')
-    type = models.CharField(max_length=300, null=True, blank=True, choices=(('', '无'), ('成人', '成人'), ('儿童', '儿童'), ('婴儿', '婴儿'), ('机组', '机组'), ('货', '货'), ('邮', '邮'), ('压舱物', '压舱物')), verbose_name='类型')
-    _class = models.CharField(max_length=300, null=True, blank=True, choices=(('', '无'), ('Y', 'Y'), ('W', 'W'), ('C', 'C'), ('F', 'F')), verbose_name='舱位')
-    location = models.CharField(max_length=300, null=True, blank=True, verbose_name='位置')
+    type = models.CharField(max_length=30, null=True, blank=True, choices=(('', '无'), ('成人', '成人'), ('儿童', '儿童'), ('婴儿', '婴儿'), ('机组', '机组'), ('货', '货'), ('邮', '邮'), ('压舱物', '压舱物')), verbose_name='类型')
+    _class = models.CharField(max_length=30, null=True, blank=True, choices=(('', '无'), ('Y', 'Y'), ('W', 'W'), ('C', 'C'), ('F', 'F')), verbose_name='舱位')
+    location = models.CharField(max_length=30, null=True, blank=True, verbose_name='位置')
     weight = models.IntegerField(verbose_name='重量')
 
     class Meta:

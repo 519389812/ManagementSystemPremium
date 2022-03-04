@@ -5,9 +5,15 @@ from flexible.models import LoadSheet, LoadSheetContent
 class LoadSheetAdmin(admin.ModelAdmin):
     fields = ('flight', 'date', 'destination')
     list_display = ('id', 'flight', 'date', 'destination')
+    search_fields = ('flight', 'date', 'destination')
 
 
 class LoadSheetContentAdmin(admin.ModelAdmin):
+    fields = ('load_sheet', 'destination', 'project', 'number', 'type', '_class', 'location', 'weight')
+    list_display = ('id', 'load_sheet', 'destination', 'project', 'number', 'type', '_class', 'location', 'weight')
+    autocomplete_fields = ['load_sheet']
+    search_fields = ('load_sheet__flight', 'load_sheet__destination')
+    list_filter = ('load_sheet__date',)
 
     def get_form(self, request, obj=None, **kwargs):
         help_texts = {

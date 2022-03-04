@@ -53,7 +53,7 @@
                         </div>
                         <div id="fixPax-0">
                             <div class="card-body">
-                                <div style="float:left">目的地</div><div align="right"><input name="fixPax_0_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ load_sheet.destination }}" disabled="disabled"/></div>
+                                <div style="float:left">目的地</div><div align="right"><input name="fixPax_0_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ load_sheet.destination }}" required/></div>
                                 <hr>
                                 <div style="float:left">旅客人数</div><div align="right"><input name="fixPax_0_paxNumber" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="-1" onblur="onFixPaxBlur.call(this)" required/></div>
                                 <hr>
@@ -97,7 +97,7 @@
                         </div>
                         <div id="fixBaggage-0">
                             <div class="card-body">
-                                <div style="float:left">目的地</div><div align="right"><input name="fixBaggage_0_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ load_sheet.destination }}" disabled="disabled"/></div>
+                                <div style="float:left">目的地</div><div align="right"><input name="fixBaggage_0_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ load_sheet.destination }}" required/></div>
                                 <hr>
                                 <div style="float:left">件数</div><div align="right"><input name="fixBaggage_0_baggageNumber" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" value="-1" required/></div>
                                 <hr>
@@ -123,7 +123,7 @@
                         </div>
                         <div id="fixOther-0">
                             <div class="card-body">
-                                <div style="float:left">目的地</div><div align="right"><input name="fixOther_0_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ load_sheet.destination }}" disabled="disabled"/></div>
+                                <div style="float:left">目的地</div><div align="right"><input name="fixOther_0_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ load_sheet.destination }}" required/></div>
                                 <hr>
                                 <div style="float:left">类型</div>
                                 <div align="right">
@@ -168,7 +168,7 @@
         '<br/><br/>' +
         '<ol class="breadcrumb"></ol>' +
         '    <div class="card-body">'+
-        '        <div style="float:left">目的地</div><div align="right"><input name="fixPax_' + i + '_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ destination }}" disabled="disabled"/></div>' +
+        '        <div style="float:left">目的地</div><div align="right"><input name="fixPax_' + i + '_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ load_sheet.destination }}" required/></div>' +
         '        <hr>' +
         '        <div style="float:left">旅客人数</div><div align="right"><input name="fixPax_' + i + '_paxNumber" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="-1" onblur="onFixPaxBlur.call(this)" required/></div>' +
         '        <hr>' +
@@ -211,7 +211,7 @@
         '<br/><br/>' +
         '<ol class="breadcrumb"></ol>' +
         '    <div class="card-body">' +
-        '    <div style="float:left">目的地</div><div align="right"><input name="fixBaggage_' + i + '_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ destination }}" disabled="disabled" required/></div>' +
+        '    <div style="float:left">目的地</div><div align="right"><input name="fixBaggage_' + i + '_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ load_sheet.destination }}" required/></div>' +
         '    <hr>' +
         '    <div style="float:left">件数</div><div align="right"><input name="fixBaggage_' + i + '_baggageNumber" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" value="-1" required/></div>' +
         '    <hr>' +
@@ -235,7 +235,7 @@
             '<br/><br/>' +
             '<ol class="breadcrumb"></ol>' +
             '    <div class="card-body">'+
-            '    <div style="float:left">目的地</div><div align="right"><input name="fixOther_' + i + '_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ destination }}" disabled="disabled" required/></div>' +
+            '    <div style="float:left">目的地</div><div align="right"><input name="fixOther_' + i + '_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ load_sheet.destination }}" required/></div>' +
             '    <hr>' +
             '    <div style="float:left">类型</div>' +
             '    <div align="right">' +

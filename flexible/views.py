@@ -35,10 +35,12 @@ def add_loadsheet(request):
             elif type_ == 'fixOther':
                 data['其他'].setdefault(id_, {})
                 data['其他'][id_][name] = param_value
-        print(data)
         load_sheet_content = LoadSheetContent.objects.filter(load_sheet__id=load_sheet_id)
         total_score = 0
         lcm_total = 0
+        passenger_correct = False
+        baggage_correct = False
+        other_correct = False
         passenger, baggage, other = [pd.DataFrame(None)] * 3
         for key, value in data.items():
             df = pd.DataFrame(value).T
@@ -47,20 +49,15 @@ def add_loadsheet(request):
                 if df.shape[0] > 0:
                     df['paxNumber'] = df['paxNumber'].apply(int)
                     df['paxWeight'] = df['paxWeight'].apply(int)
-                    df = df.pivot_table(values=['paxNumber', 'paxWeight'], index=['paxClass', 'paxType'], aggfunc=np.sum)
-                    df = df.T
-                    df['total', 'total'] = df.sum(axis=1)
-                    df = df.T
-                    lcm_total += df.loc['total', 'total']['paxWeight']
+                    df = df.pivot_table(values=['paxNumber', 'paxWeight'], index=['destination', 'paxClass', 'paxType'], dropna=False, margins=True, margins_name='合计', aggfunc=np.sum)
+                    lcm_total += df.loc['合计', '', '']['paxWeight']
                     passenger = df
-                    print(df)
                     correct = False
                     if load_sheet_passenger.count() == df.shape[0]-1:
                         correct = True
                         for obj in load_sheet_passenger:
-                            print(obj)
                             try:
-                                if df.loc[obj._class, obj.type]['paxNumber'] == obj.number and df.loc[obj._class, obj.type]['paxWeight'] == obj.weight:
+                                if df.loc[obj.destination, obj._class, obj.type]['paxNumber'] == obj.number and df.loc[obj.destination, obj._class, obj.type]['paxWeight'] == obj.weight:
                                     continue
                                 else:
                                     correct = False
@@ -72,23 +69,21 @@ def add_loadsheet(request):
                     correct = True if load_sheet_passenger.count() == 0 else False
                 if correct:
                     total_score += 33.33
+                    passenger_correct = True
             elif key == '行李':
                 load_sheet_baggage = load_sheet_content.filter(project='行李')
                 if df.shape[0] > 0:
                     df['baggageNumber'] = df['baggageNumber'].apply(int)
                     df['baggageWeight'] = df['baggageWeight'].apply(int)
-                    df = df.pivot_table(values=['baggageNumber', 'baggageWeight'], index=['baggageLocation'], aggfunc=np.sum)
-                    df.loc['total'] = df.sum()
-                    lcm_total += df.loc['total']['baggageWeight']
+                    df = df.pivot_table(values=['baggageNumber', 'baggageWeight'], index=['destination', 'baggageLocation'], dropna=False, margins=True, margins_name='合计', aggfunc=np.sum)
+                    lcm_total += df.loc['合计', '']['baggageWeight']
                     baggage = df
-                    print(df)
                     correct = False
                     if load_sheet_baggage.count() == df.shape[0]-1:
                         correct = True
                         for obj in load_sheet_baggage:
-                            print(obj)
                             try:
-                                if df.loc[obj.location]['baggageNumber'] == obj.number and df.loc[obj.location]['baggageWeight'] == obj.weight:
+                                if df.loc[obj.destination, obj.location]['baggageNumber'] == obj.number and df.loc[obj.destination, obj.location]['baggageWeight'] == obj.weight:
                                     continue
                                 else:
                                     correct = False
@@ -100,24 +95,20 @@ def add_loadsheet(request):
                     correct = True if load_sheet_baggage.count() == 0 else False
                 if correct:
                     total_score += 33.33
+                    baggage_correct = True
             elif key == '其他':
                 load_sheet_other = load_sheet_content.filter(project='其他')
                 if df.shape[0] > 0:
                     df['weight'] = df['weight'].apply(int)
-                    df = df.pivot_table(values=['weight'], index=['location', 'type'], aggfunc=np.sum)
-                    df = df.T
-                    df['total', 'total'] = df.sum(axis=1)
-                    df = df.T
-                    print(df)
+                    df = df.pivot_table(values=['weight'], index=['destination', 'location', 'type'], dropna=False, margins=True, margins_name='合计', aggfunc=np.sum)
                     other = df
-                    lcm_total += df.loc['total', 'total']['weight']
+                    lcm_total += df.loc['合计', '', '']['weight']
                     correct = False
                     if load_sheet_other.count() == df.shape[0] - 1:
                         correct = True
                         for obj in load_sheet_other:
-                            print(obj)
                             try:
-                                if df.loc[obj.location, obj.type]['weight'] == obj.weight:
+                                if df.loc[obj.destination, obj.location, obj.type]['weight'] == obj.weight:
                                     continue
                                 else:
                                     correct = False
@@ -129,8 +120,12 @@ def add_loadsheet(request):
                     correct = True if load_sheet_other.count() == 0 else False
                 if correct:
                     total_score += 33.33
+                    other_correct = True
         total_score = round(total_score, 0)
         return render(request, 'view_loadsheet.html', {'total_score': total_score, 'lcm_total': lcm_total,
-                                                       'passenger': passenger, 'baggage': baggage, 'other': other})
+                                                       'passenger': passenger, 'baggage': baggage, 'other': other,
+                                                       'passenger_correct': passenger_correct,
+                                                       'baggage_correct': baggage_correct,
+                                                       'other_correct': other_correct})
     else:
         return render(request, 'error_403.html', status=403)

@@ -36,13 +36,21 @@
         </div>
         <div class="col-lg-12 mb-12">
             <div class="card h-100 text-center">
+                <div class="card-header">
+                    <div style="float:left">旅客修正</div>
+                    {% if passenger_correct %}
+                        <div align="right" style="color: green">正确</div>
+                    {% else %}
+                        <div align="right" style="color: red">错误</div>
+                    {% endif %}
+                </div>
                 {% if passenger|length > 0 %}
-                    <div class="card-header">
-                        <div style="float:left">旅客修正</div>
-                    </div>
                     <table>
                         <thead>
                             <tr>
+                                <th>
+                                    <div class="text">目的地</div>
+                                </th>
                                 <th>
                                     <div class="text">舱位</div>
                                 </th>
@@ -60,13 +68,9 @@
                         <tbody>
                             {% for index, row in passenger.iterrows %}
                                 <tr class="{% cycle 'row1' 'row2' %}">
-                                    {% if index.0 != 'total' %}
-                                        <td>{{ index.0 }}</td>
-                                        <td>{{ index.1 }}</td>
-                                    {% else %}
-                                        <td>合计</td>
-                                        <td></td>
-                                    {% endif %}
+                                    <td>{{ index.0 }}</td>
+                                    <td>{{ index.1 }}</td>
+                                    <td>{{ index.2 }}</td>
                                     <td>{{ row.paxNumber }}</td>
                                     <td>{{ row.paxWeight }}</td>
                                 </tr>
@@ -75,13 +79,21 @@
                     </table>
                     <br/><br/>
                 {% endif %}
+                <div class="card-header">
+                    <div style="float:left">行李修正</div>
+                    {% if baggage_correct %}
+                        <div align="right" style="color: green">正确</div>
+                    {% else %}
+                        <div align="right" style="color: red">错误</div>
+                    {% endif %}
+                </div>
                 {% if baggage|length > 0 %}
-                    <div class="card-header">
-                        <div style="float:left">行李修正</div>
-                    </div>
                     <table>
                         <thead>
                             <tr>
+                                <th>
+                                    <div class="text">目的地</div>
+                                </th>
                                 <th>
                                     <div class="text">位置</div>
                                 </th>
@@ -96,11 +108,8 @@
                         <tbody>
                             {% for index, row in baggage.iterrows %}
                                 <tr class="{% cycle 'row1' 'row2' %}">
-                                    {% if index != 'total' %}
-                                        <td>{{ index }}</td>
-                                    {% else %}
-                                        <td>合计</td>
-                                    {% endif %}
+                                    <td>{{ index.0 }}</td>
+                                    <td>{{ index.1 }}</td>
                                     <td>{{ row.baggageNumber }}</td>
                                     <td>{{ row.baggageWeight }}</td>
                                 </tr>
@@ -109,13 +118,21 @@
                     </table>
                     <br/><br/>
                 {% endif %}
+                <div class="card-header">
+                    <div style="float:left">其他修正</div>
+                    {% if other_correct %}
+                        <div align="right" style="color: green">正确</div>
+                    {% else %}
+                        <div align="right" style="color: red">错误</div>
+                    {% endif %}
+                </div>
                 {% if other|length > 0 %}
-                    <div class="card-header">
-                        <div style="float:left">其他修正</div>
-                    </div>
                     <table>
                         <thead>
                             <tr>
+                                <th>
+                                    <div class="text">目的地</div>
+                                </th>
                                 <th>
                                     <div class="text">位置</div>
                                 </th>
@@ -130,13 +147,9 @@
                         <tbody>
                             {% for index, row in other.iterrows %}
                                 <tr class="{% cycle 'row1' 'row2' %}">
-                                    {% if index.0 != 'total' %}
-                                        <td>{{ index.0 }}</td>
-                                        <td>{{ index.1 }}</td>
-                                    {% else %}
-                                        <td>合计</td>
-                                        <td></td>
-                                    {% endif %}
+                                    <td>{{ index.0 }}</td>
+                                    <td>{{ index.1 }}</td>
+                                    <td>{{ index.2 }}</td>
                                     <td>{{ row.weight }}</td>
                                 </tr>
                             {% endfor %}
