@@ -3,6 +3,7 @@
 
 <head>
     {% load static %}
+    {% load performance_extras %}
     {% include "head.html" %}
     <title>查询工作量</title>
 </head>
@@ -34,9 +35,7 @@
                 <th scope="col">序号</th>
                 <th scope="col">日期</th>
                 <th scope="col">岗位</th>
-                <th scope="col">办理人数</th>
-                <th scope="col">办理行李</th>
-                <th scope="col">销售额</th>
+                <th scope="col">项目</th>
                 <th scope="col">审核组</th>
                 <th scope="col">审核状态</th>
                 <th scope="col">审核人</th>
@@ -48,16 +47,18 @@
                     <th scope="row">{{ workload.id }}</th>
                     <td>{{ workload.date }}</td>
                     <td>{{ workload.position.name }}</td>
-                    <td>{{ workload.number_people }}</td>
-                    <td>{{ workload.number_baggage }}</td>
-                    <td>{{ workload.sale }}</td>
+                    <td>{{ workload.workload|template_json_dict_to_text }}</td>
                     <td>{{ workload.verifier }}</td>
-                    {% if workload.verify == True %}
+                    {% if workload.verify %}
                         <td class="table-success">通过</td>
                     {% else %}
                         <td class="table-danger">未通过</td>
                     {% endif %}
-                    <td>{{ workload.verify_user }}</td>
+                    {% if workload.verify_user %}
+                        <td>{{ workload.verify_user }}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>

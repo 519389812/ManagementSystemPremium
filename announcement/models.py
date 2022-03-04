@@ -1,7 +1,6 @@
 from django.db import models
 from team.models import CustomTeam
 from user.models import CustomUser
-from django.utils import timezone
 from ManagementSystemPremium.settings import BASE_DIR
 import os
 from django.contrib import admin
@@ -33,18 +32,6 @@ class Announcement(models.Model):
 
     def __str__(self):
         return self.title
-
-    def template_announcement_is_active(self):
-        if self.period_close_datetime:
-            if self.period_close_datetime >= timezone.now() and self.close_datetime >= timezone.now():
-                return True
-            else:
-                return False
-        else:
-            return True if self.close_datetime >= timezone.now() else False
-
-    def template_content_preview(self):
-        return self.content[:20]
 
 
 class AnnouncementRecord(models.Model):

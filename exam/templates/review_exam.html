@@ -3,6 +3,7 @@
 
 <head>
     {% load static %}
+    {% load exam_extras %}
     {% include "head.html" %}
     <title>试卷</title>
 </head>
@@ -49,7 +50,7 @@
                         <div class="controls">
                             <label>{{ question.type }}: {{ question.title }}:</label>
                             {% if question.type == 'radio' %}
-                                {% for option in question.template_option_split %}
+                                {% for option in question.option|template_split_text %}
                                     <input type="radio" class="form-control" name="question_{{ question.id }}" value="{{ option }}" required>
                                     {% if option != answer% }
                                         <label>{{ option }}</label>
@@ -58,7 +59,7 @@
                                     {% endif %}
                                 {% endfor %}
                             {% elif question.type == 'checkbox' %}
-                                {% for option in question.template_option_split %}
+                                {% for option in question.option|template_split_text %}
                                     <input type="checkbox" class="form-control" name="question_{{ question.id }}" value="{{ option }}" required>
                                     <label>{{ option }}</label>
                                 {% endfor %}
@@ -70,10 +71,10 @@
                                 <textarea class="form-control" name="question_{{ question.id }}" placeholder="请填写答案"></textarea>
                             {% endif %}
                             {% with question_id|question.id%}
-                                {% if exam_record.template_load_answer_as_dict.question_id == question.answer %}
-                                    <div>你的回答：{% exam_record.template_load_answer_as_dict.question_id %}，<span style="color: green"></span></div>
+                                {% if exam_record|template_load_json_as_dict.question_id == question.answer %}
+                                    <div>你的回答：{% exam_record|template_load_json_as_dict.question_id %}，<span style="color: green"></span></div>
                                 {% else %}
-                                    <div>你的回答：{% exam_record.template_load_answer_as_dict.question_id %}，<span style="color: red"></span></div>
+                                    <div>你的回答：{% exam_record|template_load_json_as_dict.question_id %}，<span style="color: red"></span></div>
                                 {% endif %}
                             {% endwith %}
                             <p class="help-block" id="question_{{ question.id }}_validate"></p>

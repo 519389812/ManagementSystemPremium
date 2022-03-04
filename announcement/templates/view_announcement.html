@@ -3,6 +3,7 @@
 
 <head>
     {% load static %}
+    {% load announcement_extras %}
     {% include "head.html" %}
     <title>公告</title>
 </head>
@@ -41,7 +42,7 @@
             <hr>
             <p>{{ announcement.content|linebreaksbr }}</p>
             <div class="custom-file">
-                {% if announcement.template_announcement_is_active == True %}
+                {% if announcement|template_announcement_is_active == True %}
                     {% if is_read == False %}
                         <form enctype="multipart/form-data" action="{% url 'announcement:confirm_announcement' %}" method="POST">
                             {% csrf_token %}

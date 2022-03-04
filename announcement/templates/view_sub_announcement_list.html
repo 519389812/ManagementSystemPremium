@@ -3,6 +3,7 @@
 
 <head>
     {% load static %}
+    {% load announcement_extras %}
     {% include "head.html" %}
     <title>公告</title>
 </head>
@@ -28,7 +29,7 @@
 
     <div class="jumbotron">
         <h1 class="display-5">{{ announcement.0.title }}</h1>
-        <p>{{ announcement.0.template_content_preview }}</p>
+        <p>{{ announcement.0.content|template_content_preview }}</p>
         <ul style="text-align: center">
             {% for announcement in page_object_list %}
                 <li>
