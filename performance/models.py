@@ -51,7 +51,7 @@ class WorkloadRecord(models.Model):
         ordering = ['-create_datetime']
 
     def __str__(self):
-        return self.user.name
+        return self.user.full_name
 
 
 class WorkloadSummary(WorkloadRecord):
@@ -96,7 +96,7 @@ class ManHourRecord(models.Model):
         ordering = ["-create_datetime"]
 
     def __str__(self):
-        return self.user.name
+        return self.user.full_name
 
 
 class ManHourSummary(ManHourRecord):
