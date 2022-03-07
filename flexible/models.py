@@ -1,4 +1,5 @@
 from django.db import models
+from user.models import CustomUser
 
 
 class LoadSheet(models.Model):
@@ -12,7 +13,7 @@ class LoadSheet(models.Model):
         verbose_name_plural = '舱单'
 
     def __str__(self):
-        return self.flight
+        return '%s %s' % (self.flight, self.date)
 
 
 class LoadSheetContent(models.Model):
@@ -31,4 +32,22 @@ class LoadSheetContent(models.Model):
         verbose_name_plural = '舱单内容'
 
     def __str__(self):
-        return self.load_sheet.flight
+        return '%s %s' % (self.load_sheet.flight, self.load_sheet.date)
+
+
+class LoadSheetRecord(models.Model):
+    id = models.AutoField('序号', primary_key=True)
+    user = models.ForeignKey(CustomUser, related_name='loadSheetRecord_user', null=True, on_delete=models.CASCADE, verbose_name='用户')
+    anonymous = models.CharField(max_length=300, null=True, blank=True, verbose_name='未登录用户')
+    load_sheet = models.ForeignKey(LoadSheet, related_name='loadSheetRecord_load_sheet', on_delete=models.CASCADE, verbose_name='舱单')
+    times = models.IntegerField(null=True, blank=True, verbose_name='参与次数')
+    answer_time = models.IntegerField(null=True, blank=True, verbose_name='答题时长')
+    score = models.IntegerField(null=True, blank=True, verbose_name='成绩')
+    submit_datetime = models.DateTimeField(auto_now_add=True, verbose_name='提交时间')
+
+    class Meta:
+        verbose_name = '成绩记录'
+        verbose_name_plural = '成绩记录'
+
+    def __str__(self):
+        return '%s %s' % (self.user.name, self.score)

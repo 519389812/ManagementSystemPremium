@@ -45,15 +45,15 @@ def view_exam(request):
             exam = Exam.objects.get(id=exam_id)
         except:
             return render(request, 'error_500.html', status=500)
-        if request.user:
+        if request.user.is_authenticated:
             user = request.user
             exam_record = ExamRecord.objects.create(user=user, exam=exam, answer_time=answer_time)
-            times = ExamRecord.objects.filter(exam=exam, user=request.user).count()
+            times = ExamRecord.objects.filter(exam=exam, user=request.user).count() + 1
         else:
             user = post_data['name']
             del (post_data['name'])
             exam_record = ExamRecord.objects.create(anonymous=user, exam=exam, answer_time=answer_time)
-            times = ExamRecord.objects.filter(exam=exam, anonymous=user).count()
+            times = ExamRecord.objects.filter(exam=exam, anonymous=user).count() + 1
         score = 0
         total_score = 0
         answer_dict = {}

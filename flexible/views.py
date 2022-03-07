@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from django.shortcuts import render
-from flexible.models import LoadSheet, LoadSheetContent
+from flexible.models import LoadSheet, LoadSheetContent, LoadSheetRecord
 
 
 def view_loadsheet(request):
@@ -18,13 +18,30 @@ def add_loadsheet(request):
     if request.method == 'POST':
         params = request.POST.dict()
         load_sheet_id = params['load_sheet_id']
+        print(params)
+        answer_time = int(params['answer_time'])
+        try:
+            load_sheet = LoadSheet.objects.get(id=load_sheet_id)
+        except:
+            return render(request, 'error_500.html', status=500)
+        if request.user.is_authenticated:
+            user = request.user
+            anonymous = ''
+            times = LoadSheetRecord.objects.filter(load_sheet=load_sheet, user=request.user).count() + 1
+        else:
+            user = None
+            anonymous = params['username']
+            del (params['username'])
+            times = LoadSheetRecord.objects.filter(load_sheet=load_sheet, anonymous=anonymous).count() + 1
         del(params['csrfmiddlewaretoken'])
-        del (params['load_sheet_id'])
+        del(params['load_sheet_id'])
+        del(params['answer_time'])
         data = {}
         data.setdefault('旅客', {})
         data.setdefault('行李', {})
         data.setdefault('其他', {})
         for param_name, param_value in params.items():
+            print(param_name)
             type_, id_, name = param_name.split('_')
             if type_ == 'fixPax':
                 data['旅客'].setdefault(id_, {})
@@ -122,6 +139,8 @@ def add_loadsheet(request):
                     total_score += 33.33
                     other_correct = True
         total_score = round(total_score, 0)
+        LoadSheetRecord.objects.create(user=user, anonymous=anonymous, load_sheet=load_sheet, answer_time=answer_time,
+                                       times=times, score=total_score)
         return render(request, 'view_loadsheet.html', {'total_score': total_score, 'lcm_total': lcm_total,
                                                        'passenger': passenger, 'baggage': baggage, 'other': other,
                                                        'passenger_correct': passenger_correct,

@@ -69,7 +69,7 @@
                     </div>
                 {% endfor %}
                 <input type="number" name="exam_id" value="{{ exam.id }}" hidden>
-                <input type="number" name="answer_time" value="" hidden>
+                <input type="number" id="answer_time" name="answer_time" value="" hidden>
                 <button type="submit" class="btn btn-primary" id="submit">提交</button>
             </form>
         </div>
@@ -106,18 +106,18 @@
 <script>
     var useTime = 0;
     var examTime = {{ exam.exam_time }};
-    var timeDiv = document.getElementById("time");
+    var timeDiv = document.getElementById("answer_time");
     var timerDiv = document.getElementById("timer");
     var timeObj = null;
-    function timer(){
+    function timer() {
         if(useTime >= examTime){
             //结束，提交表单
             document.getElementById("submit").submit();
             window.clearInterval(timeObj);
             return;
         }
-        var t = Math.floor(times/60) +"分"+times%60+"秒";
-        timeDiv.val = times;
+        var t = Math.floor(useTime/60) +"分"+useTime%60+"秒";
+        timeDiv.val = useTime;
         timerDiv.innerHTML = t;
         useTime ++;
     }

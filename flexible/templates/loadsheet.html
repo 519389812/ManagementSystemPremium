@@ -39,7 +39,17 @@
             <div class="card h-100 text-center">
                 <form action="{% url 'flexible:add_loadsheet' %}" method="post">
                     {% csrf_token %}
+                    <div id="userForm">
+                        <div class="card-body">
+                            {% if request.user.is_authenticated %}
+                                <div style="float:left">姓名</div><div align="right"><input name="username" type="text" style="width: 180px;height:30px; border-style: none; text-align: right" value="{{ request.user }}" required disabled/></div>
+                            {% else %}
+                                <div style="float:left">姓名</div><div align="right"><input name="username" type="text" style="width: 180px;height:30px; border-style: none; text-align: right" placeholder="请输入用户名" required/></div>
+                            {% endif %}
+                        </div>
+                    </div>
                     <input name="load_sheet_id" value="{{ load_sheet.id }}" hidden/>
+                    <input type="number" id="answer_time" name="answer_time" value="0" hidden>
                     <div id="fixPaxForm">
                         <div class="card-header">
                             <div style="float:left">旅客修正</div>
@@ -276,6 +286,19 @@
             $(weight_name).val(number * 80)
         }
     }
+
+    var useTime = parseInt(0);
+    function timer(intDiff){
+        window.setInterval(function(){
+        $('#answer_time').val(useTime);
+        useTime++;
+        }, 1000);
+    }
+    $(function(){
+        timer(useTime);
+    });
+
+
 </script>
 
 </body>

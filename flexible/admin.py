@@ -1,5 +1,5 @@
 from django.contrib import admin
-from flexible.models import LoadSheet, LoadSheetContent
+from flexible.models import LoadSheet, LoadSheetContent, LoadSheetRecord
 
 
 class LoadSheetAdmin(admin.ModelAdmin):
@@ -25,5 +25,13 @@ class LoadSheetContentAdmin(admin.ModelAdmin):
         return super(LoadSheetContentAdmin, self).get_form(request, obj, **kwargs)
 
 
+class LoadSheetRecordAdmin(admin.ModelAdmin):
+    fields = ('user', 'anonymous', 'load_sheet', 'times', 'answer_time', 'score', 'submit_datetime')
+    list_display = ('id', 'user', 'anonymous', 'load_sheet', 'times', 'answer_time', 'score', 'submit_datetime')
+    search_fields = ('user__full_name', 'anonymous', 'load_sheet__flight')
+    list_filter = ('load_sheet__date',)
+
+
 admin.site.register(LoadSheet, LoadSheetAdmin)
 admin.site.register(LoadSheetContent, LoadSheetContentAdmin)
+admin.site.register(LoadSheetRecord, LoadSheetRecordAdmin)
