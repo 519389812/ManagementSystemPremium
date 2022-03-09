@@ -178,8 +178,8 @@ def get_workload_item(request):
         return JsonResponse(workload_item, safe=False)
 
 
-@check_grouping
 @check_authority
+@check_grouping
 def add_workload(request):
     if request.user.team.parent:
         team_id = request.user.team.parent.id
@@ -240,8 +240,8 @@ def get_man_hour_item(request):
         return JsonResponse(man_hour_item, safe=False)
 
 
-@check_grouping
 @check_authority
+@check_grouping
 def add_man_hour(request):
     if request.user.team.parent:
         team_id = request.user.team.parent.id
