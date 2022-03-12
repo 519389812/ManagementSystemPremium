@@ -2,6 +2,22 @@ import numpy as np
 import pandas as pd
 from django.shortcuts import render
 from flexible.models import LoadSheet, LoadSheetContent, LoadSheetRecord
+from django.core.paginator import Paginator
+
+
+def view_loadsheet_list(request):
+    if request.method == 'GET':
+        page_num = request.GET.get('page', '1')
+        load_sheet_list = LoadSheet.objects.all()
+        load_sheet_list = list(load_sheet_list.values('id', 'flight', 'date'))
+        paginator = Paginator(load_sheet_list, 30)
+        page = paginator.get_page(int(page_num))
+        return render(request, 'view_loadsheet_list.html', {'page_object_list': list(page.object_list),
+                                                            'total_num': paginator.count,
+                                                            'total_page_num': paginator.num_pages,
+                                                            'page_num': page.number})
+    else:
+        return render(request, 'error_400.html', status=400)
 
 
 def view_loadsheet(request):
@@ -18,7 +34,6 @@ def add_loadsheet(request):
     if request.method == 'POST':
         params = request.POST.dict()
         load_sheet_id = params['load_sheet_id']
-        print(params)
         answer_time = int(params['answer_time'])
         try:
             load_sheet = LoadSheet.objects.get(id=load_sheet_id)
@@ -41,7 +56,6 @@ def add_loadsheet(request):
         data.setdefault('行李', {})
         data.setdefault('其他', {})
         for param_name, param_value in params.items():
-            print(param_name)
             type_, id_, name = param_name.split('_')
             if type_ == 'fixPax':
                 data['旅客'].setdefault(id_, {})
@@ -100,7 +114,7 @@ def add_loadsheet(request):
                         correct = True
                         for obj in load_sheet_baggage:
                             try:
-                                if df.loc[obj.destination, obj.location]['baggageNumber'] == obj.number and df.loc[obj.destination, obj.location]['baggageWeight'] == obj.weight:
+                                if df.loc[obj.destination, obj._class]['baggageNumber'] == obj.number and df.loc[obj.destination, obj._class]['baggageWeight'] == obj.weight:
                                     continue
                                 else:
                                     correct = False

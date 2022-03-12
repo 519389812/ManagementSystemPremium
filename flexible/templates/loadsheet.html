@@ -111,7 +111,15 @@
                                 <hr>
                                 <div style="float:left">件数</div><div align="right"><input name="fixBaggage_0_baggageNumber" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" value="-1" required/></div>
                                 <hr>
-                                <div style="float:left">位置</div><div align="right"><input name="fixBaggage_0_baggageLocation" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="请输入" required/></div>
+                                <div style="float:left">舱位</div>
+                                <div align="right">
+                                    <select name="fixBaggage_0_baggageLocation" style="width: 60px;height:30px; border-style: none; text-align: right" required>
+                                        <option value="Y" selected>Y</option>
+                                        <option value="W">W</option>
+                                        <option value="C">C</option>
+                                        <option value="F">F</option>
+                                    </select>
+                                </div>
                                 <hr>
                                 <div style="float:left">重量</div><div align="right"><input name="fixBaggage_0_baggageWeight" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="-0 KG" required/></div>
                                 <hr>
@@ -223,6 +231,15 @@
         '    <div class="card-body">' +
         '    <div style="float:left">目的地</div><div align="right"><input name="fixBaggage_' + i + '_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ load_sheet.destination }}" required/></div>' +
         '    <hr>' +
+        '    <div style="float:left">舱位</div>' +
+        '    <div align="right">' +
+        '        <select name="fixBaggage_' + i + '_baggageLocation" style="width: 60px;height:30px; border-style: none; text-align: right" required>' +
+        '            <option value="Y" selected>Y</option>' +
+        '            <option value="W">W</option>' +
+        '            <option value="C">C</option>' +
+        '            <option value="F">F</option>' +
+        '        </select>' +
+        '    </div>' +
         '    <div style="float:left">件数</div><div align="right"><input name="fixBaggage_' + i + '_baggageNumber" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" value="-1" required/></div>' +
         '    <hr>' +
         '    <div style="float:left">位置</div><div align="right"><input name="fixBaggage_' + i + '_baggageLocation" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="请输入" required/></div>' +
