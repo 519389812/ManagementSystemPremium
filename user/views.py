@@ -226,7 +226,7 @@ def check_reset_password_answer(request):
             return render(request, 'reset_password_by_question_answer.html', {'msg': '输入为空'})
         try:
             user = CustomUser.objects.get(id=user_id)
-            if answer == user.answer:
+            if check_password(answer, user.answer):
                 code = random_str(16)
                 QuestionVerifyRecord.objects.create(user=user, code=code, close_datetime=timezone.localtime(timezone.now()) + datetime.timedelta(minutes=5))
                 return render(request, 'reset_password_by_question.html', {'code': code, 'msg': '验证成功，请输入新密码'})
