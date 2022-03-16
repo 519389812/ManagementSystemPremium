@@ -21,13 +21,25 @@
         <small>填写测验</small>
     </h1>
 
-    <ol class="breadcrumb">
-    </ol>
+    <ol class="breadcrumb"></ol>
 
     <!-- Team Members -->
     <div class="row">
         <div class="col-lg-12 mb-12">
             <div class="card h-100 text-center">
+                <div class="card-header">
+                    <div style="float:left">填写描述</div><div align="right"><br></div>
+                </div>
+                <div class="card-body">
+                    <div style="float:left">{{ load_sheet.description }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12 mb-12">
+            <div class="card h-100 text-center">
+                <div class="card-header">
+                    <div style="float:left">舱单信息</div><div align="right"><br></div>
+                </div>
                 <div class="card-body">
                     <div style="float:left">LMC版本号</div><div align="right">1</div>
                     <hr>
@@ -40,6 +52,9 @@
                 <form action="{% url 'flexible:add_loadsheet' %}" method="post">
                     {% csrf_token %}
                     <div id="userForm">
+                        <div class="card-header">
+                            <div style="float:left">填写人</div><div align="right"><br></div>
+                        </div>
                         <div class="card-body">
                             {% if request.user.is_authenticated %}
                                 <div style="float:left">姓名</div><div align="right"><input name="username" type="text" style="width: 180px;height:30px; border-style: none; text-align: right" value="{{ request.user }}" required disabled/></div>
@@ -111,17 +126,9 @@
                                 <hr>
                                 <div style="float:left">件数</div><div align="right"><input name="fixBaggage_0_baggageNumber" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" value="-1" required/></div>
                                 <hr>
-                                <div style="float:left">舱位</div>
-                                <div align="right">
-                                    <select name="fixBaggage_0_baggageLocation" style="width: 60px;height:30px; border-style: none; text-align: right" required>
-                                        <option value="Y" selected>Y</option>
-                                        <option value="W">W</option>
-                                        <option value="C">C</option>
-                                        <option value="F">F</option>
-                                    </select>
-                                </div>
+                                <div style="float:left">位置</div><div align="right"><input name="fixBaggage_0_baggageLocation" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="请输入"/></div>
                                 <hr>
-                                <div style="float:left">重量</div><div align="right"><input name="fixBaggage_0_baggageWeight" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="-0 KG" required/></div>
+                                <div style="float:left">重量</div><div align="right"><input name="fixBaggage_0_baggageWeight" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="-0 KG" onblur="onFixWeightBlur.call(this)" required/></div>
                                 <hr>
                             </div>
                             <div style="float:left"><button type="button" onclick="deleteFixPax('fixBaggage-0')">删除</button></div>
@@ -152,16 +159,31 @@
                                     </select>
                                 </div>
                                 <hr>
-                                <div style="float:left">位置</div><div align="right"><input name="fixOther_0_location" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="请输入" required/></div>
+                                <div style="float:left">位置</div><div align="right"><input name="fixOther_0_location" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="请输入"/></div>
                                 <hr>
-                                <div style="float:left">重量</div><div align="right"><input name="fixOther_0_weight" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="+0 KG" required/></div>
+                                <div style="float:left">重量</div><div align="right"><input name="fixOther_0_weight" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="+0 KG" onblur="onFixWeightBlur.call(this)" required/></div>
                             </div>
                             <div style="float:left"><button type="button" onclick="deleteFixPax('fixOther-0')">删除</button></div>
                         </div>
                     </div>
                     <br><br>
-                    <hr>
-                    <input class="btn btn-primary" type="submit" value="完成提交"/>
+                    <div class="card-header">
+                        <div style="float:left">LMC状态</div><div align="right"><br></div>
+                    </div>
+                    <div class="card-body">
+                        <div style="float:left">LMC TOTAL</div><div id="lmc_total" align="right">0</div>
+                        <hr>
+                        <div style="float:left">TTL PAX</div><div id="ttl_pax" align="right">{{ load_sheet.passenger }}</div>
+                        <hr>
+                        <div style="float:left">SI</div><div align="right"><br></div>
+                        <hr>
+                        <div style="float:left">上传ACARS</div><div align="right" class="custom-control custom-checkbox"><input type="checkbox"/></div>
+                        <hr>
+                        <div style="float:left">上传EFB</div><div align="right" class="custom-control custom-checkbox"><input type="checkbox" checked/></div>
+                        <hr>
+                    </div>
+                    <br><br>
+                    <input class="btn btn-primary" type="submit" value="提交复核"/>
                 </form>
             </div>
         </div>
@@ -231,20 +253,11 @@
         '    <div class="card-body">' +
         '    <div style="float:left">目的地</div><div align="right"><input name="fixBaggage_' + i + '_destination" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" value="{{ load_sheet.destination }}" required/></div>' +
         '    <hr>' +
-        '    <div style="float:left">舱位</div>' +
-        '    <div align="right">' +
-        '        <select name="fixBaggage_' + i + '_baggageLocation" style="width: 60px;height:30px; border-style: none; text-align: right" required>' +
-        '            <option value="Y" selected>Y</option>' +
-        '            <option value="W">W</option>' +
-        '            <option value="C">C</option>' +
-        '            <option value="F">F</option>' +
-        '        </select>' +
-        '    </div>' +
         '    <div style="float:left">件数</div><div align="right"><input name="fixBaggage_' + i + '_baggageNumber" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" value="-1" required/></div>' +
         '    <hr>' +
-        '    <div style="float:left">位置</div><div align="right"><input name="fixBaggage_' + i + '_baggageLocation" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="请输入" required/></div>' +
+        '    <div style="float:left">位置</div><div align="right"><input name="fixBaggage_' + i + '_baggageLocation" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="请输入"/></div>' +
         '    <hr>' +
-        '    <div style="float:left">重量</div><div align="right"><input name="fixBaggage_' + i + '_baggageWeight" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="-0 KG" required/></div>' +
+        '    <div style="float:left">重量</div><div align="right"><input name="fixBaggage_' + i + '_baggageWeight" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="-0 KG" onblur="onFixWeightBlur.call(this)" required/></div>' +
         '    </div>'
         content += '<div style="float:left"><button type="button" onClick="deleteFixBaggage(\'fixBaggage-' + i + '\')">删除</button></div></div>';
         $('#fixBaggageForm').append(content);
@@ -273,9 +286,9 @@
             '       </select>' +
             '    </div>' +
             '    <hr>' +
-            '    <div style="float:left">位置</div><div align="right"><input name="fixOther_' + i + '_location" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="请输入" required/></div>' +
+            '    <div style="float:left">位置</div><div align="right"><input name="fixOther_' + i + '_location" type="text" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="请输入"/></div>' +
             '    <hr>' +
-            '    <div style="float:left">重量</div><div align="right"><input name="fixOther_' + i + '_weight" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="+0 KG" required/></div>' +
+            '    <div style="float:left">重量</div><div align="right"><input name="fixOther_' + i + '_weight" type="number" style="width: 60px;height:30px; border-style: none; text-align: right" placeholder="+0 KG" onblur="onFixWeightBlur.call(this)" required/></div>' +
             '    </div>'
         content += '<div style="float:left"><button type="button" onClick="deleteFixPax(\'fixOther-' + i + '\')">删除</button></div></div>';
         $('#fixOtherForm').append(content);
@@ -302,6 +315,74 @@
         } else {
             $(weight_name).val(number * 80)
         }
+
+        var load_sheet_passenger = Number({{ load_sheet.passenger }});
+        var passenger = 0;
+        var weight = 0;
+
+        var number_name = 'input[name*=\"_paxNumber\"]';
+        $(number_name).each(function(){
+            var id_ = $(this).attr('name').split('_')[1];
+            var weight_name = 'input[name=\"fixPax_' + id_ + '_paxWeight\"]';
+            var p = $(this).val();
+            if (p != null && p != undefined) {
+                passenger += Number(p);
+            }
+            var w = $(weight_name).val();
+            if (w != null && w != undefined) {
+                weight += Number(w);
+            }
+        });
+
+        number_name = 'input[name*=\"_baggageWeight\"]';
+        $(number_name).each(function(){
+            var w = $(this).val();
+            if (w != null && w != undefined) {
+                weight += Number(w);
+            }
+        });
+
+        number_name = 'input[name*=\"_weight\"]';
+        $(number_name).each(function(){
+            var w = $(this).val();
+            if (w != null && w != undefined) {
+                weight += Number(w);
+            }
+        });
+
+        $('#ttl_pax').html(load_sheet_passenger + passenger);
+        $('#lmc_total').html(weight);
+    }
+
+    function onFixWeightBlur() {
+        var load_sheet_passenger = Number({{ load_sheet.passenger }});
+        var weight = 0;
+
+        var number_name = 'input[name*=\"_paxWeight\"]';
+        $(number_name).each(function(){
+            var w = $(this).val();
+            if (w != null && w != undefined) {
+                weight += Number(w);
+            }
+        });
+
+        number_name = 'input[name*=\"_baggageWeight\"]';
+        $(number_name).each(function(){
+            var w = $(this).val();
+            if (w != null && w != undefined) {
+                weight += Number(w);
+            }
+        });
+
+        number_name = 'input[name*=\"_weight\"]';
+        $(number_name).each(function(){
+            var w = $(this).val();
+            if (w != null && w != undefined) {
+                weight += Number(w);
+            }
+        });
+
+        $('#lmc_total').html(weight);
     }
 
     var useTime = parseInt(0);

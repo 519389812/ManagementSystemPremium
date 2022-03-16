@@ -3,8 +3,8 @@ from flexible.models import LoadSheet, LoadSheetContent, LoadSheetRecord
 
 
 class LoadSheetAdmin(admin.ModelAdmin):
-    fields = ('flight', 'date', 'destination')
-    list_display = ('id', 'flight', 'date', 'destination')
+    fields = ('flight', 'date', 'destination', 'aircraft', 'passenger', 'baggage', 'ACARS', 'EFB', 'description')
+    list_display = ('id', 'flight', 'date', 'destination', 'aircraft', 'passenger', 'baggage', 'ACARS', 'EFB')
     search_fields = ('flight', 'date', 'destination')
 
 
@@ -18,8 +18,8 @@ class LoadSheetContentAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         help_texts = {
             'type': '项目为旅客和其他时填写',
-            'class_': '项目为旅客和行李时填写',
-            'location': '项目为其他时填写',
+            '_class': '项目为旅客时填写',
+            'location': '项目为行李和其他时填写',
         }
         kwargs.update({'help_texts': help_texts})
         return super(LoadSheetContentAdmin, self).get_form(request, obj, **kwargs)

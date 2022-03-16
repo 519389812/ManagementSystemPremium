@@ -113,8 +113,9 @@ def add_loadsheet(request):
                     if load_sheet_baggage.count() == df.shape[0]-1:
                         correct = True
                         for obj in load_sheet_baggage:
+                            location = obj.location if obj.location else ''
                             try:
-                                if df.loc[obj.destination, obj._class]['baggageNumber'] == obj.number and df.loc[obj.destination, obj._class]['baggageWeight'] == obj.weight:
+                                if df.loc[obj.destination, location]['baggageNumber'] == obj.number and df.loc[obj.destination, location]['baggageWeight'] == obj.weight:
                                     continue
                                 else:
                                     correct = False
@@ -138,8 +139,9 @@ def add_loadsheet(request):
                     if load_sheet_other.count() == df.shape[0] - 1:
                         correct = True
                         for obj in load_sheet_other:
+                            location = obj.location if obj.location else ''
                             try:
-                                if df.loc[obj.destination, obj.location, obj.type]['weight'] == obj.weight:
+                                if df.loc[obj.destination, location, obj.type]['weight'] == obj.weight:
                                     continue
                                 else:
                                     correct = False
@@ -153,8 +155,8 @@ def add_loadsheet(request):
                     total_score += 33.33
                     other_correct = True
         total_score = round(total_score, 0)
-        LoadSheetRecord.objects.create(user=user, anonymous=anonymous, load_sheet=load_sheet, answer_time=answer_time,
-                                       times=times, score=total_score)
+        # LoadSheetRecord.objects.create(user=user, anonymous=anonymous, load_sheet=load_sheet, answer_time=answer_time,
+        #                                times=times, score=total_score)
         return render(request, 'view_loadsheet.html', {'total_score': total_score, 'lcm_total': lcm_total,
                                                        'passenger': passenger, 'baggage': baggage, 'other': other,
                                                        'passenger_correct': passenger_correct,

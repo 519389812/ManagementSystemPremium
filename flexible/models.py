@@ -7,6 +7,12 @@ class LoadSheet(models.Model):
     flight = models.CharField(max_length=30, verbose_name='航班号')
     date = models.DateField(verbose_name='日期')
     destination = models.CharField(max_length=30, verbose_name='目的地')
+    aircraft = models.CharField(max_length=30, verbose_name='机型')
+    passenger = models.IntegerField(null=True, blank=True, verbose_name='旅客人数')
+    baggage = models.IntegerField(null=True, blank=True, verbose_name='行李件数')
+    ACARS = models.BooleanField(default=False, verbose_name='上传ACARS')
+    EFB = models.BooleanField(default=False, verbose_name='上传EFB')
+    description = models.TextField(max_length=1000, verbose_name='描述')
 
     class Meta:
         verbose_name = '舱单'
