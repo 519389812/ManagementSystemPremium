@@ -57,6 +57,8 @@ def add_loadsheet(request):
         data.setdefault('其他', {})
         for param_name, param_value in params.items():
             type_, id_, name = param_name.split('_')
+            if name == 'destination' or name == 'location' or name == 'baggageLocation':
+                param_value = param_value.upper()
             if type_ == 'fixPax':
                 data['旅客'].setdefault(id_, {})
                 data['旅客'][id_][name] = param_value
@@ -155,8 +157,8 @@ def add_loadsheet(request):
                     total_score += 33.33
                     other_correct = True
         total_score = round(total_score, 0)
-        # LoadSheetRecord.objects.create(user=user, anonymous=anonymous, load_sheet=load_sheet, answer_time=answer_time,
-        #                                times=times, score=total_score)
+        LoadSheetRecord.objects.create(user=user, anonymous=anonymous, load_sheet=load_sheet, answer_time=answer_time,
+                                       times=times, score=total_score)
         return render(request, 'view_loadsheet.html', {'total_score': total_score, 'lcm_total': lcm_total,
                                                        'passenger': passenger, 'baggage': baggage, 'other': other,
                                                        'passenger_correct': passenger_correct,
