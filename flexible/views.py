@@ -83,6 +83,7 @@ def add_loadsheet(request):
                     df['paxNumber'] = df['paxNumber'].apply(int)
                     df['paxWeight'] = df['paxWeight'].apply(int)
                     df = df.pivot_table(values=['paxNumber', 'paxWeight'], index=['destination', 'paxClass', 'paxType'], dropna=False, margins=True, margins_name='合计', aggfunc=np.sum)
+                    df.dropna(inplace=True)
                     lcm_total += df.loc['合计', '', '']['paxWeight']
                     passenger = df
                     correct = False
@@ -109,6 +110,7 @@ def add_loadsheet(request):
                     df['baggageNumber'] = df['baggageNumber'].apply(int)
                     df['baggageWeight'] = df['baggageWeight'].apply(int)
                     df = df.pivot_table(values=['baggageNumber', 'baggageWeight'], index=['destination', 'baggageLocation'], dropna=False, margins=True, margins_name='合计', aggfunc=np.sum)
+                    df.dropna(inplace=True)
                     lcm_total += df.loc['合计', '']['baggageWeight']
                     baggage = df
                     correct = False
@@ -135,8 +137,9 @@ def add_loadsheet(request):
                 if df.shape[0] > 0:
                     df['weight'] = df['weight'].apply(int)
                     df = df.pivot_table(values=['weight'], index=['destination', 'location', 'type'], dropna=False, margins=True, margins_name='合计', aggfunc=np.sum)
-                    other = df
+                    df.dropna(inplace=True)
                     lcm_total += df.loc['合计', '', '']['weight']
+                    other = df
                     correct = False
                     if load_sheet_other.count() == df.shape[0] - 1:
                         correct = True

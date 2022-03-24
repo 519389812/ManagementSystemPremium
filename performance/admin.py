@@ -128,6 +128,7 @@ class WorkloadSummaryAdmin(admin.ModelAdmin):
             qs.fillna('0', inplace=True)
             # margins 必须加dropna=False参数才能生效
             qs = pd.pivot_table(qs, index=['组别', '姓名'], values=[c for c in qs.columns if c not in ['组别', '姓名', '岗位']], dropna=False, aggfunc=np.sum, margins=True, margins_name='总计')
+            qs.dropna(inplace=True)
             qs['总计'] = qs.sum(axis=1)
             response.context_data['summary'] = qs
         return response
@@ -213,6 +214,7 @@ class ManHourSummaryAdmin(admin.ModelAdmin):
             qs.drop(columns=['start_datetime', 'end_datetime', 'man_hour__weight'], inplace=True)
             qs.rename(columns={'user__team__name': '组别', 'user__full_name': '姓名', 'man_hour__name': '工时项目', 'working_hours': '工作时长', 'output': '产出'}, inplace=True)
             qs = pd.pivot_table(qs, index=['组别', '姓名'], values=['工作时长', '产出'], dropna=False, aggfunc=np.sum, margins=True, margins_name='总计')
+            qs.dropna(inplace=True)
             response.context_data['summary'] = qs
         return response
 
