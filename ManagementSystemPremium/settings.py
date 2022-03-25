@@ -25,37 +25,47 @@ SECRET_KEY = '^gj4*l7^c75mhlsrgmby=!!ro^%2%+2o41sg)hh0r=qe$k&tqd'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-online = True
-ad = False
+online = 'gnzj'
 # SECURITY WARNING: don't run with debug turned on in production!
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-if online:
-    if not ad:
-        DEBUG = False
-        ALLOWED_HOSTS = ['teamwork.pythonanywhere.com']
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.mysql',
-                'NAME': 'teamwork$default',
-                'USER': 'teamwork',
-                'PASSWORD': 'zjss123456',
-                'HOST': 'teamwork.mysql.pythonanywhere-services.com',
-            }
+if online == 'teamwork':
+    DEBUG = False
+    ALLOWED_HOSTS = ['teamwork.pythonanywhere.com']
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'teamwork$default',
+            'USER': 'teamwork',
+            'PASSWORD': 'zjss123456',
+            'HOST': 'teamwork.mysql.pythonanywhere-services.com',
         }
-    else:
-        DEBUG = False
-        ALLOWED_HOSTS = ['teamworkad.pythonanywhere.com']
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.mysql',
-                'NAME': 'teamworkad$default',
-                'USER': 'teamworkad',
-                'PASSWORD': 'zjss123456',
-                'HOST': 'teamworkad.mysql.pythonanywhere-services.com',
-            }
+    }
+elif online == 'teamworkad':
+    DEBUG = False
+    ALLOWED_HOSTS = ['teamworkad.pythonanywhere.com']
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'teamworkad$default',
+            'USER': 'teamworkad',
+            'PASSWORD': 'zjss123456',
+            'HOST': 'teamworkad.mysql.pythonanywhere-services.com',
         }
+    }
+elif online == 'gnzj':
+    DEBUG = False
+    ALLOWED_HOSTS = ['gnzj.pythonanywhere.com']
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'gnzj$default',
+            'USER': 'gnzj',
+            'PASSWORD': 'gnzj123456',
+            'HOST': 'gnzj.mysql.pythonanywhere-services.com',
+        }
+    }
 else:
     DEBUG = True
     ALLOWED_HOSTS = []
