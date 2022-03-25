@@ -12,3 +12,4 @@ pydocx==0.9.10
 pycryptodome==3.14.1
 user-agents==2.2.0
 pycryptodome==3.14.1
+mysqlclient==2.1.0
