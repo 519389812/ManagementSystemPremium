@@ -42,7 +42,7 @@ class WorkloadRecordAdmin(admin.ModelAdmin):
     autocomplete_fields = ['user', 'position', 'verifier', 'verify_user']
     search_fields = ('user__full_name', 'date', 'position__name', 'verifier__name', 'remark')
     fieldsets = (
-        ('基本信息', {'fields': ['id', 'user', 'position', 'verifier', 'verify', 'remark']}),
+        ('基本信息', {'fields': ['id', 'user', 'position', 'workload', 'verifier', 'verify', 'remark']}),
         ('操作信息', {'fields': ['create_datetime', 'verify_user', 'verify_datetime']}),
     )
     readonly_fields = ('id', 'user', 'position', 'workload_project', 'output', 'create_datetime', 'verify_user', 'verify_datetime')
