@@ -42,7 +42,7 @@ class WorkloadRecordAdmin(admin.ModelAdmin):
     autocomplete_fields = ['user', 'position', 'verifier', 'verify_user']
     search_fields = ('user__full_name', 'date', 'position__name', 'verifier__name', 'remark')
     fieldsets = (
-        ('基本信息', {'fields': ['id', 'user', 'position', 'workload', 'verifier', 'verify', 'remark']}),
+        ('基本信息', {'fields': ['id', 'user', 'position', 'workload_project', 'verifier', 'verify', 'remark']}),
         ('操作信息', {'fields': ['create_datetime', 'verify_user', 'verify_datetime']}),
     )
     readonly_fields = ('id', 'user', 'position', 'workload_project', 'output', 'create_datetime', 'verify_user', 'verify_datetime')
@@ -57,7 +57,7 @@ class WorkloadRecordAdmin(admin.ModelAdmin):
     def output(self, obj):
         workload_item = list(WorkloadItem.objects.filter(position=obj.position).values('name', 'weight'))
         workload_item = {i['name']: i['weight'] for i in workload_item}
-        out = sum([v * workload_item[k] for k, v in json.loads(obj.workload).items()])
+        out = sum([v * workload_item.get(k, 0) for k, v in json.loads(obj.workload).items()])
         return out
     output.short_description = '折算产出'
 
