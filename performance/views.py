@@ -15,6 +15,8 @@ from django.contrib import messages
 from io import BytesIO
 from django.utils.datastructures import MultiValueDictKeyError
 from django.core.paginator import Paginator
+import zoneinfo
+from django.utils.dateparse import parse_datetime
 
 from jinja2 import Environment, FileSystemLoader
 from pyecharts.globals import CurrentConfig
@@ -262,8 +264,10 @@ def add_man_hour(request):
         try:
             position = Position.objects.get(id=int(position_id))
             man_hour = ManHourItem.objects.get(id=int(man_hour_id))
-            start_datetime = timezone.localtime(timezone.datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M"))
-            end_datetime = timezone.localtime(timezone.datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M"))
+            start_datetime = parse_datetime(start_datetime)
+            start_datetime = start_datetime.replace(tzinfo=zoneinfo.ZoneInfo(timezone.get_current_timezone().zone))
+            end_datetime = parse_datetime(end_datetime)
+            end_datetime = end_datetime.replace(tzinfo=zoneinfo.ZoneInfo(timezone.get_current_timezone().zone))
             verifier = CustomTeam.objects.get(id=int(verifier_team_id))
             ManHourRecord.objects.create(user=request.user, position=position, man_hour=man_hour,
                                          start_datetime=start_datetime, end_datetime=end_datetime,
