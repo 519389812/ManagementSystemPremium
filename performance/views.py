@@ -1,4 +1,6 @@
 import json
+import sys
+
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, reverse, redirect
 from django.conf import settings
@@ -15,7 +17,6 @@ from django.contrib import messages
 from io import BytesIO
 from django.utils.datastructures import MultiValueDictKeyError
 from django.core.paginator import Paginator
-import zoneinfo
 from django.utils.dateparse import parse_datetime
 
 from jinja2 import Environment, FileSystemLoader
@@ -26,6 +27,11 @@ CurrentConfig.GLOBAL_ENV = Environment(loader=FileSystemLoader('{}/templates/pye
 from pyecharts import options as opts
 from pyecharts.charts import Bar, Line, Grid, Page
 from pyecharts.globals import ThemeType
+
+if sys.version_info >= (3, 9):
+    import zoneinfo
+else:
+    from backports import zoneinfo
 
 
 def make_date_list(start_date, end_date):
