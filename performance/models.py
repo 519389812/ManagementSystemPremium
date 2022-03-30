@@ -21,7 +21,7 @@ class PositionType(models.Model):
 class WorkloadPosition(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100, verbose_name='岗位名称')
-    type = models.ForeignKey(PositionType, on_delete=models.CASCADE, verbose_name='岗位类型')
+    type = models.ForeignKey(PositionType, related_name='workloadPosition_type', on_delete=models.CASCADE, verbose_name='岗位类型')
 
     class Meta:
         verbose_name = '工作量岗位'
@@ -33,7 +33,7 @@ class WorkloadPosition(models.Model):
 
 class WorkloadItem(models.Model):
     id = models.AutoField(primary_key=True)
-    position = models.ForeignKey(WorkloadPosition, on_delete=models.CASCADE, verbose_name='所属岗位')
+    position = models.ForeignKey(WorkloadPosition, related_name='workloadItem_position', on_delete=models.CASCADE, verbose_name='所属岗位')
     name = models.CharField(max_length=100, verbose_name='项目')
     weight = models.FloatField(verbose_name='每单位折算产出')
 
@@ -49,7 +49,7 @@ class WorkloadRecord(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(CustomUser, related_name='workloadRecord_user', on_delete=models.CASCADE, verbose_name='登记人')
     date = models.DateField(verbose_name='日期')
-    position = models.ForeignKey(WorkloadPosition, on_delete=models.CASCADE, verbose_name='岗位')
+    position = models.ForeignKey(WorkloadPosition, related_name='workloadRecord_position', on_delete=models.CASCADE, verbose_name='岗位')
     workload = models.JSONField(max_length=1000, blank=True, verbose_name='项目')
     verifier = models.ForeignKey(CustomTeam, related_name='workloadRecord_verifier', on_delete=models.CASCADE, verbose_name='审核组')
     remark = models.TextField(max_length=1000, blank=True, verbose_name='备注')
@@ -78,7 +78,7 @@ class WorkloadSummary(WorkloadRecord):
 class ManHourPosition(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100, verbose_name='岗位名称')
-    type = models.ForeignKey(PositionType, on_delete=models.CASCADE, verbose_name='岗位类型')
+    type = models.ForeignKey(PositionType, related_name='manHourPosition_type', on_delete=models.CASCADE, verbose_name='岗位类型')
 
     class Meta:
         verbose_name = '工时岗位'
@@ -90,7 +90,7 @@ class ManHourPosition(models.Model):
 
 class ManHourItem(models.Model):
     id = models.AutoField(primary_key=True)
-    position = models.ForeignKey(ManHourPosition, on_delete=models.CASCADE, verbose_name='所属岗位')
+    position = models.ForeignKey(ManHourPosition, related_name='manHourItem_position', on_delete=models.CASCADE, verbose_name='所属岗位')
     name = models.CharField(max_length=100, verbose_name='项目')
     weight = models.FloatField(verbose_name='每单位折算产出')
 
