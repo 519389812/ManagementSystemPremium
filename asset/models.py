@@ -27,7 +27,8 @@ class FixedStatus(models.Model):
 
 
 class Room(models.Model):
-    id = models.CharField(max_length=300, primary_key=True, verbose_name='房间编号')
+    id = models.AutoField(primary_key=True)
+    sn = models.CharField(max_length=300, verbose_name='房间编号')
     name = models.CharField(max_length=300, unique=True, verbose_name='房间名称')
     purpose = models.ForeignKey(RoomPurpose, related_name='room_purpose', on_delete=models.CASCADE, verbose_name='用途')
 
@@ -52,7 +53,8 @@ class CurrentType(models.Model):
 
 
 class Current(models.Model):
-    id = models.CharField(max_length=300, primary_key=True, verbose_name='流动资产编号')
+    id = models.AutoField(primary_key=True)
+    sn = models.CharField(max_length=300, verbose_name='流动资产编号')
     type = models.ForeignKey(CurrentType, related_name='current_type', on_delete=models.CASCADE, verbose_name='类型')
     name = models.CharField(max_length=300, unique=True, verbose_name='流动资产名称')
 
@@ -77,12 +79,13 @@ class FixedType(models.Model):
 
 
 class Fixed(models.Model):
-    id = models.CharField(max_length=300, primary_key=True, verbose_name='固定资产编号')
+    id = models.AutoField(primary_key=True)
+    sn = models.CharField(max_length=300, verbose_name='固定资产编号')
     type = models.ForeignKey(FixedType, related_name='fixed_type', on_delete=models.CASCADE, verbose_name='类型')
-    name = models.CharField(max_length=300, unique=True, verbose_name='固定资产名称')
+    name = models.CharField(max_length=300, verbose_name='固定资产名称')
     room = models.ForeignKey(Room, related_name='fixed_room', on_delete=models.CASCADE, verbose_name='位置')
     status = models.ForeignKey(FixedStatus, related_name='fixed_status', on_delete=models.CASCADE, verbose_name='状态')
-    expiry_date = models.DateField(null=True, verbose_name='过期日期')
+    expiry_date = models.DateField(blank=True, null=True, verbose_name='过期日期')
 
     class Meta:
         verbose_name = '固定资产管理'
@@ -94,8 +97,8 @@ class Fixed(models.Model):
 
 class Rack(models.Model):
     id = models.AutoField(primary_key=True)
-    room = models.OneToOneField(Room, null=True, related_name='rack_room', on_delete=models.CASCADE, verbose_name='位置')
-    fixed = models.OneToOneField(Fixed, null=True, related_name='rack_fixed', on_delete=models.CASCADE, verbose_name='货架对应资产')
+    room = models.OneToOneField(Room, blank=True, null=True, related_name='rack_room', on_delete=models.CASCADE, verbose_name='堆放地')
+    fixed = models.OneToOneField(Fixed, blank=True, null=True, related_name='rack_fixed', on_delete=models.CASCADE, verbose_name='对应固定资产')
 
     class Meta:
         verbose_name = '管理货架'
@@ -103,7 +106,7 @@ class Rack(models.Model):
         ordering = ['room__name', 'fixed__name']
 
     def __str__(self):
-        return self.room__name if self.room__name is not None else self.fixed__name
+        return '堆放地: %s, 货架: %s' % (self.room.name if self.room else '-', self.fixed.name if self.fixed else '-')
 
 
 class CurrentRecord(models.Model):
@@ -121,7 +124,7 @@ class CurrentRecord(models.Model):
         verbose_name_plural = '流动资产入出库记录'
 
     def __str__(self):
-        return self.current__name
+        return self.current.name
 
 
 class CurrentStorage(models.Model):

@@ -47,7 +47,7 @@ class CostSummaryAdmin(admin.ModelAdmin):
             'quantity': Sum('quantity'),
         }
         data = list(
-            qs.filter(verify=True).values('team__name').annotate(**metrics).order_by('-quantity'))
+            qs.values('team__name').annotate(**metrics).order_by('-quantity'))
         response.context_data['summary'] = data
         return response
 

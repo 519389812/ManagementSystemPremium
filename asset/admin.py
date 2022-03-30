@@ -22,10 +22,11 @@ class FixedStatusAdmin(admin.ModelAdmin):
 
 
 class RoomAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'purpose',)
+    list_display = ('id', 'sn', 'name', 'purpose',)
     list_display_links = ('id',)
     search_fields = ('name',)
     list_filter = ('purpose__name',)
+    readonly_fields = ('id',)
 
 
 class CurrentTypeAdmin(admin.ModelAdmin):
@@ -35,10 +36,11 @@ class CurrentTypeAdmin(admin.ModelAdmin):
 
 
 class CurrentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'type', 'name')
+    list_display = ('id', 'sn', 'type', 'name')
     list_display_links = ('id',)
     search_fields = ('name', 'type__name')
     list_filter = ('type__name',)
+    readonly_fields = ('id',)
 
 
 class FixedTypeAdmin(admin.ModelAdmin):
@@ -48,16 +50,24 @@ class FixedTypeAdmin(admin.ModelAdmin):
 
 
 class FixedAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'type', 'room', 'status', 'expiry_date', 'is_expired')
+    list_display = ('id', 'sn', 'name', 'type', 'room', 'status', 'expiry_date', 'is_expired')
     list_display_links = ('id',)
     search_fields = ('name', 'type__name')
     list_editable = ('status',)
     list_filter = ('type__name', 'room__name', 'room__purpose__name', 'status', 'expiry_date')
+    readonly_fields = ('id',)
+
+    def get_form(self, request, obj=None, **kwargs):
+        help_texts = {
+            'expiry_date': '不填写则为长期',
+        }
+        kwargs.update({'help_texts': help_texts})
+        return super(FixedAdmin, self).get_form(request, obj, **kwargs)
 
     def save_model(self, request, obj, form, change):
         if change:
-            if obj.room.id != form.changed_data['room']:
-                if len(CurrentStorage.objects.filter(room_name=obj.name)) > 0:
+            if 'room' in form.changed_data:
+                if len(CurrentStorage.objects.filter(rack_name=obj.name)) > 0:
                     messages.success(request, '检查到货架地址有变更，已更新库存记录')
                     CurrentStorage.objects.filter(room_name=obj.name).update(room_name=obj.room.name)
         super(FixedAdmin, self).save_model(request, obj, form, change)
@@ -75,8 +85,8 @@ class FixedAdmin(admin.ModelAdmin):
                 ret = '未过期'
                 color_code = 'green'
         else:
-            ret = '无'
-            color_code = 'black'
+            ret = '长期'
+            color_code = 'green'
         return format_html(
             '<span style="color: {};">{}</span>',
             color_code,
@@ -91,18 +101,27 @@ class RackAdmin(admin.ModelAdmin):
     search_fields = ('room__name', 'fixed__name')
     list_filter = ('room__name', 'room__purpose__name', 'fixed__name')
 
+    def get_form(self, request, obj=None, **kwargs):
+        help_texts = {
+            'room': '堆放地和固定资产仅选填一项',
+            'fixed': '堆放地和固定资产仅选填一项',
+        }
+        kwargs.update({'help_texts': help_texts})
+        return super(RackAdmin, self).get_form(request, obj, **kwargs)
+
     def save_model(self, request, obj, form, change):
-        if change:
-            if not form.changed_data['room'] and not form.changed_data['fixed']:
-                messages.set_level(request, level=messages.ERROR)
-                messages.error(request, '存放地点：房间或货架至少填写一项')
-            else:
-                super(RackAdmin, self).save_model(request, obj, form, change)
+        if not form.cleaned_data['room'] and not form.cleaned_data['fixed']:
+            messages.set_level(request, level=messages.ERROR)
+            messages.error(request, '保存失败！存放地点：堆放地或货架至少填写一项')
+        elif form.cleaned_data['room'] and form.cleaned_data['fixed']:
+            messages.set_level(request, level=messages.ERROR)
+            messages.error(request, '保存失败！存放地点：堆放地或货架仅可填写一项')
+        else:
+            super(RackAdmin, self).save_model(request, obj, form, change)
 
 
 class CurrentRecordAdmin(admin.ModelAdmin):
-    list_display = (
-        'id', 'current', 'quantity', 'rack', 'in_out', 'operating_datetime', 'operating_user', 'comment')
+    list_display = ('id', 'current', 'quantity', 'rack', 'in_out', 'operating_datetime', 'operating_user', 'comment')
     list_display_links = ('id',)
     search_fields = ('current__name',)
     list_filter = ('rack__room__name', 'rack__fixed__name', 'in_out')
@@ -112,40 +131,44 @@ class CurrentRecordAdmin(admin.ModelAdmin):
         ('操作信息', {'fields': ['operating_datetime', 'operating_user']}),
     )
     # date_hierarchy = 'operating_datetime'  # 详细时间分层筛选
-    readonly_fields = ['operating_datetime', 'operating_user']
+    readonly_fields = ['id', 'operating_datetime', 'operating_user']
 
     def save_model(self, request, obj, form, change):
-        try:
-            current_storage = CurrentStorage.objects.get(current=obj.current, rack=obj.rack)
-        except:
-            current_storage = None
-        if current_storage:
-            if obj.in_out == 'in':
+        current_storage = CurrentStorage.objects.filter(current=obj.current, rack=obj.rack)
+        if current_storage.count() > 0:
+            current_storage = current_storage[0]
+            print(3)
+            if obj.in_out == '入库':
+                print(4)
                 current_storage.quantity = current_storage.quantity + obj.quantity
                 current_storage.save()
-                obj.operation_username = request.user
+                obj.operating_user = request.user
                 super(CurrentRecordAdmin, self).save_model(request, obj, form, change)
-            elif obj.in_out == 'out':
+            elif obj.in_out == '出库':
+                print(5)
                 quantity = current_storage.quantity - obj.quantity
                 if quantity < 0:
                     messages.set_level(request, level=messages.ERROR)
                     messages.error(request, '错误！出库数量大于库存数。')
                 elif quantity == 0:
                     current_storage.delete()
-                    obj.operation_username = request.user.full_name
+                    obj.operating_user = request.user.full_name
                     super(CurrentRecordAdmin, self).save_model(request, obj, form, change)
                 else:
                     current_storage.quantity = quantity
                     current_storage.save()
-                    obj.operation_username = request.user.full_name
+                    obj.operating_user = request.user.full_name
                     super(CurrentRecordAdmin, self).save_model(request, obj, form, change)
         else:
-            if obj.in_out == 'in':
-                obj.operation_user = request.user
+            if obj.in_out == '入库':
+                obj.operating_user = request.user
+                CurrentStorage.objects.create(current=obj.current, rack=obj.rack, quantity=obj.quantity)
                 super(CurrentRecordAdmin, self).save_model(request, obj, form, change)
-            elif obj.in_out == 'out':
+            elif obj.in_out == '出库':
+                print(2)
                 messages.set_level(request, level=messages.ERROR)
                 messages.error(request, '错误！该物资无库存记录。')
+
 
     # 导出功能
     # actions = ['export_directly']
