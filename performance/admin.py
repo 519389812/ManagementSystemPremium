@@ -1,5 +1,5 @@
 from django.contrib import admin
-from performance.models import Position, WorkloadItem, WorkloadRecord, WorkloadSummary, ManHourItem, ManHourRecord, ManHourSummary
+from performance.models import PositionType, WorkloadPosition, ManHourPosition, WorkloadItem, WorkloadRecord, WorkloadSummary, ManHourItem, ManHourRecord, ManHourSummary
 from team.models import CustomTeam
 from user.models import CustomUser
 from django.contrib.admin import widgets
@@ -19,8 +19,13 @@ def half_ceil(x):
     return math.modf(x)[1] + (0.5 if math.modf(x)[0] < 0.5 else 1)
 
 
-class PositionAdmin(admin.ModelAdmin):
+class PositionTypeAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
+    search_fields = ('name',)
+
+
+class WorkloadPositionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'type')
     search_fields = ('name',)
 
 
@@ -134,6 +139,11 @@ class WorkloadSummaryAdmin(admin.ModelAdmin):
         return response
 
 
+class ManHourPositionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'type')
+    search_fields = ('name',)
+
+
 class ManHourItemAdmin(admin.ModelAdmin):
     list_display = ('id', 'position', 'name', 'weight')
     search_fields = ('name',)
@@ -225,4 +235,6 @@ admin.site.register(WorkloadSummary, WorkloadSummaryAdmin)
 admin.site.register(ManHourItem, ManHourItemAdmin)
 admin.site.register(ManHourRecord, ManHourRecordAdmin)
 admin.site.register(ManHourSummary, ManHourSummaryAdmin)
-admin.site.register(Position, PositionAdmin)
+admin.site.register(PositionType, PositionTypeAdmin)
+admin.site.register(WorkloadPosition, WorkloadPositionAdmin)
+admin.site.register(ManHourPosition, ManHourPositionAdmin)

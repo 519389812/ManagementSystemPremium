@@ -52,8 +52,8 @@ class LoadSheetRecord(models.Model):
     submit_datetime = models.DateTimeField(auto_now_add=True, verbose_name='提交时间')
 
     class Meta:
-        verbose_name = '成绩记录'
-        verbose_name_plural = '成绩记录'
+        verbose_name = '舱单成绩记录'
+        verbose_name_plural = '舱单成绩记录'
 
     def __str__(self):
         return '%s %s' % (self.user.name, self.score)

@@ -5,7 +5,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, reverse, redirect
 from django.conf import settings
 from django.core.paginator import Paginator
-from performance.models import Position, WorkloadRecord, WorkloadItem, ManHourItem, ManHourRecord
+from performance.models import PositionType, WorkloadPosition, ManHourPosition, WorkloadRecord, WorkloadItem, ManHourItem, ManHourRecord
 from team.models import CustomTeam
 from user.views import check_authority, check_grouping
 from ManagementSystemPremium.views import parse_url_param
@@ -193,7 +193,7 @@ def add_workload(request):
         team_id = request.user.team.parent.id
     else:
         team_id = request.user.team.id
-    position_list = list(Position.objects.all().order_by('name').values('id', 'name'))
+    position_list = list(WorkloadPosition.objects.all().order_by('name').values('id', 'name'))
     team_list = list(CustomTeam.objects.filter(related_parent__iregex=r'[^0-9]*%s[^0-9]' % str(team_id)).order_by('name'))
     team_list = [{'id': team.id, 'name': team.get_related_parent_name()} for team in team_list]
     if request.method == 'POST':
@@ -210,7 +210,7 @@ def add_workload(request):
             if set(list(post_dict.keys())) != set(position_workload_item_list):
                 return render(request, 'error_500.html', status=500)
             post_dict = json.dumps(post_dict)
-            position = Position.objects.get(id=int(position_id))
+            position = WorkloadPosition.objects.get(id=int(position_id))
             verifier = CustomTeam.objects.get(id=int(verifier_team_id))
             WorkloadRecord.objects.create(user=request.user, date=date, position=position, workload=post_dict,
                                           verifier=verifier, remark=remark)
@@ -255,7 +255,7 @@ def add_man_hour(request):
         team_id = request.user.team.parent.id
     else:
         team_id = request.user.team.id
-    position_list = list(Position.objects.all().order_by('name').values('id', 'name'))
+    position_list = list(ManHourPosition.objects.all().order_by('name').values('id', 'name'))
     team_list = list(CustomTeam.objects.filter(related_parent__iregex=r'[^0-9]*%s[^0-9]' % str(team_id)).order_by('name'))
     team_list = [{'id': team.id, 'name': team.get_related_parent_name()} for team in team_list]
     if request.method == 'POST':
@@ -268,7 +268,7 @@ def add_man_hour(request):
         if not all([position_id, man_hour_id, start_datetime, end_datetime, verifier_team_id]):
             return render(request, 'error_500.html', status=500)
         try:
-            position = Position.objects.get(id=int(position_id))
+            position = ManHourPosition.objects.get(id=int(position_id))
             man_hour = ManHourItem.objects.get(id=int(man_hour_id))
             start_datetime = parse_datetime(start_datetime)
             start_datetime = start_datetime.replace(tzinfo=zoneinfo.ZoneInfo(timezone.get_current_timezone().zone))
