@@ -98,7 +98,7 @@ class Fixed(models.Model):
 class Rack(models.Model):
     id = models.AutoField(primary_key=True)
     room = models.OneToOneField(Room, blank=True, null=True, related_name='rack_room', on_delete=models.CASCADE, verbose_name='堆放地')
-    fixed = models.OneToOneField(Fixed, blank=True, null=True, related_name='rack_fixed', on_delete=models.CASCADE, verbose_name='对应固定资产')
+    fixed = models.OneToOneField(Fixed, blank=True, null=True, related_name='rack_fixed', on_delete=models.CASCADE, verbose_name='堆放货架')
 
     class Meta:
         verbose_name = '管理货架'
@@ -106,7 +106,7 @@ class Rack(models.Model):
         ordering = ['room__name', 'fixed__name']
 
     def __str__(self):
-        return '堆放地: %s, 货架: %s' % (self.room.name if self.room else '-', self.fixed.name if self.fixed else '-')
+        return '%s%s' % (self.room.name if self.room else '', self.fixed.name if self.fixed else '')
 
 
 class CurrentRecord(models.Model):

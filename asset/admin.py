@@ -64,14 +64,6 @@ class FixedAdmin(admin.ModelAdmin):
         kwargs.update({'help_texts': help_texts})
         return super(FixedAdmin, self).get_form(request, obj, **kwargs)
 
-    def save_model(self, request, obj, form, change):
-        if change:
-            if 'room' in form.changed_data:
-                if len(CurrentStorage.objects.filter(rack_name=obj.name)) > 0:
-                    messages.success(request, '检查到货架地址有变更，已更新库存记录')
-                    CurrentStorage.objects.filter(room_name=obj.name).update(room_name=obj.room.name)
-        super(FixedAdmin, self).save_model(request, obj, form, change)
-
     # 配置过期颜色
     def is_expired(self, obj):
         if obj.expiry_date:
@@ -134,40 +126,72 @@ class CurrentRecordAdmin(admin.ModelAdmin):
     readonly_fields = ['id', 'operating_datetime', 'operating_user']
 
     def save_model(self, request, obj, form, change):
+        if change:
+            messages.set_level(request, level=messages.ERROR)
+            messages.error(request, '错误！出入库不允许变更，若填写错误请删除记录，以回滚库存数量')
+        else:
+            current_storage = CurrentStorage.objects.filter(current=obj.current, rack=obj.rack)
+            if current_storage.count() > 0:
+                current_storage = current_storage.first()
+                if obj.in_out == '入库':
+                    current_storage.quantity = current_storage.quantity + obj.quantity
+                    current_storage.save()
+                    obj.operating_user = request.user
+                    super(CurrentRecordAdmin, self).save_model(request, obj, form, change)
+                elif obj.in_out == '出库':
+                    quantity = current_storage.quantity - obj.quantity
+                    if quantity < 0:
+                        messages.set_level(request, level=messages.ERROR)
+                        messages.error(request, '错误！出库数量大于库存数。')
+                    elif quantity == 0:
+                        current_storage.delete()
+                        obj.operating_user = request.user
+                        super(CurrentRecordAdmin, self).save_model(request, obj, form, change)
+                    else:
+                        current_storage.quantity = quantity
+                        current_storage.save()
+                        obj.operating_user = request.user
+                        super(CurrentRecordAdmin, self).save_model(request, obj, form, change)
+            else:
+                if obj.in_out == '入库':
+                    obj.operating_user = request.user
+                    CurrentStorage.objects.create(current=obj.current, rack=obj.rack, quantity=obj.quantity)
+                    super(CurrentRecordAdmin, self).save_model(request, obj, form, change)
+                elif obj.in_out == '出库':
+                    messages.set_level(request, level=messages.ERROR)
+                    messages.error(request, '错误！该物资无库存记录。')
+
+    def delete_model(self, request, obj):
         current_storage = CurrentStorage.objects.filter(current=obj.current, rack=obj.rack)
         if current_storage.count() > 0:
-            current_storage = current_storage[0]
-            print(3)
+            current_storage = current_storage.first()
             if obj.in_out == '入库':
-                print(4)
-                current_storage.quantity = current_storage.quantity + obj.quantity
-                current_storage.save()
-                obj.operating_user = request.user
-                super(CurrentRecordAdmin, self).save_model(request, obj, form, change)
-            elif obj.in_out == '出库':
-                print(5)
                 quantity = current_storage.quantity - obj.quantity
                 if quantity < 0:
                     messages.set_level(request, level=messages.ERROR)
-                    messages.error(request, '错误！出库数量大于库存数。')
+                    messages.error(request, '错误！库存量小于需回滚数量。')
                 elif quantity == 0:
                     current_storage.delete()
-                    obj.operating_user = request.user.full_name
-                    super(CurrentRecordAdmin, self).save_model(request, obj, form, change)
+                    obj.delete()
                 else:
                     current_storage.quantity = quantity
                     current_storage.save()
-                    obj.operating_user = request.user.full_name
-                    super(CurrentRecordAdmin, self).save_model(request, obj, form, change)
+                    obj.delete()
+            elif obj.in_out == '出库':
+                quantity = current_storage.quantity + obj.quantity
+                current_storage.quantity = quantity
+                current_storage.save()
+                obj.delete()
         else:
             if obj.in_out == '入库':
-                obj.operating_user = request.user
-                CurrentStorage.objects.create(current=obj.current, rack=obj.rack, quantity=obj.quantity)
-                super(CurrentRecordAdmin, self).save_model(request, obj, form, change)
-            elif obj.in_out == '出库':
-                print(2)
                 messages.set_level(request, level=messages.ERROR)
                 messages.error(request, '错误！该物资无库存记录。')
+            elif obj.in_out == '出库':
+                CurrentStorage.objects.create(current=obj.current, rack=obj.rack, quantity=obj.quantity)
+
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            self.delete_model(request, obj)
 
 
     # 导出功能
