@@ -134,6 +134,7 @@ class WorkloadSummaryAdmin(admin.ModelAdmin):
             # margins 必须加dropna=False参数才能生效
             qs = pd.pivot_table(qs, index=['组别', '姓名'], values=[c for c in qs.columns if c not in ['组别', '姓名', '岗位']], dropna=False, aggfunc=np.sum, margins=True, margins_name='总计')
             qs.dropna(inplace=True)
+            qs = qs[qs.columns.tolist().sort()]
             qs['总计'] = qs.sum(axis=1)
             response.context_data['summary'] = qs
         return response
