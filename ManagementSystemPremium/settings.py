@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 import os
 from pathlib import Path
+import re
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -25,12 +26,11 @@ SECRET_KEY = '^gj4*l7^c75mhlsrgmby=!!ro^%2%+2o41sg)hh0r=qe$k&tqd'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-online = 'teamworkad'
 # SECURITY WARNING: don't run with debug turned on in production!
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-if online == 'teamwork':
+if re.search(r'teamwork[^ad]', os.getcwd()):
     DEBUG = False
     ALLOWED_HOSTS = ['teamwork.pythonanywhere.com']
     DATABASES = {
@@ -42,7 +42,7 @@ if online == 'teamwork':
             'HOST': 'teamwork.mysql.pythonanywhere-services.com',
         }
     }
-elif online == 'teamworkad':
+elif re.search(r'teamworkad', os.getcwd()):
     DEBUG = False
     ALLOWED_HOSTS = ['teamworkad.pythonanywhere.com']
     DATABASES = {
@@ -54,7 +54,7 @@ elif online == 'teamworkad':
             'HOST': 'teamworkad.mysql.pythonanywhere-services.com',
         }
     }
-elif online == 'gnzj':
+elif re.search(r'gnzj', os.getcwd()):
     DEBUG = False
     ALLOWED_HOSTS = ['gnzj.pythonanywhere.com']
     DATABASES = {

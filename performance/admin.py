@@ -220,7 +220,7 @@ class ManHourSummaryAdmin(admin.ModelAdmin):
             qs = response.context_data['cl'].queryset
         except (AttributeError, KeyError):
             return response
-        qs = pd.DataFrame(qs.values('user__team__name', 'man_hour__name', 'man_hour__weight', 'user__full_name', 'start_datetime', 'end_datetime'))
+        qs = pd.DataFrame(qs.filter(verify=True).values('user__team__name', 'man_hour__name', 'man_hour__weight', 'user__full_name', 'start_datetime', 'end_datetime'))
         if qs.shape[0] > 0:
             qs['working_hours'] = ((qs['end_datetime'] - qs['start_datetime']).dt.total_seconds()/3600).apply(lambda x: max(round(x, 2), 0))
             qs['output'] = qs['working_hours'] * qs['man_hour__weight']
