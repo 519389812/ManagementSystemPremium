@@ -30,7 +30,9 @@ SECRET_KEY = '^gj4*l7^c75mhlsrgmby=!!ro^%2%+2o41sg)hh0r=qe$k&tqd'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-if re.search(r'teamwork[^ad]', os.getcwd()):
+cwd = os.getcwd()
+
+if re.search(r'teamwork[^ad]', cwd):
     DEBUG = False
     ALLOWED_HOSTS = ['teamwork.pythonanywhere.com']
     DATABASES = {
@@ -42,7 +44,7 @@ if re.search(r'teamwork[^ad]', os.getcwd()):
             'HOST': 'teamwork.mysql.pythonanywhere-services.com',
         }
     }
-elif re.search(r'teamworkad', os.getcwd()):
+elif re.search(r'teamworkad', cwd):
     DEBUG = False
     ALLOWED_HOSTS = ['teamworkad.pythonanywhere.com']
     DATABASES = {
@@ -54,7 +56,7 @@ elif re.search(r'teamworkad', os.getcwd()):
             'HOST': 'teamworkad.mysql.pythonanywhere-services.com',
         }
     }
-elif re.search(r'gnzj', os.getcwd()):
+elif re.search(r'gnzj', cwd):
     DEBUG = False
     ALLOWED_HOSTS = ['gnzj.pythonanywhere.com']
     DATABASES = {
