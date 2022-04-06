@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>防疫政策</title>
+</head>
+
+<body class="d-flex flex-column h-100">
+<main class="flex-shrink-0">
+    <!-- Navigation-->
+    {% include "navigation.html" %}
+    <!-- Page Content-->
+    <section class="py-5">
+        <div class="container px-5 my-5">
+            <div class="text-center mb-5">
+                <h1 class="fw-bolder">国内部分城市防疫政策</h1>
+                <p class="lead fw-normal text-muted mb-0">最近更新时间：{{ last_update_datetime }}</p>
+            </div>
+            <div class="row gx-5">
+                <div class="col-xl-4">
+                    <div class="card border-0 bg-light mt-xl-5">
+                        <div class="card-body p-4 py-lg-5">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <div class="text-center">
+                                    <div class="h6 fw-bolder"></div>
+                                    <input id="key" type="text" class="form-control" placeholder="省份 城市"/>
+                                    <div id="search_result" style="display: none;color: red">无记录</div>
+                                    <br/>
+                                    <button class="btn btn-secondary" type="button" onclick="next()">搜索</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-8">
+                    <!-- FAQ Accordion 1-->
+                    {% for key, value in city_contents.items %}
+                        <h2 class="fw-bolder mb-3" id="province{{ value.0.id }}">{{ key }}</h2>
+                        <div class="accordion mb-5" id="accordionExample">
+                            {% for v in value %}
+                                <div class="accordion-item">
+                                    <h3 class="accordion-header" id="heading{{ v.id }}">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#collapse{{ v.id }}" aria-expanded="false" aria-controls="collapse{{ v.id }}">
+                                            <strong id="city{{ v.id }}">{{ v.name }}</strong>&nbsp;&nbsp;&nbsp;<div>{{ v.summary }}</div>
+                                        </button>
+                                    </h3>
+                                    <div class="accordion-collapse collapse" id="collapse{{ v.id }}" aria-labelledby="heading{{ v.id }}"
+                                         data-bs-parent="#accordionExample">
+                                        <div class="accordion-body">
+                                            <ul class="list-unstyled mb-4">
+                                                <li class="mb-2 text-muted"><i style="font-size:10px">更新时间：{{ v.update_datetime }}</i></li>
+                                                {% for k1, v1 in v.policy.items %}
+                                                    <li class="mb-2">
+                                                        <strong>{{ k1|linebreaksbr }}</strong>
+                                                    </li>
+                                                    {% for v2 in v1 %}
+                                                        <li class="mb-2">
+                                                            <i class="bi bi-check text-primary"></i>
+                                                            {{ v2|linebreaksbr }}
+                                                        </li>
+                                                    {% endfor %}
+                                                {% endfor %}
+                                                {% if v.image %}
+                                                    <li class="mb-2"><img style="width: 100%" src="{{ v.image.url }}"/></li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+<!-- Footer-->
+{% include "footer.html" %}
+{% include "script.html" %}
+<script type="text/javascript">
+    var oldKey = "";//查询框能搜索，定位，高亮目标
+    var pos = -1;//用于记录每个关键词的位置，以方便跳转
+
+    function next(){
+        var key = $("#key").val(); //取key值
+        if (!key) {
+            oldKey = "";
+            return; //key为空则退出
+        }
+        if (oldKey != key) {
+            $("#key").val(key);
+            oldKey = key;
+            var regExp = new RegExp('id="((province[0-9]+)|(city[0-9]+))".*'+key+'.*');//正则表达式匹配
+            var str = $("body").html().match(regExp);
+            if (str == null) {
+                pos = -1
+                $('#search_result').slideDown().delay(1500).slideUp(300);
+                return;
+            }
+            pos = $("#" + str[1]).offset().top;
+        }
+        if (pos == -1) {
+            $('#search_result').slideDown().delay(1500).slideUp(300);
+            return;
+        }
+        $("html,body").scrollTop(pos);//跳转到指定位置
+    }
+
+    document.onkeydown = function(e) {  //使next button响应回车事件
+        if((e||event).keyCode==13)
+            next();
+    };
+</script>
+<style type="text/css">
+    .res
+    {
+        color: Red;
+    }
+    .result
+    {
+        background: yellow;
+    }
+</style>
+</body>
+</html>
