@@ -39,7 +39,7 @@ class Employee(models.Model):
         verbose_name_plural = '个人技能掌握'
 
     def __str__(self):
-        return self.user.name
+        return self.user.full_name
 
 
 class EmployeeSummary(WorkloadRecord):

@@ -116,7 +116,7 @@
                         <label>开票人:</label>
                         <select class="form-control" id="issue_user_id" name="issue_user_id" required>
                             {% for user in user_list %}
-                                <option value="{{ user.id }}">{{ user.name }}</option>
+                                <option value="{{ user.id }}">{{ user.full_name }}</option>
                             {% endfor %}
                         </select>
                         <p class="help-block" id="issue_user_validate"></p>

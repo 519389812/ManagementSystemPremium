@@ -16,13 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views as main_views
-from user import views as user_views
-from performance import views as performance_views
-from sale import views as sales_views
-from exam import views as exam_views
-from django.shortcuts import render
-from ManagementSystemPremium.views import error_404, error_400, error_403, error_500
+from .views import error_404, error_400, error_403, error_500
 import notifications.urls
+from django.conf.urls.static import static
+from . import settings
 
 
 handler404 = error_404
@@ -71,4 +68,5 @@ urlpatterns = [
 
     # flexible
     path('flexible/', include('flexible.urls', namespace='flexible')),
-]
+
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
