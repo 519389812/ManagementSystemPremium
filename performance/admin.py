@@ -40,6 +40,12 @@ class WorkloadItemAdmin(admin.ModelAdmin):
         kwargs.update({'help_texts': help_texts})
         return super(WorkloadItemAdmin, self).get_form(request, obj, **kwargs)
 
+    def save_model(self, request, obj, form, change):
+        if change:
+            if 'name' in form.changed_data:
+
+        super().save_model(request, obj, form, change)
+
 
 class WorkloadRecordAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'date', 'position', 'workload_project', 'output', 'verifier', 'remark', 'create_datetime', 'verify', 'verify_user', 'verify_datetime')
