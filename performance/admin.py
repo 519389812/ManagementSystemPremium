@@ -43,7 +43,7 @@ class WorkloadItemAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if change:
             if 'name' in form.changed_data:
-
+                pass  # todo
         super().save_model(request, obj, form, change)
 
 

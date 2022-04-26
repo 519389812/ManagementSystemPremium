@@ -70,7 +70,8 @@ def add_loadsheet(request):
                 data['其他'][id_][name] = param_value
         load_sheet_content = LoadSheetContent.objects.filter(load_sheet__id=load_sheet_id)
         total_score = 0
-        lcm_total = 0
+        lcm_total = load_sheet.passenger
+        weight_fixed = 0
         passenger_correct = False
         baggage_correct = False
         other_correct = False
@@ -84,7 +85,8 @@ def add_loadsheet(request):
                     df['paxWeight'] = df['paxWeight'].apply(int)
                     df = df.pivot_table(values=['paxNumber', 'paxWeight'], index=['destination', 'paxClass', 'paxType'], dropna=False, margins=True, margins_name='合计', aggfunc=np.sum)
                     df.dropna(inplace=True)
-                    lcm_total += df.loc['合计', '', '']['paxWeight']
+                    lcm_total += df.loc['合计', '', '']['paxNumber']
+                    weight_fixed += df.loc['合计', '', '']['paxWeight']
                     passenger = df
                     correct = False
                     if load_sheet_passenger.count() == df.shape[0]-1:
@@ -111,7 +113,7 @@ def add_loadsheet(request):
                     df['baggageWeight'] = df['baggageWeight'].apply(int)
                     df = df.pivot_table(values=['baggageNumber', 'baggageWeight'], index=['destination', 'baggageLocation'], dropna=False, margins=True, margins_name='合计', aggfunc=np.sum)
                     df.dropna(inplace=True)
-                    lcm_total += df.loc['合计', '']['baggageWeight']
+                    weight_fixed += df.loc['合计', '']['baggageWeight']
                     baggage = df
                     correct = False
                     if load_sheet_baggage.count() == df.shape[0]-1:
@@ -138,7 +140,7 @@ def add_loadsheet(request):
                     df['weight'] = df['weight'].apply(int)
                     df = df.pivot_table(values=['weight'], index=['destination', 'location', 'type'], dropna=False, margins=True, margins_name='合计', aggfunc=np.sum)
                     df.dropna(inplace=True)
-                    lcm_total += df.loc['合计', '', '']['weight']
+                    weight_fixed += df.loc['合计', '', '']['weight']
                     other = df
                     correct = False
                     if load_sheet_other.count() == df.shape[0] - 1:
@@ -163,7 +165,8 @@ def add_loadsheet(request):
         LoadSheetRecord.objects.create(user=user, anonymous=anonymous, load_sheet=load_sheet, answer_time=answer_time,
                                        times=times, score=total_score)
         return render(request, 'view_loadsheet.html', {'total_score': total_score, 'lcm_total': lcm_total,
-                                                       'passenger': passenger, 'baggage': baggage, 'other': other,
+                                                       'weight_fixed': weight_fixed, 'passenger': passenger,
+                                                       'baggage': baggage, 'other': other,
                                                        'passenger_correct': passenger_correct,
                                                        'baggage_correct': baggage_correct,
                                                        'other_correct': other_correct})
