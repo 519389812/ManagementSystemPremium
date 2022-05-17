@@ -205,8 +205,8 @@ def add_workload(request):
             return render(request, 'error_500.html', status=500)
         try:
             post_dict = (dict(request.POST))
-            post_dict = {k: int(v[0]) for k, v in post_dict.items() if k not in ['date', 'position_id', 'verifier_team_id', 'remark', 'csrfmiddlewaretoken']}
-            position_workload_item_list = list(WorkloadItem.objects.filter(position__id=int(position_id)).values_list('name', flat=True))
+            post_dict = {int(k): int(v[0]) for k, v in post_dict.items() if k not in ['date', 'position_id', 'verifier_team_id', 'remark', 'csrfmiddlewaretoken']}
+            position_workload_item_list = list(WorkloadItem.objects.filter(position__id=int(position_id)).values_list('id', flat=True))
             if set(list(post_dict.keys())) != set(position_workload_item_list):
                 return render(request, 'error_500.html', status=500)
             post_dict = json.dumps(post_dict)

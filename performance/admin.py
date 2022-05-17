@@ -40,11 +40,19 @@ class WorkloadItemAdmin(admin.ModelAdmin):
         kwargs.update({'help_texts': help_texts})
         return super(WorkloadItemAdmin, self).get_form(request, obj, **kwargs)
 
-    def save_model(self, request, obj, form, change):
-        if change:
-            if 'name' in form.changed_data:
-                pass  # todo
-        super().save_model(request, obj, form, change)
+    def delete_model(self, request, obj):
+        workload_record_queryset = WorkloadRecord.objects.all()
+        for workload_record in workload_record_queryset:
+            workload = json.loads(workload_record.workload)
+            if str(obj.id) in workload.keys():
+                del(workload[str(obj.id)])
+                workload_record.workload = json.dumps(workload)
+                workload_record.save()
+        obj.delete()
+
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            self.delete_model(request, obj)
 
 
 class WorkloadRecordAdmin(admin.ModelAdmin):
@@ -62,7 +70,7 @@ class WorkloadRecordAdmin(admin.ModelAdmin):
     )
 
     def workload_project(self, obj):
-        return ' '.join(['%s: %s' % (k, v) for k, v in json.loads(obj.workload).items()])
+        return ' '.join(['%s:%s ' % (WorkloadItem.objects.get(id=int(k)).name, v) for k, v in json.loads(obj.workload).items()])
     workload_project.short_description = '工作量'
 
     def output(self, obj):

@@ -21,6 +21,7 @@ urlpatterns = [
     path('supervisor_signature/', views.supervisor_signature, name="supervisor_signature"),
     path('supervise_docx/', views.supervise_docx, name="supervise_docx"),
     path('show_docx_html/', views.show_docx_html, name="show_docx_html"),
+    path('set_signature/', views.set_signature, name="set_signature"),
     re_path('translate_words/(.+)/$', views.translate_words, name="translate_words"),
     re_path('select_template/(.+)/$', views.select_template, name="select_template"),
     re_path('upload_template/(.+)/$', views.upload_template, name="upload_template"),

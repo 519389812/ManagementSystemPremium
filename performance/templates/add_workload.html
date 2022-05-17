@@ -146,7 +146,7 @@ $('#position_id').change(function(){
             for (var i = 0; i <= data.length - 1; i++) {
                 content += '<div class="control-group form-group"><div class="controls">';
                 content += '<label>' + data[i].name + '</label>';
-                content += '<input type="number" class="form-control" id="' + data[i].name + '" name="' + data[i].name + '" placeholder="输入值" value="0" required data-validation-required-message="Please enter a number.">';
+                content += '<input type="number" class="form-control" id="' + data[i].id + '" name="' + data[i].id + '" placeholder="输入值" value="0" required data-validation-required-message="Please enter a number.">';
                 content += '<p class="help-block" id="workload_item_' + data[i].id + '_validate"></p></div></div>';
             }
             workloadDiv.append(content);

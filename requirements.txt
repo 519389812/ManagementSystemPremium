@@ -14,3 +14,4 @@ user-agents==2.2.0
 pycryptodome==3.14.1
 mysqlclient==2.1.0
 backports.zoneinfo==0.2.1
+rsa==4.8

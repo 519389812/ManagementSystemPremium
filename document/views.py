@@ -30,7 +30,7 @@ time_zone = pytz_timezone(TIME_ZONE)
 
 
 def document(request):
-    return render(request, 'paperless.html')
+    return render(request, 'document.html')
 
 
 def introduce_docx(request):

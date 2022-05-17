@@ -97,92 +97,29 @@ changeColorButton.addEventListener("click", function (event) {
   signaturePad.penColor = color;
 });
 
-function getCookie(name){
-  var strcookie = document.cookie;
-  var arrcookie = strcookie.split("; ");
-  for ( var i = 0; i < arrcookie.length; i++) {
-    var arr = arrcookie[i].split("=");
-    if (arr[0] == name){
-      return arr[1];
-    }
-  }
-  return "";
-  }
-
-function randomNum(n) {
-  let sString = "";
-  let strings = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  for (i = 0; i < n; i++) {
-    ind = Math.floor(Math.random() * strings.length);
-    sString += strings.charAt(ind);
-  }
-  return sString;
-}
-
-function aesEncrypt(data, key) {
-  var k = CryptoJS.enc.Utf8.parse(key);
-  var d = CryptoJS.enc.Utf8.parse(data);
-  var encrypted = CryptoJS.AES.encrypt(d, k, {mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7});
-  return encrypted.toString();
-}
-
 savePNGButton.addEventListener("click", function (event) {
   if (signaturePad.isEmpty()) {
-    alert("请先签名！");
+    alert("Please provide a signature first.");
   } else {
-    var key = randomNum(16);
-    var dataURL = aesEncrypt(encodeURIComponent(signaturePad.toDataURL()), key);
-//    var dataURL = encodeURIComponent(signaturePad.toDataURL());
-    var xhr=new XMLHttpRequest();
-    var cxck = getCookie("csrftoken");
-    if (contentId!="") {
-      var jsonData = JSON.stringify({
-        "data": dataURL,
-        "docx_id": docxId,
-        "content_id": contentId,
-        "key": key,
-      });
-      xhr.open('post','/document/fill_signature/', true);
-    } else {
-      var jsonData = JSON.stringify({
-        "data": dataURL,
-        "docx_id": docxId,
-        "signature_key": signatureKey,
-        "key": key,
-      });
-      xhr.open('post','/document/supervisor_signature/', true);
-    }
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.setRequestHeader("X-CSRFToken", cxck);
-    xhr.onreadystatechange = function () {  //绑定响应状态事件监听函数
-      if (xhr.readyState == 4) {  //监听readyState状态
-        if (xhr.status == 200 || xhr.status == 0) {  //监听HTTP状态码
-          alert("提交成功，页面将自动跳转！");  //接收数据
-        } else {
-          alert("提交失败！");
-        }
-        window.location.href = "/document/view_docx/" + docxId;
-      }
-    }
-    xhr.send(jsonData);
-    alert("签名成功，请等待页面反馈！");
+    var dataURL = signaturePad.toDataURL();
+    download(dataURL, "signature.png");
   }
 });
 
-//saveJPGButton.addEventListener("click", function (event) {
-//  if (signaturePad.isEmpty()) {
-//    alert("Please provide a signature first.");
-//  } else {
-//    var dataURL = signaturePad.toDataURL("image/jpeg");
-//    download(dataURL, "signature.jpg");
-//  }
-//});
-//
-//saveSVGButton.addEventListener("click", function (event) {
-//  if (signaturePad.isEmpty()) {
-//    alert("Please provide a signature first.");
-//  } else {
-//    var dataURL = signaturePad.toDataURL('image/svg+xml');
-//    download(dataURL, "signature.svg");
-//  }
-//});
+saveJPGButton.addEventListener("click", function (event) {
+  if (signaturePad.isEmpty()) {
+    alert("Please provide a signature first.");
+  } else {
+    var dataURL = signaturePad.toDataURL("image/jpeg");
+    download(dataURL, "signature.jpg");
+  }
+});
+
+saveSVGButton.addEventListener("click", function (event) {
+  if (signaturePad.isEmpty()) {
+    alert("Please provide a signature first.");
+  } else {
+    var dataURL = signaturePad.toDataURL('image/svg+xml');
+    download(dataURL, "signature.svg");
+  }
+});
