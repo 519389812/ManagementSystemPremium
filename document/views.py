@@ -452,3 +452,22 @@ def upload_template(request, error=''):
             return render(request, 'error_403.html', status=403)
     else:
         return render(request, 'upload_template.html', {'error': error})
+
+
+@check_authority
+def set_signature(request):
+    if request.method == 'POST':
+        request_data = json.loads(request.body)
+        try:
+            docx_id = request_data['docx_id']
+            docx_object = DocxInit.objects.get(id=docx_id)
+        except:
+            return render(request, 'error_docx_missing.html', status=403)
+        if check_datetime_closed(timezone.localtime(docx_object.close_datetime), timezone.localtime(timezone.now())):
+            return render(request, 'error_docx_closed.html', status=403)
+        signature_data = parse.unquote(decrypt(request_data['data'], request_data['key']))
+        # signature_data = parse.unquote(request_data['data'])
+        ContentStorage.objects.filter(id=docx_id + '_' + request_data['content_id']).update(signature=signature_data)
+        return redirect(reverse('view_docx', args=[docx_id]))
+    else:
+        return render(request, 'error_400.html', status=400)
