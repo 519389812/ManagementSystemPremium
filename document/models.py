@@ -4,7 +4,8 @@ from team.models import CustomTeam
 
 
 class DocxInit(models.Model):
-    id = models.CharField(max_length=14, primary_key=True)
+    id = models.AutoField(max_length=14, primary_key=True)
+    docx_id = models.CharField(max_length=14, verbose_name="文件id")
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name="创建人")
     template_name = models.CharField(max_length=30, verbose_name="模板名")
     docx_name = models.CharField(max_length=30, verbose_name="文档名")
@@ -25,7 +26,8 @@ class DocxInit(models.Model):
 
 
 class ContentStorage(models.Model):
-    id = models.CharField(max_length=29, primary_key=True)
+    id = models.AutoField(max_length=14, primary_key=True)
+    content_id = models.CharField(max_length=14, verbose_name="文件id")
     docx = models.ForeignKey(DocxInit, on_delete=models.CASCADE, verbose_name="模板")
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name="填写人")
     content = models.TextField(max_length=500, verbose_name="内容")
@@ -42,7 +44,8 @@ class ContentStorage(models.Model):
 
 
 class SignatureStorage(models.Model):
-    id = models.CharField(max_length=29, primary_key=True)
+    id = models.AutoField(max_length=14, primary_key=True)
+    signature_id = models.CharField(max_length=29, verbose_name="签名id")
     docx = models.ForeignKey(DocxInit, on_delete=models.CASCADE, verbose_name="模板")
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name="填写人")
     location = models.TextField(max_length=500, verbose_name="签名位置")
@@ -59,7 +62,8 @@ class SignatureStorage(models.Model):
 
 
 class SignatureRemoteStorage(models.Model):
-    id = models.CharField(max_length=29, primary_key=True)
+    id = models.AutoField(max_length=14, primary_key=True)
+    signature_id = models.CharField(max_length=29, verbose_name="签名id")
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, verbose_name="填写人")
     signature = models.TextField(max_length=150000, verbose_name="签名", blank=True)
     is_download = models.BooleanField(default=False, verbose_name="是否下载")

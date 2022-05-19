@@ -18,6 +18,7 @@ from user_agents import parse
 import json
 # from django_apscheduler.jobstores import DjangoJobStore, register_events, register_job
 # from django.utils import timezone
+from document.models import SignatureRemoteStorage
 
 
 def check_datetime_opened(close_timezone, now_timezone):
@@ -85,7 +86,8 @@ def home(request):
 
 @check_authority
 def user_setting(request):
-    return render(request, 'user_setting.html')
+    is_sign = True if SignatureRemoteStorage.objects.filter(user=request.user).count() > 0 else False
+    return render(request, 'user_setting.html', {"is_sign": is_sign})
 
 
 def register(request):

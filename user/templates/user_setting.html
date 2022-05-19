@@ -51,8 +51,8 @@
                 {% endif %}
             </p>
             <p><b>团队：</b>{{ request.user.team.name }}</p>
-            <p><b>签名：</b>
-                {% if request.user.email_verify == True %}
+            <p><b>预签名：</b>
+                {% if is_sign == True %}
                     已设置<<a href="{% url 'document:set_signature' %}"><i style="font-size: 14px">重签</i></a>>
                 {% else %}
                     未设置<<a href="{% url 'document:set_signature' %}"><i style="font-size: 14px">设置签名</i></a>>

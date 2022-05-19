@@ -117,6 +117,7 @@ def delete_template(request):
         return render(request, 'error_400.html', status=400)
 
 
+# 初始化新文档
 @check_authority
 def init_docx(request):
     if request.method == 'POST':
@@ -153,7 +154,7 @@ def write_init_docx(request, template_name):
             del(params['team'])
         content = json.dumps(params)
         docx_id = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-        docx_init_object = DocxInit.objects.create(id=docx_id, user=request.user, template_name=template_name, docx_name=docx_name, content=content, close_datetime=close_datetime)
+        docx_init_object = DocxInit.objects.create(docx_id=docx_id, user=request.user, template_name=template_name, docx_name=docx_name, content=content, close_datetime=close_datetime)
         if len(team_id_list) > 0:
             team_id_list = [int(i) for i in team_id_list]
             for team_id in team_id_list:
