@@ -30,7 +30,7 @@
 
         <div class="signature-pad--actions">
             <div>
-                <button type="button" class="button clear" id="button" data-action="clear">重签</button>
+                <button type="button" class="button clear" data-action="clear">重签</button>
 <!--                <button type="button" class="button" data-action="change-color">Change color</button>-->
                 <button type="button" class="button" data-action="undo">撤销</button>
             </div>
@@ -38,7 +38,7 @@
 <!--                <button type="button" class="button save" data-action="save-png">Save as PNG</button>-->
 <!--                <button type="button" class="button save" data-action="save-jpg">Save as JPG</button>-->
 <!--                <button type="button" class="button save" data-action="save-svg">Save as SVG</button>-->
-                <button type="button" class="button save" id="submitButton" onclick="submit()">确认</button>
+                <button type="button" class="button save" id="submitButton">确认</button>
             </div>
         </div>
     </div>
@@ -63,8 +63,6 @@
         s.parentNode.insertBefore(ga, s);
     })();
 
-    var docxId = '{{ docx_id }}';
-    var contentId = '{{ content_id }}';
     var pubKey = '-----BEGIN RSA PUBLIC KEY-----\n' +
         'MIGJAoGBAJbpnczQQzLj2XlObi6eRFbxdLPHBAUy/zd7DHkvi2E32+TnCulVL7oF\n' +
         '9p438gF29U5Y5OE04mLLoFrGxlihHnZmiw2Z5bglyKnIlWWSO35k9rXl7fkpkK+D\n' +
@@ -92,8 +90,15 @@
             alert("请先签名！");
         } else {
 //    var dataURL = encodeURIComponent(signaturePad.toDataURL());
-            var xhr = new XMLHttpRequest();
+            if ('{{ request.user.is_anonymous }}' == True ) {
+                 window.location.href = "{% url 'user:login' %}";
+            }
+            var user = '{{ request.user.id }}';
+            var docxId = '{{ docx_id }}';
+            var contentId = '{{ content_id }}';
             var cxck = getCookie("csrftoken");
+
+            var xhr = new XMLHttpRequest();
             var dataURL = encryptor.encrypt(signaturePad.toDataURL());
             if (contentId != "") {
                 var jsonData = JSON.stringify({
@@ -136,8 +141,16 @@
         var width = document.documentElement.clientWidth;
         var height = document.documentElement.clientHeight;
         if (width < height) {
-            console.log($("#button"))
-            $("#button").style.transform = 'rotate(' + 90 + 'deg)';
+            var angle = 90;
+            // $('.button').css(
+                // {
+                //     'transform': 'rotate(' + angle + 'deg)',
+                //     '-webkit-transform': 'rotate(' + angle + 'deg)',
+                //     '-moz-transform': 'rotate(' + angle + 'deg)',
+                // });
+            $('.button').css('transform','rotate('+ angle +'deg)');
+            $('.button').css('-webkit-transform','rotate('+ angle +'deg)');
+            $('.button').css('-moz-transform','rotate('+ angle +'deg)');
             // $("#signature-pad").addClass("wrapper-pad");
             // $("#signature-pad-footer").addClass("wrapper-footer");
             }
