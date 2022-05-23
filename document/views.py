@@ -471,4 +471,4 @@ def set_signature(request):
         ContentStorage.objects.filter(id=docx_id + '_' + request_data['content_id']).update(signature=signature_data)
         return redirect(reverse('view_docx', args=[docx_id]))
     else:
-        return render(request, 'error_400.html', status=400)
+        return render(request, 'signature.html')

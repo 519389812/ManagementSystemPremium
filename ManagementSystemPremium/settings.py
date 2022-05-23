@@ -194,6 +194,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static', 'ManagementSystemPremium'),
+    os.path.join(BASE_DIR, 'document', 'static', 'document'),
     os.path.join(BASE_DIR, 'performance', 'static', 'performance'),
 ]
 
