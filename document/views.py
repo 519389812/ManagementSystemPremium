@@ -23,8 +23,7 @@ from team.models import CustomTeam
 from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.core.paginator import Paginator
-import js2py
-from ManagementSystemPremium import jsencrypt
+from ManagementSystemPremium import safe
 
 
 time_zone = pytz_timezone(TIME_ZONE)
@@ -474,11 +473,11 @@ def upload_template(request, error=''):
 def set_signature(request):
     if request.method == 'POST':
         request_data = json.loads(request.body)
-        je = jsencrypt.JSEncrypt()
-        print(je)
-        # jsencrypt = js2py.require('D:\\PyProject\\ManagementSystemPremium\\ManagementSystemPremium\\static\\ManagementSystemPremium\\js\\jsencrypt.js')
-        # excryptor = js2py.eval_js('new jsencrypt.JSEncrypt()')
-        # js2py.eval_js('encryptor..decryptLong()')
+        print(request_data["data"])
+        text = safe.crypto_rsa_decrypt(request_data["data"], "./ManagementSystemPremium/pri.pem", "PKCS1_v1_5")
+        print(text)
+        print(text.decode())
+
         # try:
         #     docx_id = request_data['docx_id']
         #     docx_object = DocxInit.objects.get(id=docx_id)
