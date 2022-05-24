@@ -14,6 +14,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
     <link rel="stylesheet" href="{% static 'css/signature-pad.css' %}">
+    <script src="../../../../jsencrypt-master/bin/jsencrypt.js"></script>
 
     <!--[if IE]>
     <link rel="stylesheet" type="text/css" href="{% static 'css/ie9.css' %}">
@@ -46,7 +47,7 @@
 
 <script src="{% static 'js/signature_pad.umd.js' %}"></script>
 <script src="{% static 'js/app.js' %}"></script>
-<script src="{% static 'js/jsencrypt.min.js' %}"></script>
+<script src="{% static 'js/jsencrypt.js' %}"></script>
 <script src="{% static 'js/jquery.js' %}"></script>
 
 <script type="text/javascript">
@@ -64,13 +65,14 @@
     })();
 
     var pubKey = '-----BEGIN RSA PUBLIC KEY-----\n' +
-        'MIGJAoGBAJbpnczQQzLj2XlObi6eRFbxdLPHBAUy/zd7DHkvi2E32+TnCulVL7oF\n' +
-        '9p438gF29U5Y5OE04mLLoFrGxlihHnZmiw2Z5bglyKnIlWWSO35k9rXl7fkpkK+D\n' +
-        'nh1AvYH5/j7GSADZlktAI4aDHJ8A3iBpAYrfSf3oLLBooKs/U3d/AgMBAAE=\n' +
+        'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDeL8yBEmncJLr3zdyo0oPRLFvJ\n' +
+        'a2uaKI0anUvfiOOAfOAbLQtuqO1oBKYYZ1vzkty9O2nkswCAmwJf+qYKVty3ncjW\n' +
+        'vrXNdV/LFdbGmkaFADUFIJGjZzXcLdO/JvyTpvGy8E3MZF2nNFCpX/wYJqd02dAm\n' +
+        'SDpPRkkUUMuYhdWWLwIDAQAB\n' +
         '-----END RSA PUBLIC KEY-----'
 
     var encryptor = new JSEncrypt();
-    encryptor.setPublicKey(pubKey)
+    encryptor.setPublicKey(pubKey);
 
     function getCookie(name){
         var strcookie = document.cookie;
@@ -90,30 +92,29 @@
             alert("请先签名！");
         } else {
 //    var dataURL = encodeURIComponent(signaturePad.toDataURL());
-            if ('{{ request.user.is_anonymous }}' == True ) {
+            if ('{{ request.user.is_anonymous }}' == 'True' ) {
                  window.location.href = "{% url 'user:login' %}";
             }
-            var user = '{{ request.user.id }}';
             var docxId = '{{ docx_id }}';
-            var contentId = '{{ content_id }}';
+            var signatureLocation = '{{ signature_location }}';
             var cxck = getCookie("csrftoken");
 
             var xhr = new XMLHttpRequest();
-            var dataURL = encryptor.encrypt(signaturePad.toDataURL());
-            if (contentId != "") {
+            var dataURL = encryptor.encryptLong("你好");
+            // console.log(signaturePad.toDataURL());
+            console.log(dataURL);
+            if (docxId != "") {
                 var jsonData = JSON.stringify({
                     "data": dataURL,
+                    "signature_location": signatureLocation,
                     "docx_id": docxId,
-                    "content_id": contentId,
                 });
-                xhr.open('post', '/document/fill_signature/', true);
+                xhr.open('post', '{% url "document:set_signature" %}', true);
             } else {
                 var jsonData = JSON.stringify({
                     "data": dataURL,
-                    "docx_id": docxId,
-                    "signature_key": signatureKey,
                 });
-                xhr.open('post', '/document/supervisor_signature/', true);
+                xhr.open('post', '{% url "document:set_signature" %}', true);
             }
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.setRequestHeader("X-CSRFToken", cxck);
@@ -121,10 +122,19 @@
                 if (xhr.readyState == 4) {  //监听readyState状态
                     if (xhr.status == 200 || xhr.status == 0) {  //监听HTTP状态码
                         alert("提交成功，页面将自动跳转！");  //接收数据
+                        if (docxId != "") {
+                            window.location.href = "/document/view_docx/" + docxId;
+                        } else {
+                            window.location.href = "{% url 'user:user_setting' %}";
+                        }
                     } else {
-                        alert("提交失败！");
+                        alert("提交失败，请重试！");
+                        if (docxId != "") {
+                            window.location.href = "/document/view_docx/" + docxId;
+                        } else {
+                            window.location.href = "{% url 'user:user_setting' %}";
+                        }
                     }
-                    window.location.href = "/document/view_docx/" + docxId;
                 }
             }
             xhr.send(jsonData);
@@ -142,15 +152,18 @@
         var height = document.documentElement.clientHeight;
         if (width < height) {
             var angle = 90;
+            // 改变按钮方向1
             // $('.button').css(
                 // {
                 //     'transform': 'rotate(' + angle + 'deg)',
                 //     '-webkit-transform': 'rotate(' + angle + 'deg)',
                 //     '-moz-transform': 'rotate(' + angle + 'deg)',
                 // });
+            // 改变按钮方向2
             $('.button').css('transform','rotate('+ angle +'deg)');
             $('.button').css('-webkit-transform','rotate('+ angle +'deg)');
             $('.button').css('-moz-transform','rotate('+ angle +'deg)');
+            // 改变签字版方向
             // $("#signature-pad").addClass("wrapper-pad");
             // $("#signature-pad-footer").addClass("wrapper-footer");
             }
