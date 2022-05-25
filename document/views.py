@@ -475,9 +475,15 @@ def set_signature(request):
     if request.method == 'POST':
         request_data = json.loads(request.body)
         encrypted_text = request_data["data"]
-        print(request_data["key"])
-        encrypted_key = request_data["key"] + '-' + PEM_VERSION
-        # SignatureRemoteStorage.objects.create(signature_id=generate('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 16), user=request.user, signature=encrypted_text, key=encrypted_key)
+        encrypted_key = request_data["key"] + ';' + PEM_VERSION
+        if SignatureRemoteStorage.objects.filter(user=request.user).count() == 0:
+            SignatureRemoteStorage.objects.create(signature_id=generate('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 16), user=request.user, signature=encrypted_text, key=encrypted_key)
+        else:
+            signature = SignatureRemoteStorage.objects.get(user=request.user)
+            signature.signature = encrypted_text
+            signature.key = encrypted_key
+            signature.is_download = False
+            signature.save()
         return render(request, 'user_setting.html')
 
         # try:
@@ -498,9 +504,9 @@ def set_signature(request):
 def download_signature(request):
     signature_storage = SignatureRemoteStorage.objects.filter(is_download=False)
     for signature in signature_storage:
-        response = HttpResponse(signature.signature)
+        response = HttpResponse(signature.key + ';' + signature.signature)
         response['Content-Type'] = 'application/octet-stream'  # 设置头信息，告诉浏览器这是个文件
-        response['Content-Disposition'] = 'attachment;filename="%s-%s.txt"' % (signature.signature_id, signature.key)
-        # signature.is_download = True
+        response['Content-Disposition'] = 'attachment;filename="%s.txt"' % signature.signature_id
+        signature.is_download = True
         signature.save()
         return response

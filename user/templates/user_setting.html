@@ -32,7 +32,6 @@
                 <a href="{% url 'user:user_setting' %}" class="list-group-item active">用户信息</a>
                 <a href="{% url 'user:change_password' %}" class="list-group-item">修改密码</a>
                 <a href="{% url 'user:set_email_verify' %}" class="list-group-item" style="pointer-events: none;cursor: default;color:gray;">设置和验证邮箱</a>
-                <a href="{% url 'document:set_signature' %}" class="list-group-item" style="pointer-events: none;cursor: default;color:gray;">设置签名</a>
                 {% if request.user.is_superuser %}
                     <a href="{% url 'document:download_signature' %}" class="list-group-item">下载签名</a>
                 {% endif %}
@@ -50,7 +49,7 @@
                 {% if request.user.email_verify == True %}
                     已验证
                 {% else %}
-                    未验证<<a href="{% url 'user:set_email_verify' %}" style="pointer-events: none;cursor: default;color:gray;"><i style="font-size: 14px">验证邮箱</i></a>>
+                    未验证<<a href="{% url 'user:set_email_verify' %}?reset=false" style="pointer-events: none;cursor: default;color:gray;"><i style="font-size: 14px">验证邮箱</i></a>>
                 {% endif %}
             </p>
             <p><b>团队：</b>{{ request.user.team.name }}</p>

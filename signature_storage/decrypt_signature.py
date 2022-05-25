@@ -67,25 +67,24 @@ def aes_decrypt(text, key):
 
 
 if __name__ == '__main__':
+    signature_dir = os.path.join(os.getcwd(), 'signature')
     signature_storage = os.listdir(os.path.join(os.getcwd(), 'signature'))
     current_version = ''
-    print('Start.')
     for signature in signature_storage:
-        file_name, ext = os.path.splitext(signature)
+        signature_path = os.path.join(signature_dir, signature)
+        signature_id, ext = os.path.splitext(signature)
         if ext == '.txt':
             # try:
-            print(file_name)
-            id_, key, version = file_name.split('-')
-            print(key)
+            with open(os.path.join(signature_dir, signature), 'r') as f:
+                key, version, img = f.read().split(';')
             if current_version != version or 'cipher' not in locals():
                 cipher = set_crypto_pri_key(mode='PKCS1_v1_5', version=version)
             key = crypto_rsa_decrypt(cipher, key, "PKCS1_v1_5")
-            with open(signature, 'r') as f:
-                text = parse.unquote(aes_decrypt(f.read(), key))
-                encoded_image = text.split(",")[1]
-                decoded_image = base64.b64decode(encoded_image)
-            with open('%s.png' % id_, 'wb') as f:
+            text = parse.unquote(aes_decrypt(img, key))
+            encoded_image = text.split(",")[1]
+            decoded_image = base64.b64decode(encoded_image)
+            with open(os.path.join(signature_dir, '%s.png' % signature_id), 'wb') as f:
                 f.write(decoded_image)
-            os.remove(signature)
+            os.remove(os.path.join(signature_dir, signature))
             # except:
             #     continue
