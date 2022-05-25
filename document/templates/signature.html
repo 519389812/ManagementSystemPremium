@@ -47,7 +47,8 @@
 
 <script src="{% static 'js/signature_pad.umd.js' %}"></script>
 <script src="{% static 'js/app.js' %}"></script>
-<script src="{% static 'js/jsencrypt.js' %}"></script>
+<script src="{% static 'js/aes.js' %}"></script>
+<script src="{% static 'js/jsencrypt.min.js' %}"></script>
 <script src="{% static 'js/jquery.js' %}"></script>
 
 <script type="text/javascript">
@@ -64,15 +65,32 @@
         s.parentNode.insertBefore(ga, s);
     })();
 
-    var pubKey = '-----BEGIN RSA PUBLIC KEY-----\n' +
-        'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDeL8yBEmncJLr3zdyo0oPRLFvJ\n' +
-        'a2uaKI0anUvfiOOAfOAbLQtuqO1oBKYYZ1vzkty9O2nkswCAmwJf+qYKVty3ncjW\n' +
-        'vrXNdV/LFdbGmkaFADUFIJGjZzXcLdO/JvyTpvGy8E3MZF2nNFCpX/wYJqd02dAm\n' +
-        'SDpPRkkUUMuYhdWWLwIDAQAB\n' +
-        '-----END RSA PUBLIC KEY-----'
+        var pubKey = '-----BEGIN PUBLIC KEY-----' +
+'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCqVgUzBeHQ/Z6TzZtmu7nfnxtx' +
+'Ase4XC0vc2t2MgM7qMKUWOQHd7dJEA0+92GI16TlFgm7F2Y9pT4AXNjsd5VjYdXP' +
+'leMClA9RHRTdz4t69yyTEpO2AC4w0z5a/yY2IumO/n4rANVh1xNRM6zDrQvx7HcS' +
+'9xWY9g52lGf+6EBZTQIDAQAB' +
+'-----END PUBLIC KEY-----'
 
     var encryptor = new JSEncrypt();
     encryptor.setPublicKey(pubKey);
+
+    function randomNum(n) {
+        let sString = "";
+        let strings = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        for (i = 0; i < n; i++) {
+            ind = Math.floor(Math.random() * strings.length);
+            sString += strings.charAt(ind);
+        }
+        return sString;
+    }
+
+    function aesEncrypt(data, key) {
+        var k = CryptoJS.enc.Utf8.parse(key);
+        var d = CryptoJS.enc.Utf8.parse(data);
+        var encrypted = CryptoJS.AES.encrypt(d, k, {mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7});
+        return encrypted.toString();
+    }
 
     function getCookie(name){
         var strcookie = document.cookie;
@@ -100,19 +118,23 @@
             var cxck = getCookie("csrftoken");
 
             var xhr = new XMLHttpRequest();
-            var dataURL = encryptor.encryptLong("你好");
-            // console.log(signaturePad.toDataURL());
-            console.log(dataURL);
+            var key = randomNum(16);
+            console.log(key);
+            var dataURL = aesEncrypt(encodeURIComponent(signaturePad.toDataURL()), key);
+            key = encryptor.encrypt(key);
+            console.log(key);
             if (docxId != "") {
                 var jsonData = JSON.stringify({
                     "data": dataURL,
                     "signature_location": signatureLocation,
                     "docx_id": docxId,
+                    "key": key,
                 });
                 xhr.open('post', '{% url "document:set_signature" %}', true);
             } else {
                 var jsonData = JSON.stringify({
                     "data": dataURL,
+                    "key": key,
                 });
                 xhr.open('post', '{% url "document:set_signature" %}', true);
             }

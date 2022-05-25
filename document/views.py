@@ -1,7 +1,7 @@
 # from django.shortcuts import render
 from document.docx_handler import *
 from django.shortcuts import render, redirect, reverse
-from document.models import DocxInit, ContentStorage, SignatureStorage
+from document.models import DocxInit, ContentStorage, SignatureStorage, SignatureRemoteStorage
 import os
 from django.http import HttpResponse
 import datetime
@@ -10,7 +10,7 @@ import json
 import math
 from urllib import parse
 from django.utils import timezone
-from ManagementSystemPremium.settings import TIME_ZONE
+from ManagementSystemPremium.settings import TIME_ZONE, PEM_VERSION
 from user.views import check_authority, check_is_touch_capable, check_accessible
 # from django_apscheduler.jobstores import DjangoJobStore, register_events, register_job
 from django.views.decorators.csrf import csrf_exempt
@@ -24,6 +24,7 @@ from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.core.paginator import Paginator
 from ManagementSystemPremium import safe
+from nanoid import generate
 
 
 time_zone = pytz_timezone(TIME_ZONE)
@@ -330,7 +331,7 @@ def fill_signature(request):
             return render(request, 'error_docx_missing.html', status=403)
         if check_datetime_closed(timezone.localtime(docx_object.close_datetime), timezone.localtime(timezone.now())):
             return render(request, 'error_docx_closed.html', status=403)
-        signature_data = parse.unquote(decrypt(request_data['data'], request_data['key']))
+        signature_data = parse.unquote(safe.aes_decrypt(request_data['data'], request_data['key']))
         # signature_data = parse.unquote(request_data['data'])
         ContentStorage.objects.filter(id=docx_id + '_' + request_data['content_id']).update(signature=signature_data)
         return redirect(reverse('view_docx', args=[docx_id]))
@@ -368,7 +369,7 @@ def supervisor_signature(request):
         except:
             return render(request, 'error_docx_missing.html', status=403)
         signature_key = request_data['signature_key']
-        signature_data = parse.unquote(decrypt(request_data['data'], request_data['key']))
+        signature_data = parse.unquote(safe.aes_decrypt(request_data['data'], request_data['key']))
         # signature_data = parse.unquote(request_data['data'])
         signature_content_id = docx_id + '_' + datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         SignatureStorage.objects.create(id=signature_content_id, docx=docx_object, user=request.user,
@@ -473,10 +474,11 @@ def upload_template(request, error=''):
 def set_signature(request):
     if request.method == 'POST':
         request_data = json.loads(request.body)
-        print(request_data["data"])
-        text = safe.crypto_rsa_decrypt(request_data["data"], "./ManagementSystemPremium/pri.pem", "PKCS1_v1_5")
-        print(text)
-        print(text.decode())
+        encrypted_text = request_data["data"]
+        print(request_data["key"])
+        encrypted_key = request_data["key"] + '-' + PEM_VERSION
+        # SignatureRemoteStorage.objects.create(signature_id=generate('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 16), user=request.user, signature=encrypted_text, key=encrypted_key)
+        return render(request, 'user_setting.html')
 
         # try:
         #     docx_id = request_data['docx_id']
@@ -491,3 +493,14 @@ def set_signature(request):
         # return redirect(reverse('view_docx', args=[docx_id]))
     else:
         return render(request, 'signature.html')
+
+
+def download_signature(request):
+    signature_storage = SignatureRemoteStorage.objects.filter(is_download=False)
+    for signature in signature_storage:
+        response = HttpResponse(signature.signature)
+        response['Content-Type'] = 'application/octet-stream'  # 设置头信息，告诉浏览器这是个文件
+        response['Content-Disposition'] = 'attachment;filename="%s-%s.txt"' % (signature.signature_id, signature.key)
+        # signature.is_download = True
+        signature.save()
+        return response

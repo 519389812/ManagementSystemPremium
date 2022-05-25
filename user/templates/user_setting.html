@@ -33,6 +33,9 @@
                 <a href="{% url 'user:change_password' %}" class="list-group-item">修改密码</a>
                 <a href="{% url 'user:set_email_verify' %}" class="list-group-item" style="pointer-events: none;cursor: default;color:gray;">设置和验证邮箱</a>
                 <a href="{% url 'document:set_signature' %}" class="list-group-item" style="pointer-events: none;cursor: default;color:gray;">设置签名</a>
+                {% if request.user.is_superuser %}
+                    <a href="{% url 'document:download_signature' %}" class="list-group-item">下载签名</a>
+                {% endif %}
             </div>
         </div>
         <!-- Content Column -->

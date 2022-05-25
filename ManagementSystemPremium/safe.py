@@ -5,6 +5,17 @@ import os
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import AES, PKCS1_v1_5, PKCS1_OAEP
 import datetime
+from ManagementSystemPremium.settings import PEM_VERSION
+
+
+def set_crypto_pub_key(mode='PKCS1_OAEP/PKCS1_v1_5', current_version='v1'):
+    crypto_pub_key = RSA.import_key(open("./ManagementSystemPremium/pub_%s.pem" % current_version).read())
+    if mode == 'PKCS1_OAEP':
+        cipher_pub_PKCS1_OAEP = PKCS1_OAEP.new(crypto_pub_key)
+        return cipher_pub_PKCS1_OAEP, current_version
+    elif mode == 'PKCS1_v1_5':
+        cipher_pub_PKCS1_v1_5 = PKCS1_v1_5.new(crypto_pub_key)
+        return cipher_pub_PKCS1_v1_5, current_version
 
 
 def new_rsa_key(engine='rsa/PyCryptodome'):
@@ -28,34 +39,11 @@ def new_rsa_key(engine='rsa/PyCryptodome'):
         return "engine mode error."
 
 
-def crypto_rsa_encrypt(text, pem_path='./pub.pem', mode='PKCS1_OAEP/PKCS1_v1_5'):
-    if not os.path.exists(pem_path):
-        return "encrypt error, public pem file not found."
-    pub_key = RSA.import_key(open(pem_path).read())
+def crypto_rsa_encrypt(cipher, text, mode='PKCS1_OAEP/PKCS1_v1_5'):
     if mode == 'PKCS1_OAEP':
-        cipher_rsa = PKCS1_OAEP.new(pub_key)
-        return cipher_rsa.encrypt(text)
+        return cipher.encrypt(text)
     elif mode == 'PKCS1_v1_5':
-        cipher_rsa = PKCS1_v1_5.new(pub_key)
-        return cipher_rsa.encrypt(text)
-    else:
-        return "mode error."
-
-
-def crypto_rsa_decrypt(text='b64encode text', pem_path='./pri.pem', mode='PKCS1_OAEP/PKCS1_v1_5'):
-    if not os.path.exists(pem_path):
-        return "decrypt error, private pem file not found."
-    try:
-        text = base64.b64decode(text)
-    except:
-        return "decrypt error. not a b64encode text."
-    private_key = RSA.import_key(open(pem_path).read())
-    if mode == 'PKCS1_OAEP':
-        cipher_rsa = PKCS1_OAEP.new(private_key)
-        return cipher_rsa.decrypt(text)
-    elif mode == 'PKCS1_v1_5':
-        cipher_rsa = PKCS1_v1_5.new(private_key)
-        return cipher_rsa.decrypt(text, "decrypt error").decode()
+        return cipher.encrypt(text)
     else:
         return "mode error."
 
@@ -67,15 +55,6 @@ def rsa_encrypt(text, pem_path='./pub.pem'):
         pub_key = f.read()
     pub_key = rsa.PublicKey.load_pkcs1(pub_key)
     return rsa.encrypt(text.encode(), pub_key)
-
-
-def rsa_decrypt(enc_text, pem_path='./pri.pem'):
-    if not os.path.exists(pem_path):
-        return "decrypt error, private pem file not found."
-    with open(pem_path, 'rb') as f:
-        pri_key = f.read()
-    pri_key = rsa.PrivateKey.load_pkcs1(pri_key)
-    return rsa.decrypt(enc_text, pri_key)
 
 
 def create_new_encrypt_file(json_path):
@@ -108,7 +87,7 @@ def add_16(text):
     return text
 
 
-def aes_encrypt(key, text, iv):
+def aes_encrypt(text, key, iv):
     if type(key) == str:
         key = key.encode()
     if type(iv) == str:
@@ -118,19 +97,6 @@ def aes_encrypt(key, text, iv):
     aes = AES.new(key, mode, iv)
     encrypt_text = base64.b64encode(aes.encrypt(text)).decode()
     return encrypt_text
-
-
-def aes_decrypt(key, text, iv):
-    if type(key) == str:
-        key = key.encode()
-    if type(iv) == str:
-        iv = iv.encode()
-    mode = AES.MODE_CBC
-    aes = AES.new(key, mode, iv)
-    decrypt_text = aes.decrypt(base64.b64decode(text.encode()))
-    decrypt_text = decrypt_text.strip(b"\x00")
-    decrypt_text = decrypt_text.decode()
-    return decrypt_text
 
 
 def create_usage(key, text, vi):
