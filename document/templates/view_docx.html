@@ -53,10 +53,10 @@
                 <h5 class="card-header">填写文档</h5>
                 <div class="card-body">
                     {% if info != "" %}
-                        <p>{{ info }}</p>
+                        {% include 'info.html' %}
                     {% endif %}
                     {% if closed == False %}
-                        <form class="input-group" action="{% url 'document:fill_docx' docx_dict.id need_signature %}" method="post">
+                        <form class="input-group" action="{% url 'document:fill_docx' docx_dict.docx_id need_signature %}" method="post">
                             {% csrf_token %}
                             {% for key, value in content_variable_dict.items %}
                                 <div class="control-group form-group">
@@ -71,17 +71,21 @@
                                 </div>
                             {% endfor %}
                             {% if need_signature == True %}
-                                <span class="inpug-group-append">
-                                    {% if signed == True %}
-                                        <button type="submit" class="btn btn-secondary" disabled="{{ signed }}">已签名</button>
-                                    {% else %}
-                                        <button type="submit" class="btn btn-secondary">签名</button>
-                                    {% endif %}
-                                </span>
+                                <div class="form-control-range form-group">
+                                    <span class="input-group-append">
+                                        {% if signed == True %}
+                                            <button type="submit" class="btn btn-secondary" disabled="{{ signed }}">已签名</button>
+                                        {% else %}
+                                            <button type="submit" class="btn btn-secondary">签名</button>
+                                        {% endif %}
+                                    </span>
+                                </div>
                             {% else %}
-                                <span class="inpug-group-append">
-                                    <button type="submit" class="btn btn-secondary" disabled="{{ filled }}">确定</button>
-                                </span>
+                                <div class="form-control-range form-group">
+                                    <span class="input-group-append">
+                                        <button type="submit" class="btn btn-secondary" disabled="{{ filled }}">确定</button>
+                                    </span>
+                                </div>
                             {% endif %}
                         </form>
                     {% else %}
@@ -90,7 +94,7 @@
                                 {% if request.user.is_superuser %}
                                     <p><b>请补充以下签名：</b></p>
                                     {% for key, value in supervisor_variable_dict.items %}
-                                        <a href="/document/supervise_docx/?docx_id={{ docx_dict.id }}&signature_key={{ value.origin }}" class="btn btn-secondary">{{ value.cn_name }}</a>
+                                        <a href="/document/supervise_docx/?docx_id={{ docx_dict.docx_id }}&signature_key={{ value.origin }}" class="btn btn-secondary">{{ value.cn_name }}</a>
                                     {% endfor%}
                                 {% else %}
                                     <p><b>该文档含有需管理员补充的签名的字段</b></p>
@@ -111,9 +115,9 @@
                     <p>创建时间: {{ docx_dict.create_datetime }}</p>
                     <p>修改时间: {{ docx_dict.edit_datetime }}</p>
                     <p>截止时间: {{ docx_dict.close_datetime }}</p>
-                    <a href="/document/download_docx/{{ docx_dict.id }}" class="btn btn-primary">下载文档</a>
+                    <a href="/document/download_docx/{{ docx_dict.docx_id }}" class="btn btn-primary">下载文档</a>
                     {% if request.user.is_superuser == True and closed == False %}
-                        <a href="/document/close_docx/{{ docx_dict.id }}" class="btn btn-danger">关闭文档</a>
+                        <a href="/document/close_docx/{{ docx_dict.docx_id }}" class="btn btn-danger">关闭文档</a>
                     {% endif %}
                 </div>
             </div>
@@ -188,7 +192,7 @@
 
     $(document).ready(function(){
         $('#show_docx_html').click(function(){
-            var docx_id = {{ docx_dict.id }};
+            var docx_id = {{ docx_dict.docx_id }};
             $.get("/document/show_docx_html/",{'docx_id':docx_id}, function(response){
                 $('#docx_html_content').html(response);
             });

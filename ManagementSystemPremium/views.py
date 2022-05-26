@@ -60,10 +60,6 @@ def create_related_list(node_id, parent_object):
             return related_list
 
 
-def create_related_children_list(object, team_id):
-    return eval("%s.objects.filter(related_parent__iregex=r'[^0-9]*%s[^0-9]')" % (object, str(team_id)))
-
-
 # 解析[{},{}]格式数据为树结构
 def create_related_tree(data, root_value, parent_field, node_field):
     """

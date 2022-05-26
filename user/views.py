@@ -58,13 +58,14 @@ def check_is_touch_capable(func):
 
 
 # 仅适用于嵌套在第一个参数是requests,第二个参数是object_id的函数上
-def check_accessible(model_object):
+def check_accessible(model_object, field_name):
     def func_wrapper(func):
         def args_wrapper(*args, **kwargs):
-            print(args)
             try:
-                obj = model_object.objects.get(id=args[1])
-            except:
+                model = model_object
+                obj = eval('model.objects.get(%s=args[1])' % field_name)
+            except Exception as e:
+                print(e)
                 return redirect('/error_404')
             if args[0].user.is_superuser:
                 return func(*args, **kwargs)

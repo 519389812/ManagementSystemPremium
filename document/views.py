@@ -24,7 +24,6 @@ from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.core.paginator import Paginator
 from ManagementSystemPremium import safe
-from ManagementSystemPremium.views import create_related_children_list
 from nanoid import generate
 
 
@@ -63,14 +62,14 @@ def translate_words(request, error=''):
             translate_before = request.POST.get('translate_before', '')
             translate_after = request.POST.get('translate_after', '')
             if translate_before == '' or translate_after == '':
-                return redirect(reverse('translate_words', args=['输入为空']))
+                return redirect(reverse('document:translate_words', args=['输入为空']))
             if not re.search(r'^[_a-zA-Z0-9\u4e00-\u9fa5]+$', translate_before) or not re.search(
                     r'^[_a-zA-Z0-9\u4e00-\u9fa5]+$', translate_after):
-                return redirect(reverse('translate_words', args=['输入含有空格或特殊字符']))
+                return redirect(reverse('document:translate_words', args=['输入含有空格或特殊字符']))
             translate_dict = json.load(open(translate_path, 'r'))
             translate_dict[translate_before] = translate_after
             json.dump(translate_dict, open(translate_path, 'w'))
-            return redirect(reverse('translate_words'))
+            return redirect(reverse('document:translate_words'))
         else:
             return render(request, 'error_400.html', status=400)
 
@@ -85,7 +84,7 @@ def delete_translate_words(request):
             try:
                 del (translate_dict[word])
                 json.dump(translate_dict, open(translate_path, 'w'))
-                return redirect(reverse('translate_words'))
+                return redirect(reverse('document:translate_words'))
             except:
                 return render(request, 'error_400.html', status=400)
         else:
@@ -114,7 +113,7 @@ def delete_template(request):
         template_path = os.path.join(templates_dir, template_name + '.docx')
         for path in [source_path, template_path]:
             os.remove(path)
-        return redirect(reverse('select_template', args=['删除 %s 成功' % template_name]))
+        return redirect(reverse('document:select_template', args=['删除 %s 成功' % template_name]))
     else:
         return render(request, 'error_400.html', status=400)
 
@@ -145,10 +144,13 @@ def write_init_docx(request, template_name):
     if request.method == 'POST':
         params = request.POST.dict()
         docx_name = params['docx_name']
+        remote_sign = params['remote_sign']
+        remote_sign = True if remote_sign == 'Y' else False
         close_datetime = params['close_datetime']
         close_datetime = time_zone.localize(datetime.datetime.strptime(close_datetime, '%Y-%m-%dT%H:%M'))
         team_id_list = request.POST.getlist('team')
         del (params['docx_name'])
+        del (params['remote_sign'])
         del (params['csrfmiddlewaretoken'])
         del (params['close_datetime'])
         if len(team_id_list) > 0:
@@ -156,18 +158,19 @@ def write_init_docx(request, template_name):
         content = json.dumps(params)
         docx_id = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         docx_init_object = DocxInit.objects.create(docx_id=docx_id, user=request.user, template_name=template_name,
-                                                   docx_name=docx_name, content=content, close_datetime=close_datetime)
+                                                   docx_name=docx_name, content=content, remote_sign=remote_sign,
+                                                   close_datetime=close_datetime)
         if len(team_id_list) > 0:
             team_id_list = [int(i) for i in team_id_list]
             add_list = []
             for team_id in team_id_list:
-                team_list = create_related_children_list(CustomTeam, team_id)
+                team_list = CustomTeam.objects.filter(related_parent__iregex=r'[^0-9]*%d[^0-9]' % team_id)
                 for team in team_list:
                     team_object = CustomTeam.objects.get(id=team.id)
                     add_list.append(team_object)
             add_list = list(set(add_list))
             docx_init_object.team.add(*add_list)
-        return redirect(reverse('view_docx', args=[docx_id]))
+        return redirect(reverse('document:view_docx', args=[docx_id]))
     else:
         return render(request, 'error_400.html', status=400)
 
@@ -176,9 +179,9 @@ def write_init_docx(request, template_name):
 def view_docx_list(request):
     if request.method == 'GET':
         page_num = request.GET.get('page', '1')
-        docx_list = DocxInit.objects.values('id', 'user__last_name', 'user__first_name', 'template_name', 'docx_name',
-                                            'version', 'create_datetime', 'edit_datetime', 'close_datetime').order_by(
-            '-id')[:12]
+        docx_list = DocxInit.objects.values('id', 'docx_id', 'user__last_name', 'user__first_name', 'template_name',
+                                            'docx_name', 'version', 'create_datetime', 'edit_datetime',
+                                            'close_datetime').order_by('-id')[:12]
         paginator = Paginator(docx_list, 30)
         page = paginator.get_page(int(page_num))
         return render(request, 'view_docx_list.html', {'page_docx_list': list(page.object_list),
@@ -195,15 +198,17 @@ def split_list_by_n(list_collection, n):
 
 
 @check_authority
-@check_accessible(DocxInit)
-def view_docx(request, docx_id):
+@check_accessible(DocxInit, 'docx_id')
+def view_docx(request, docx_id, info=''):
     if request.method == 'GET':
-        docx_object = DocxInit.objects.filter(id=docx_id)
+        print(docx_id)
+        docx_object = DocxInit.objects.filter(docx_id=docx_id)
         if len(docx_object) == 0:
             return render(request, 'error_403.html', status=403)
         docx_dict = \
-            docx_object.values('id', 'user__last_name', 'user__first_name', 'template_name', 'docx_name', 'content',
-                               'remote_sign', 'version', 'create_datetime', 'edit_datetime', 'close_datetime')[0]
+            docx_object.values('id', 'docx_id', 'user__last_name', 'user__first_name', 'template_name', 'docx_name',
+                               'content', 'remote_sign', 'version', 'create_datetime', 'edit_datetime',
+                               'close_datetime')[0]
         closed = check_datetime_closed(timezone.localtime(docx_dict['close_datetime']),
                                        timezone.localtime(timezone.now()))
         document_handler, document_template_handler = create_docx_handler(
@@ -224,7 +229,7 @@ def view_docx(request, docx_id):
         return render(request, 'view_docx.html',
                       {'docx_dict': docx_dict, 'content_variable_dict': content_variable_dict,
                        'need_signature': need_signature, 'filled': filled, 'signed': signed, 'closed': closed,
-                       'supervisor_variable_dict': supervisor_variable_dict})
+                       'supervisor_variable_dict': supervisor_variable_dict, 'info': info})
     else:
         return render(request, 'error_400.html', status=400)
 
@@ -232,7 +237,7 @@ def view_docx(request, docx_id):
 @check_authority
 def show_docx_html(request):
     docx_id = request.GET['docx_id']
-    docx_object = DocxInit.objects.filter(id=docx_id)
+    docx_object = DocxInit.objects.filter(docx_id=docx_id)
     if len(docx_object) == 0:
         return
     docx_dict = docx_object.values('template_name', 'content')[0]
@@ -291,11 +296,11 @@ def show_docx_html(request):
 
 @check_authority
 @check_is_touch_capable
-@check_accessible(DocxInit)
+@check_accessible(DocxInit, 'docx_id')
 def fill_docx(request, docx_id, need_signature):
     if request.method == 'POST':
         try:
-            docx_object = DocxInit.objects.get(id=docx_id)
+            docx_object = DocxInit.objects.get(docx_id=docx_id)
         except:
             return render(request, 'error_docx_missing.html', status=403)
         if check_datetime_closed(timezone.localtime(docx_object.close_datetime), timezone.localtime(timezone.now())):
@@ -313,7 +318,7 @@ def fill_docx(request, docx_id, need_signature):
             return render(request, 'signature.html',
                           {'docx_id': content_id[:14], 'content_id': content_id[15:], 'signature_key': ''})
         else:
-            return redirect(reverse('view_docx', args=[docx_id]))
+            return redirect(reverse('document:view_docx', args=[docx_id]))
     else:
         return render(request, 'error_400.html', status=400)
 
@@ -324,7 +329,7 @@ def fill_signature(request):
         request_data = json.loads(request.body)
         try:
             docx_id = request_data['docx_id']
-            docx_object = DocxInit.objects.get(id=docx_id)
+            docx_object = DocxInit.objects.get(docx_id=docx_id)
         except:
             return render(request, 'error_docx_missing.html', status=403)
         if check_datetime_closed(timezone.localtime(docx_object.close_datetime), timezone.localtime(timezone.now())):
@@ -332,7 +337,7 @@ def fill_signature(request):
         signature_data = parse.unquote(safe.aes_decrypt(request_data['data'], request_data['key']))
         # signature_data = parse.unquote(request_data['data'])
         ContentStorage.objects.filter(id=docx_id + '_' + request_data['content_id']).update(signature=signature_data)
-        return redirect(reverse('view_docx', args=[docx_id]))
+        return redirect(reverse('document:view_docx', args=[docx_id]))
     else:
         return render(request, 'error_400.html', status=400)
 
@@ -346,7 +351,7 @@ def supervise_docx(request):
         if docx_id == '' or signature_key == '':
             return render(request, 'error_403.html', status=403)
         try:
-            docx_object = DocxInit.objects.get(id=docx_id)
+            docx_object = DocxInit.objects.get(docx_id=docx_id)
         except:
             return render(request, 'error_docx_missing.html', status=403)
         if not check_datetime_closed(timezone.localtime(docx_object.close_datetime),
@@ -363,7 +368,7 @@ def supervisor_signature(request):
         request_data = json.loads(request.body)
         try:
             docx_id = request_data['docx_id']
-            docx_object = DocxInit.objects.get(id=docx_id)
+            docx_object = DocxInit.objects.get(docx_id=docx_id)
         except:
             return render(request, 'error_docx_missing.html', status=403)
         signature_key = request_data['signature_key']
@@ -372,7 +377,7 @@ def supervisor_signature(request):
         signature_content_id = docx_id + '_' + datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         SignatureStorage.objects.create(id=signature_content_id, docx=docx_object, user=request.user,
                                         content=signature_key, signature=signature_data)
-        return redirect(reverse('view_docx', args=[docx_id]))
+        return redirect(reverse('document:view_docx', args=[docx_id]))
     else:
         return render(request, 'error_400.html', status=400)
 
@@ -382,8 +387,8 @@ def close_docx(request, docx_id):
     if request.method == 'GET':
         if request.user.is_superuser:
             close_datetime = timezone.localtime(timezone.now()) - datetime.timedelta(minutes=1)
-            DocxInit.objects.filter(id=docx_id).update(close_datetime=close_datetime)
-            return redirect(reverse('view_docx', args=[docx_id]))
+            DocxInit.objects.filter(docx_id=docx_id).update(close_datetime=close_datetime)
+            return redirect(reverse('document:view_docx', args=[docx_id]))
         else:
             return render(request, 'error_400.html', status=400)
     else:
@@ -443,11 +448,11 @@ def upload_template(request, error=''):
             source = request.FILES.get('source', '')
             template = request.FILES.get('template', '')
             if source == '' or template == '':
-                return redirect(reverse('upload_template', args=['请选择上传文档']))
+                return redirect(reverse('document:upload_template', args=['请选择上传文档']))
             if source.name != template.name:
-                return redirect(reverse('upload_template', args=['预览文档与模板文档名称必须一致']))
+                return redirect(reverse('document:upload_template', args=['预览文档与模板文档名称必须一致']))
             if template in os.listdir(templates_dir):
-                return redirect(reverse('upload_template', args=['文档已存在，请先删除同名文档']))
+                return redirect(reverse('document:upload_template', args=['文档已存在，请先删除同名文档']))
             else:
                 try:
                     source_file = open(os.path.join(source_dir, source.name), 'wb+')
@@ -459,9 +464,9 @@ def upload_template(request, error=''):
                         else:
                             file.write(handler.read())
                         file.close()
-                    return redirect(reverse('upload_template', args=['上传 %s 成功' % template.name]))
+                    return redirect(reverse('document:upload_template', args=['上传 %s 成功' % template.name]))
                 except:
-                    return redirect(reverse('upload_template', args=['上传文件时发生错误']))
+                    return redirect(reverse('document:upload_template', args=['上传文件时发生错误']))
         else:
             return render(request, 'error_403.html', status=403)
     else:
@@ -486,7 +491,7 @@ def set_signature(request):
 
         # try:
         #     docx_id = request_data['docx_id']
-        #     docx_object = DocxInit.objects.get(id=docx_id)
+        #     docx_object = DocxInit.objects.get(docx_id=docx_id)
         # except:
         #     return render(request, 'error_docx_missing.html', status=403)
         # if check_datetime_closed(timezone.localtime(docx_object.close_datetime), timezone.localtime(timezone.now())):
@@ -494,7 +499,7 @@ def set_signature(request):
         # signature_data = parse.unquote(decrypt(request_data['data'], request_data['key']))
         # # signature_data = parse.unquote(request_data['data'])
         # ContentStorage.objects.filter(id=docx_id + '_' + request_data['content_id']).update(signature=signature_data)
-        # return redirect(reverse('view_docx', args=[docx_id]))
+        # return redirect(reverse('document:view_docx', args=[docx_id]))
     else:
         return render(request, 'signature.html')
 
