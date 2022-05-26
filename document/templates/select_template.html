@@ -45,7 +45,7 @@
 
             <!-- Preview Image -->
             <div id="template_preview"></div>
-
+            <br>
 
         </div>
 
@@ -112,7 +112,22 @@
 
 <!-- Bootstrap core JavaScript -->
 {% include "script.html" %}
-
+<script>
+    $(document).ready(function(){
+        $('#select_template').change(function(){
+            var template_name = $('#select_template').val();
+            if (template_name != "无"){
+                $.get("{% url 'document:preview_template' %}",{'template_name':template_name}, function(response){
+                    $('#template_name').html(template_name);
+                    $('#template_preview').html(response);
+                });
+            } else {
+                $('#template_name').html("预览");
+                $('#template_preview').html("请选择模板");
+            };
+        });
+    });
+</script>
 
 </body>
 

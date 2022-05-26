@@ -11,7 +11,7 @@ import math
 from urllib import parse
 from django.utils import timezone
 from ManagementSystemPremium.settings import TIME_ZONE, PEM_VERSION
-from user.views import check_authority, check_is_touch_capable, check_accessible
+from user.views import check_authority, check_is_touch_capable, check_accessible, check_is_superuser
 # from django_apscheduler.jobstores import DjangoJobStore, register_events, register_job
 from django.views.decorators.csrf import csrf_exempt
 import zipfile
@@ -24,6 +24,7 @@ from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.core.paginator import Paginator
 from ManagementSystemPremium import safe
+from ManagementSystemPremium.views import create_related_children_list
 from nanoid import generate
 
 
@@ -120,6 +121,7 @@ def delete_template(request):
 
 # 初始化新文档
 @check_authority
+@check_is_superuser
 def init_docx(request):
     if request.method == 'POST':
         template_name = request.POST.get('select_template', '')
@@ -130,11 +132,7 @@ def init_docx(request):
         document_handler_template, _ = create_docx_handler(templates_dir + template_name + '.docx', 'python-docx')
         variable_dict = get_variable_list(document_handler_template, '_', -1, r'[a-z0-9]+_i[a-z]_')
         docx_html = docx_to_html(source_path)
-        if not request.user.is_superuser:
-            team_id = str(request.user.team.id)
-            team_list = list(CustomTeam.objects.filter(related_parent__in=team_id).values('id', 'name', 'parent__name'))
-        else:
-            team_list = list(CustomTeam.objects.all().values('id', 'name', 'parent__name'))
+        team_list = list(CustomTeam.objects.all().values('id', 'name', 'parent__name'))
         return render(request, 'init_docx.html',
                       {'template_name': template_name, 'docx_html': docx_html, 'variable_dict': variable_dict,
                        'team_list': team_list})
@@ -161,9 +159,14 @@ def write_init_docx(request, template_name):
                                                    docx_name=docx_name, content=content, close_datetime=close_datetime)
         if len(team_id_list) > 0:
             team_id_list = [int(i) for i in team_id_list]
+            add_list = []
             for team_id in team_id_list:
-                team_object = CustomTeam.objects.get(id=team_id)
-                docx_init_object.team.add(team_object)
+                team_list = create_related_children_list(CustomTeam, team_id)
+                for team in team_list:
+                    team_object = CustomTeam.objects.get(id=team.id)
+                    add_list.append(team_object)
+            add_list = list(set(add_list))
+            docx_init_object.team.add(*add_list)
         return redirect(reverse('view_docx', args=[docx_id]))
     else:
         return render(request, 'error_400.html', status=400)
@@ -193,25 +196,20 @@ def split_list_by_n(list_collection, n):
 
 @check_authority
 @check_accessible(DocxInit)
-def view_docx(request, docx_id, info=''):
+def view_docx(request, docx_id):
     if request.method == 'GET':
         docx_object = DocxInit.objects.filter(id=docx_id)
         if len(docx_object) == 0:
             return render(request, 'error_403.html', status=403)
         docx_dict = \
             docx_object.values('id', 'user__last_name', 'user__first_name', 'template_name', 'docx_name', 'content',
-                               'version', 'create_datetime', 'edit_datetime', 'close_datetime')[0]
+                               'remote_sign', 'version', 'create_datetime', 'edit_datetime', 'close_datetime')[0]
         closed = check_datetime_closed(timezone.localtime(docx_dict['close_datetime']),
                                        timezone.localtime(timezone.now()))
         document_handler, document_template_handler = create_docx_handler(
             templates_dir + docx_dict['template_name'] + '.docx', '')
         content_variable_dict = get_variable_list(document_handler, '_', -1, r'[a-z0-9]+_n[a-z]_\d+')
         supervisor_variable_dict = get_variable_list(document_handler, '_', -1, r'[a-z0-9]+_s[a-z]_')
-        docx_signature_queryset = SignatureStorage.objects.filter(docx__id=docx_id)
-        docx_signature_list = list(docx_signature_queryset.values('content', 'signature'))
-        for content in docx_signature_list:
-            if content['content'].split('_')[0] in supervisor_variable_dict.keys():
-                del (supervisor_variable_dict[content['content'].split('_')[0]])
         if len(content_variable_dict) == 0:
             return render(request, 'error_403.html', status=403)
         need_signature = content_variable_dict.__contains__('signature')
@@ -226,7 +224,7 @@ def view_docx(request, docx_id, info=''):
         return render(request, 'view_docx.html',
                       {'docx_dict': docx_dict, 'content_variable_dict': content_variable_dict,
                        'need_signature': need_signature, 'filled': filled, 'signed': signed, 'closed': closed,
-                       'supervisor_variable_dict': supervisor_variable_dict, 'info': info})
+                       'supervisor_variable_dict': supervisor_variable_dict})
     else:
         return render(request, 'error_400.html', status=400)
 

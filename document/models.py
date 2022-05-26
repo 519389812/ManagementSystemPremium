@@ -48,8 +48,6 @@ class SignatureStorage(models.Model):
     signature_id = models.CharField(max_length=30, unique=True, verbose_name="签名id")
     docx = models.ForeignKey(DocxInit, on_delete=models.CASCADE, verbose_name="模板")
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name="填写人")
-    location = models.TextField(max_length=500, verbose_name="签名位置")
-    is_confirm = models.BooleanField(default=False, verbose_name="确认签名")
     signature = models.TextField(max_length=150000, verbose_name="签名", blank=True)
     create_datetime = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
 

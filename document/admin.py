@@ -34,7 +34,7 @@ class ContentStorageAdmin(admin.ModelAdmin):
 
 
 class SignatureStorageAdmin(admin.ModelAdmin):
-    list_display = ("id", "docx", "user", "location", "is_sign", "create_datetime")
+    list_display = ("id", "signature_id", "docx", "user", "is_sign", "create_datetime")
     list_display_links = ("id",)
 
     def is_sign(self, obj):
@@ -51,7 +51,7 @@ class SignatureStorageAdmin(admin.ModelAdmin):
 
 
 class SignatureRemoteStorageAdmin(admin.ModelAdmin):
-    list_display = ("id", "user", "key", "is_download", "create_datetime")
+    list_display = ("id", "signature_id", "user", "key", "is_download", "create_datetime")
     list_display_links = ("id",)
 
 

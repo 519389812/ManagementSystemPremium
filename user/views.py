@@ -35,6 +35,16 @@ def check_authority(func):
     return wrapper
 
 
+def check_is_superuser(func):
+    def wrapper(*args, **kwargs):
+        if not args[0].user.is_superuser:
+            if "X-Requested_With" in args[0].headers:
+                return JsonResponse('无权限访问', safe=False)
+            return redirect(reverse('error_not_accessible'))
+        return func(*args, **kwargs)
+    return wrapper
+
+
 def check_is_touch_capable(func):
     def wrapper(*args, **kwargs):
         user_agent = parse(args[0].META.get('HTTP_USER_AGENT'))
@@ -51,6 +61,7 @@ def check_is_touch_capable(func):
 def check_accessible(model_object):
     def func_wrapper(func):
         def args_wrapper(*args, **kwargs):
+            print(args)
             try:
                 obj = model_object.objects.get(id=args[1])
             except:
