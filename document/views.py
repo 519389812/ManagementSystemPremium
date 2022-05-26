@@ -156,7 +156,7 @@ def write_init_docx(request, template_name):
         if len(team_id_list) > 0:
             del (params['team'])
         content = json.dumps(params)
-        docx_id = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+        docx_id = datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
         docx_init_object = DocxInit.objects.create(docx_id=docx_id, user=request.user, template_name=template_name,
                                                    docx_name=docx_name, content=content, remote_sign=remote_sign,
                                                    close_datetime=close_datetime)
@@ -201,7 +201,6 @@ def split_list_by_n(list_collection, n):
 @check_accessible(DocxInit, 'docx_id')
 def view_docx(request, docx_id, info=''):
     if request.method == 'GET':
-        print(docx_id)
         docx_object = DocxInit.objects.filter(docx_id=docx_id)
         if len(docx_object) == 0:
             return render(request, 'error_403.html', status=403)
@@ -218,10 +217,12 @@ def view_docx(request, docx_id, info=''):
         if len(content_variable_dict) == 0:
             return render(request, 'error_403.html', status=403)
         need_signature = content_variable_dict.__contains__('signature')
-        docx_content_queryset = ContentStorage.objects.filter(docx__id=docx_id)
-        if docx_content_queryset.filter(user__id=request.user.id).count() > 0:
+        docx_content_queryset = ContentStorage.objects.filter(docx__docx_id=docx_id)
+        if docx_content_queryset.filter(user=request.user).count() > 0:
             filled = True
-            signed = True if docx_content_queryset.filter(user__id=request.user.id)[0].signature != '' else False
+            # todo
+            if docx_dict['remote_sign']:
+                signed = True if SignatureRemoteStorage.objects.filter(docx__docx_id=docx_id, user=request.user)[0].count() > 0 else False
         else:
             filled, signed = False, False
         if need_signature:
@@ -244,12 +245,12 @@ def show_docx_html(request):
     document_handler, document_template_handler = create_docx_handler(
         templates_dir + docx_dict['template_name'] + '.docx', '')
     count_variable_dict = get_variable_list(document_handler, '_', -1, r'[a-z0-9]+_a[a-z]_')
-    docx_signature_queryset = SignatureStorage.objects.filter(docx__id=docx_id)
+    docx_signature_queryset = SignatureStorage.objects.filter(docx__docx_id=docx_id)
     docx_signature_list = list(docx_signature_queryset.values('content', 'signature'))
     docx_signature_list = None if len(docx_signature_list) == 0 else docx_signature_list
     content_variable_dict = get_variable_list(document_handler, '_', -1, r'[a-z0-9]+_n[a-z]_\d+')
     maximum = int(content_variable_dict[list(content_variable_dict.keys())[0]]['maximum']) + 1
-    docx_content_queryset = ContentStorage.objects.filter(docx__id=docx_id)
+    docx_content_queryset = ContentStorage.objects.filter(docx__docx_id=docx_id)
     content_count = docx_content_queryset.values().count()
     docx_path = storage_dir + docx_id + '_%s.docx'
     docx_html_list = []
@@ -295,7 +296,7 @@ def show_docx_html(request):
 
 
 @check_authority
-@check_is_touch_capable
+# @check_is_touch_capable
 @check_accessible(DocxInit, 'docx_id')
 def fill_docx(request, docx_id, need_signature):
     if request.method == 'POST':
@@ -307,16 +308,22 @@ def fill_docx(request, docx_id, need_signature):
             return render(request, 'error_docx_closed.html', status=403)
         params = request.POST.dict()
         del (params['csrfmiddlewaretoken'])
-        exist_content = ContentStorage.objects.filter(docx__id=docx_id, user__id=request.user.id)
+        exist_content = ContentStorage.objects.filter(docx=docx_object, user=request.user)
         if exist_content.count() > 0:
-            content_id = exist_content[0].id
+            if need_signature:
+                signature_id = exist_content[0].signature_id
         else:
             content = json.dumps(params)
-            content_id = docx_id + '_' + datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-            ContentStorage.objects.create(id=content_id, docx=docx_object, user=request.user, content=content)
+            content_id = datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
+            if need_signature:
+                signature_id = generate('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 16)
+                ContentStorage.objects.create(content_id=content_id, docx=docx_object, user=request.user,
+                                              content=content, signature_id=signature_id)
+            else:
+                ContentStorage.objects.create(content_id=content_id, docx=docx_object, user=request.user,
+                                              content=content)
         if need_signature:
-            return render(request, 'signature.html',
-                          {'docx_id': content_id[:14], 'content_id': content_id[15:], 'signature_key': ''})
+            return render(request, 'signature.html', {'docx_id': docx_id, 'signature_id': signature_id})
         else:
             return redirect(reverse('document:view_docx', args=[docx_id]))
     else:
@@ -336,7 +343,7 @@ def fill_signature(request):
             return render(request, 'error_docx_closed.html', status=403)
         signature_data = parse.unquote(safe.aes_decrypt(request_data['data'], request_data['key']))
         # signature_data = parse.unquote(request_data['data'])
-        ContentStorage.objects.filter(id=docx_id + '_' + request_data['content_id']).update(signature=signature_data)
+        ContentStorage.objects.filter(content_id=docx_id + '_' + request_data['content_id']).update(signature=signature_data)
         return redirect(reverse('document:view_docx', args=[docx_id]))
     else:
         return render(request, 'error_400.html', status=400)
@@ -374,7 +381,7 @@ def supervisor_signature(request):
         signature_key = request_data['signature_key']
         signature_data = parse.unquote(safe.aes_decrypt(request_data['data'], request_data['key']))
         # signature_data = parse.unquote(request_data['data'])
-        signature_content_id = docx_id + '_' + datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+        signature_content_id = docx_id + '_' + datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
         SignatureStorage.objects.create(id=signature_content_id, docx=docx_object, user=request.user,
                                         content=signature_key, signature=signature_data)
         return redirect(reverse('document:view_docx', args=[docx_id]))
@@ -498,7 +505,7 @@ def set_signature(request):
         #     return render(request, 'error_docx_closed.html', status=403)
         # signature_data = parse.unquote(decrypt(request_data['data'], request_data['key']))
         # # signature_data = parse.unquote(request_data['data'])
-        # ContentStorage.objects.filter(id=docx_id + '_' + request_data['content_id']).update(signature=signature_data)
+        # ContentStorage.objects.filter(content_id=docx_id + '_' + request_data['content_id']).update(signature=signature_data)
         # return redirect(reverse('document:view_docx', args=[docx_id]))
     else:
         return render(request, 'signature.html')

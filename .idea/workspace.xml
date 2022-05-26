@@ -3,12 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="e629d207-6632-4336-a507-24113a457853" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ManagementSystemPremium/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/ManagementSystemPremium/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/templates/init_docx.html" beforeDir="false" afterPath="$PROJECT_DIR$/document/templates/init_docx.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/templates/select_template.html" beforeDir="false" afterPath="$PROJECT_DIR$/document/templates/select_template.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/templates/view_docx.html" beforeDir="false" afterPath="$PROJECT_DIR$/document/templates/view_docx.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/templates/view_docx_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/document/templates/view_docx_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/document/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/document/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/document/templates/signature.html" beforeDir="false" afterPath="$PROJECT_DIR$/document/templates/signature.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/document/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/document/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/user/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/user/views.py" afterDir="false" />
     </list>
@@ -210,6 +207,7 @@
       <workItem from="1653482439097" duration="5191000" />
       <workItem from="1653526002508" duration="22453000" />
       <workItem from="1653568640441" duration="6374000" />
+      <workItem from="1653575683124" duration="2143000" />
     </task>
     <servers />
   </component>

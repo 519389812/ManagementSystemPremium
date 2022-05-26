@@ -114,19 +114,17 @@
                  window.location.href = "{% url 'user:login' %}";
             }
             var docxId = '{{ docx_id }}';
-            var signatureLocation = '{{ signature_location }}';
+            var signatureId = '{{ signature_id }}';
             var cxck = getCookie("csrftoken");
 
             var xhr = new XMLHttpRequest();
             var key = randomNum(16);
-            console.log(key);
             var dataURL = aesEncrypt(encodeURIComponent(signaturePad.toDataURL()), key);
             key = encryptor.encrypt(key);
-            console.log(key);
             if (docxId != "") {
                 var jsonData = JSON.stringify({
                     "data": dataURL,
-                    "signature_location": signatureLocation,
+                    "signature_id": signatureId,
                     "docx_id": docxId,
                     "key": key,
                 });

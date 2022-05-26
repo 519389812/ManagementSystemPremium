@@ -65,7 +65,6 @@ def check_accessible(model_object, field_name):
                 model = model_object
                 obj = eval('model.objects.get(%s=args[1])' % field_name)
             except Exception as e:
-                print(e)
                 return redirect('/error_404')
             if args[0].user.is_superuser:
                 return func(*args, **kwargs)
