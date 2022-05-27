@@ -99,6 +99,15 @@ def aes_encrypt(text, key, iv):
     return encrypt_text
 
 
+def aes_decrypt(text, key):
+    if type(key) == str:
+        key = key.encode()
+    aes = AES.new(key, mode=AES.MODE_ECB)
+    decrypted_text = aes.decrypt(base64.decodebytes(bytes(text, encoding='utf8'))).decode("utf8")
+    decrypted_text = decrypted_text[:-ord(decrypted_text[-1])]  # 去除多余补位
+    return decrypted_text
+
+
 def create_usage(key, text, vi):
     usage = {'key': text}
     usage = json.dumps(usage)

@@ -58,32 +58,52 @@
                     {% if closed == False %}
                         <form class="input-group" action="{% url 'document:fill_docx' docx_dict.docx_id need_signature %}" method="post">
                             {% csrf_token %}
-                            {% for key, value in content_variable_dict.items %}
-                                <div class="control-group form-group">
-                                    <div class="controls">
-                                        <label>{{ value.cn_name }}</label>
-                                        {% if filled == True %}
+                            {% if filled == True %}
+                                {% for key, value in content_variable_dict.items %}
+                                    <div class="control-group form-group">
+                                        <div class="controls">
+                                            <label>{{ value.cn_name }}</label>
                                             <input type="{{ value.type_text }}" class="form-control" name="{{ value.en_name }}" placeholder="您已提交" disabled="disabled"/>
-                                        {% else %}
-                                            <input type="{{ value.type_text }}" class="form-control" placeholder="请填写" name="{{ value.en_name }}" required/>
-                                        {% endif %}
+                                        </div>
                                     </div>
-                                </div>
-                            {% endfor %}
-                            {% if need_signature == True %}
+                                {% endfor %}
                                 <div class="form-control-range form-group">
                                     <span class="input-group-append">
-                                        {% if signed == True %}
-                                            <button type="submit" class="btn btn-secondary" disabled="{{ signed }}">已签名</button>
+                                        {% if need_signature == True %}
+                                            {% if signed == True %}
+                                                <button type="submit" class="btn btn-secondary" disabled="disabled">已签名</button>
+                                            {% else %}
+                                                {% if docx_dict.remote_sign == True %}
+                                                    <button type="submit" class="btn btn-secondary">确认并签名</button>
+                                                {% else %}
+                                                    <button type="submit" class="btn btn-secondary">签名</button>
+                                                {% endif %}
+                                            {% endif %}
                                         {% else %}
-                                            <button type="submit" class="btn btn-secondary">签名</button>
+                                            <button type="submit" class="btn btn-secondary" disabled="disabled">已确认</button>
                                         {% endif %}
                                     </span>
                                 </div>
                             {% else %}
+                                {% for key, value in content_variable_dict.items %}
+                                    <div class="control-group form-group">
+                                        <div class="controls">
+                                            <label>{{ value.cn_name }}</label>
+                                            <input type="{{ value.type_text }}" class="form-control" placeholder="请填写" name="{{ value.en_name }}" required/>
+                                        </div>
+                                    </div>
+                                {% endfor %}
                                 <div class="form-control-range form-group">
                                     <span class="input-group-append">
-                                        <button type="submit" class="btn btn-secondary" disabled="{{ filled }}">确定</button>
+                                        {% if docx_dict.remote_sign == True %}
+                                            <button type="submit" class="btn btn-secondary">确认并签名</button>
+                                        {% else %}
+                                            {% if need_signature == True %}
+                                                <button type="submit" class="btn btn-secondary">签名</button>
+                                            {% else %}
+                                                <button type="submit" class="btn btn-secondary" >确认</button>
+                                            {% endif %}
+                                        {% endif %}
                                     </span>
                                 </div>
                             {% endif %}

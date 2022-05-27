@@ -10,6 +10,8 @@ import base64
 import datetime
 from PIL import Image
 from ManagementSystemPremium.settings import BASE_DIR
+from ManagementSystemPremium import safe
+from urllib import parse
 
 
 source_dir = os.path.join(BASE_DIR, "document/static/document/docs/source/")
@@ -115,7 +117,7 @@ def fix_image_rotate(image_path):
     img.close()
 
 
-def write(document_template_handler, save_path, init_content: str = None, fill_content: list = None, content_variable_dict: dict = None, auto_variable_dict: str = None, signature_content: list = None, maximum=0):
+def write(document_template_handler, save_path, init_content: str = None, fill_content: list = None, content_variable_dict: dict = None, auto_variable_dict: str = None, signature_content: list = None, supervisor_variable_dict: dict = None, maximum=0):
     context = {}
     datetime_now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     image_path_list = []
@@ -163,15 +165,16 @@ def write(document_template_handler, save_path, init_content: str = None, fill_c
     if signature_content:
         try:
             for content in signature_content:
-                name = content['content']
-                content_str = base64.b64decode(content['signature'].split(',')[1])
+                signature_id = content['signature_id']
+                key, signature = content['signature'].split(';')
+                signature_data = base64.b64decode(parse.unquote(safe.aes_decrypt(signature, key)).split(',')[1])
                 image_path = temporary_dir + datetime_now + '_%s.png' % i
                 with open(image_path, 'wb') as f:
-                    f.write(content_str)
+                    f.write(signature_data)
                 fix_image_rotate(image_path)
-                content_str = InlineImage(document_template_handler, image_path, height=Mm(8))
+                signature_data = InlineImage(document_template_handler, image_path, height=Mm(8))
                 image_path_list.append(image_path)
-                context.update({name: content_str})
+                context.update({signature_id: signature_data})
                 i += 1
         except:
             pass

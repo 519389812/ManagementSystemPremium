@@ -3,9 +3,13 @@
   <component name="ChangeListManager">
     <list default="true" id="e629d207-6632-4336-a507-24113a457853" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ManagementSystemPremium/safe.py" beforeDir="false" afterPath="$PROJECT_DIR$/ManagementSystemPremium/safe.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/document/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/document/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/document/docx_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/document/docx_handler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/document/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/document/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/document/templates/signature.html" beforeDir="false" afterPath="$PROJECT_DIR$/document/templates/signature.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/document/templates/view_docx.html" beforeDir="false" afterPath="$PROJECT_DIR$/document/templates/view_docx.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/document/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/document/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/user/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/user/views.py" afterDir="false" />
     </list>
@@ -208,6 +212,7 @@
       <workItem from="1653526002508" duration="22453000" />
       <workItem from="1653568640441" duration="6374000" />
       <workItem from="1653575683124" duration="2143000" />
+      <workItem from="1653611968999" duration="22575000" />
     </task>
     <servers />
   </component>
@@ -215,11 +220,11 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/ManagementSystemPremium$views.coverage" NAME="views Coverage Results" MODIFIED="1653484058427" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/document" />
-    <SUITE FILE_PATH="coverage/ManagementSystemPremium$safe.coverage" NAME="safe Coverage Results" MODIFIED="1653448976995" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ManagementSystemPremium" />
     <SUITE FILE_PATH="coverage/ManagementSystemPremium$test.coverage" NAME="test Coverage Results" MODIFIED="1653399702598" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/document" />
-    <SUITE FILE_PATH="coverage/ManagementSystemPremium$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1653445082915" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ManagementSystemPremium" />
+    <SUITE FILE_PATH="coverage/ManagementSystemPremium$views.coverage" NAME="views Coverage Results" MODIFIED="1653484058427" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/document" />
     <SUITE FILE_PATH="coverage/ManagementSystemPremium$decrypt_signature.coverage" NAME="decrypt_signature Coverage Results" MODIFIED="1653487167027" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/signature_storage" />
+    <SUITE FILE_PATH="coverage/ManagementSystemPremium$safe.coverage" NAME="safe Coverage Results" MODIFIED="1653448976995" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ManagementSystemPremium" />
+    <SUITE FILE_PATH="coverage/ManagementSystemPremium$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1653445082915" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ManagementSystemPremium" />
     <SUITE FILE_PATH="coverage/ManagementSystemPremium$download_signature.coverage" NAME="download_signature Coverage Results" MODIFIED="1653464099174" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

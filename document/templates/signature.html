@@ -120,7 +120,6 @@
             var xhr = new XMLHttpRequest();
             var key = randomNum(16);
             var dataURL = aesEncrypt(encodeURIComponent(signaturePad.toDataURL()), key);
-            key = encryptor.encrypt(key);
             if (docxId != "") {
                 var jsonData = JSON.stringify({
                     "data": dataURL,
@@ -128,11 +127,11 @@
                     "docx_id": docxId,
                     "key": key,
                 });
-                xhr.open('post', '{% url "document:set_signature" %}', true);
+                xhr.open('post', '{% url "document:fill_signature" %}', true);
             } else {
                 var jsonData = JSON.stringify({
                     "data": dataURL,
-                    "key": key,
+                    "key": encryptor.encrypt(key),
                 });
                 xhr.open('post', '{% url "document:set_signature" %}', true);
             }

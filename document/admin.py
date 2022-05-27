@@ -24,7 +24,7 @@ class DocxInitAdmin(admin.ModelAdmin):
 
 
 class ContentStorageAdmin(admin.ModelAdmin):
-    list_display = ("id", "docx", "user", "content", "signature_id", "create_datetime", "edit_datetime")
+    list_display = ("id", "docx", "user", "content", "signature_id", "is_confirm", "create_datetime", "edit_datetime")
     list_display_links = ("id",)
 
     def get_queryset(self, request):
@@ -34,15 +34,8 @@ class ContentStorageAdmin(admin.ModelAdmin):
 
 
 class SignatureStorageAdmin(admin.ModelAdmin):
-    list_display = ("id", "signature_id", "docx", "user", "is_sign", "create_datetime")
+    list_display = ("id", "signature_id", "docx", "user", "create_datetime")
     list_display_links = ("id",)
-
-    def is_sign(self, obj):
-        if obj.is_confirm:
-            return "是"
-        else:
-            return "是" if obj.signature != "" else ""
-    is_sign.short_description = "是否签名"
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

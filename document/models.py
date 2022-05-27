@@ -31,7 +31,7 @@ class ContentStorage(models.Model):
     docx = models.ForeignKey(DocxInit, on_delete=models.CASCADE, verbose_name="模板")
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name="填写人")
     content = models.TextField(max_length=500, verbose_name="内容")
-    signature_id = models.TextField(max_length=500, null=True, blank=True, verbose_name="签名号")
+    signature_id = models.CharField(max_length=30, null=True, blank=True, verbose_name="签名号")
     is_confirm = models.BooleanField(default=False, verbose_name="签字确认")
     create_datetime = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
     edit_datetime = models.DateTimeField(auto_now=True, verbose_name="最新修改时间")
@@ -41,7 +41,7 @@ class ContentStorage(models.Model):
         verbose_name_plural = "文档内容"
 
     def __str__(self):
-        return self.content
+        return str(self.id)
 
 
 class SignatureStorage(models.Model):
