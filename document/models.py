@@ -27,12 +27,13 @@ class DocxInit(models.Model):
 
 class ContentStorage(models.Model):
     id = models.AutoField(primary_key=True)
-    content_id = models.CharField(max_length=30, unique=True, verbose_name="文件id")
+    content_id = models.CharField(max_length=30, unique=True, verbose_name="填写id")
     docx = models.ForeignKey(DocxInit, on_delete=models.CASCADE, verbose_name="模板")
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name="填写人")
-    content = models.TextField(max_length=500, verbose_name="内容")
+    content_name = models.CharField(max_length=30, null=True, blank=True, verbose_name="内容名")
+    content = models.TextField(max_length=500, null=True, blank=True, verbose_name="内容")
     signature_id = models.CharField(max_length=30, null=True, blank=True, verbose_name="签名号")
-    is_confirm = models.BooleanField(default=False, verbose_name="签字确认")
+    is_confirm = models.BooleanField(default=False, verbose_name="远程确认签字")
     create_datetime = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
     edit_datetime = models.DateTimeField(auto_now=True, verbose_name="最新修改时间")
 
@@ -75,4 +76,4 @@ class SignatureRemoteStorage(models.Model):
         verbose_name_plural = "签名"
 
     def __str__(self):
-        return self.user.full_name
+        return self.signature_id

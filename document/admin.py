@@ -24,7 +24,7 @@ class DocxInitAdmin(admin.ModelAdmin):
 
 
 class ContentStorageAdmin(admin.ModelAdmin):
-    list_display = ("id", "docx", "user", "content", "signature_id", "is_confirm", "create_datetime", "edit_datetime")
+    list_display = ("id", "docx", "user", "content_name", "content", "signature_id", "is_confirm", "create_datetime", "edit_datetime")
     list_display_links = ("id",)
 
     def get_queryset(self, request):

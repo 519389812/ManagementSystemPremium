@@ -3,6 +3,7 @@
 
 <head>
     {% load static %}
+    {% load document_extras %}
     {% include "head.html" %}
     <title>查看文档</title>
 
@@ -110,16 +111,63 @@
                         </form>
                     {% else %}
                         <label><b>文档已关闭</b></label>
+                        <form class="input-group" action="{% url 'document:fill_supervisor_docx' docx_dict.docx_id need_supervisor_signature %}" method="post">
+                            {% csrf_token %}
                             {% if supervisor_variable_dict|length > 0 %}
+                                <p><b>该文档含有需管理员补充的字段</b></p>
                                 {% if request.user.is_superuser %}
-                                    <p><b>请补充以下签名：</b></p>
                                     {% for key, value in supervisor_variable_dict.items %}
-                                        <a href="/document/supervise_docx/?docx_id={{ docx_dict.docx_id }}&signature_key={{ value.origin }}" class="btn btn-secondary">{{ value.cn_name }}</a>
-                                    {% endfor%}
+                                        <div class="control-group form-group">
+                                            <div class="controls">
+                                                <label>{{ value.cn_name }}</label>
+                                                {% if supervisor_filled_dict|template_get_dict_value:key %}
+                                                    <input type="{{ value.type_text }}" class="form-control" name="{{ value.en_name }}" disabled="disabled" placeholder="已填写"/>
+                                                {% else %}
+                                                    <input type="{{ value.type_text }}" class="form-control" name="{{ value.en_name }}"/>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    {% if supervisor_signature_dict|length > 0 %}
+                                        <div class="form-control-range form-group">
+                                            <label>签名</label>
+                                            {% for key, value in supervisor_signature_dict.items %}
+                                                <div class="checkbox">
+                                                    <label>
+                                                        {% if supervisor_filled_dict|template_get_dict_value:key %}
+                                                            <input type="checkbox" value="signature" title="{{ value.cn_name }}" name="{{ value.en_name }}" disabled="disabled">
+                                                            {{ value.cn_name }}(已签名)
+                                                        {% else %}
+                                                            <input type="checkbox" value="signature" title="{{ value.cn_name }}" name="{{ value.en_name }}">
+                                                            {{ value.cn_name }}
+                                                        {% endif %}
+                                                    </label>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-control-range form-group">
+                                        <span class="input-group-append">
+                                            {% if supervisor_filled %}
+                                                <button type="submit" class="btn btn-secondary" disabled="disabled">已完成</button>
+                                            {% else %}
+                                                {% if need_supervisor_signature %}
+                                                    {% if docx_dict.remote_sign == True %}
+                                                        <button type="submit" class="btn btn-secondary">确认并签名</button>
+                                                    {% else %}
+                                                        <button type="submit" class="btn btn-secondary">签名</button>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <button type="submit" class="btn btn-secondary" >确认</button>
+                                                {% endif %}
+                                            {% endif %}
+                                        </span>
+                                    </div>
                                 {% else %}
-                                    <p><b>该文档含有需管理员补充的签名的字段</b></p>
+                                    <p><b>该文档含有需管理员补充的字段</b></p>
                                 {% endif %}
                             {% endif %}
+                        </form>
                     {% endif %}
                 </div>
             </div>
@@ -212,7 +260,7 @@
 
     $(document).ready(function(){
         $('#show_docx_html').click(function(){
-            var docx_id = {{ docx_dict.docx_id }};
+            var docx_id = "{{ docx_dict.docx_id }}";
             $.get("/document/show_docx_html/",{'docx_id':docx_id}, function(response){
                 $('#docx_html_content').html(response);
             });

@@ -42,10 +42,8 @@ def to_list(origin_text, is_type, is_not_type):
 def get_file_path(file_dir, file_name):
     file_path = os.path.join(file_dir, file_name)
     if os.path.isfile(file_path) and file_path.endswith(".docx"):
-        print("Open tamplate file success.")
         return file_path
     else:
-        print("Open tamplate file failed.")
         return None
 
 
@@ -117,9 +115,11 @@ def fix_image_rotate(image_path):
     img.close()
 
 
-def write(document_template_handler, save_path, init_content: str = None, fill_content: list = None, content_variable_dict: dict = None, auto_variable_dict: str = None, signature_content: list = None, supervisor_variable_dict: dict = None, maximum=0):
+def write(document_template_handler, save_path, init_content: str = None, docx_content: list = None,
+          docx_variable_dict: dict = None, auto_variable_dict: str = None, signature_content: list = None,
+          supervisor_variable_dict: dict = None, supervisor_content_list: list = None, maximum=0, show_signature=False,
+          show_signature_id=False):
     context = {}
-    datetime_now = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     image_path_list = []
     i = 0
     if init_content:
@@ -127,32 +127,45 @@ def write(document_template_handler, save_path, init_content: str = None, fill_c
             context.update(json.loads(init_content))
         except:
             pass
-    if fill_content:
-        for content in fill_content:
+    if docx_content:
+        for content in docx_content:
             try:
                 content_dict = json.loads(content["content"])
                 for key, value in content_dict.items():
                     if i == maximum-1:
-                        name = content_variable_dict[key]["origin"]
+                        name = docx_variable_dict[key]["origin"]
                     else:
                         name = key + '__' + str(i)
                     context.update({name: value})
             except:
                 pass
             try:
-                content_str = content["signature"]
+                signature_name, signature_img, content_str = '', '', ''
+                signature_id = content["signature_id"]
                 if i == maximum-1:
-                    name = content_variable_dict["signature"]["origin"]
+                    name = docx_variable_dict["signature"]["origin"]
                 else:
                     name = "signature" + '__' + str(i)
-                if content_str != "":
-                    content_str = base64.b64decode(content_str.split(',')[1])
-                    image_path = temporary_dir + datetime_now + '_%s.png' % i
-                    with open(image_path, 'wb') as f:
-                        f.write(content_str)
-                    fix_image_rotate(image_path)
-                    content_str = InlineImage(document_template_handler, image_path, height=Mm(9))
-                    image_path_list.append(image_path)
+                if signature_id != "":
+                    for s in signature_content:
+                        if s['signature_id'] == signature_id:
+                            signature_name = s['user__full_name']
+                            signature_img = s['signature']
+                    if show_signature:
+                        if signature_img != '':
+                            k, s = signature_img.split(';')
+                            signature_img = base64.b64decode(parse.unquote(safe.aes_decrypt(s, k)).split(',')[1])
+                            image_path = temporary_dir + signature_id + '.png'
+                            with open(image_path, 'wb') as f:
+                                f.write(signature_img)
+                            fix_image_rotate(image_path)
+                            content_str = InlineImage(document_template_handler, image_path, height=Mm(9))
+                            image_path_list.append(image_path)
+                    elif show_signature_id:
+                        content_str = "{{ " + signature_id + " }}"
+                    else:
+                        if signature_name != '':
+                            content_str = signature_name + ' 已签名'
                 context.update({name: content_str})
             except:
                 pass
@@ -162,22 +175,39 @@ def write(document_template_handler, save_path, init_content: str = None, fill_c
             context.update(json.loads(auto_variable_dict))
         except:
             pass
-    if signature_content:
-        try:
-            for content in signature_content:
-                signature_id = content['signature_id']
-                key, signature = content['signature'].split(';')
-                signature_data = base64.b64decode(parse.unquote(safe.aes_decrypt(signature, key)).split(',')[1])
-                image_path = temporary_dir + datetime_now + '_%s.png' % i
-                with open(image_path, 'wb') as f:
-                    f.write(signature_data)
-                fix_image_rotate(image_path)
-                signature_data = InlineImage(document_template_handler, image_path, height=Mm(8))
-                image_path_list.append(image_path)
-                context.update({signature_id: signature_data})
-                i += 1
-        except:
-            pass
+    if supervisor_content_list:
+        for content in supervisor_content_list:
+            try:
+                name = supervisor_variable_dict[content["content_name"]]["origin"]
+                if content["content"]:
+                    context.update({name: content["content"]})
+                elif content["signature_id"]:
+                    signature_name, signature_img, content_str = '', '', ''
+                    signature_id = content["signature_id"]
+                    if signature_id != "":
+                        for s in signature_content:
+                            if s['signature_id'] == signature_id:
+                                signature_name = s['user__full_name']
+                                signature_img = s['signature']
+                        if show_signature:
+                            if signature_img != '':
+                                k, s = signature_img.split(';')
+                                signature_img = base64.b64decode(parse.unquote(safe.aes_decrypt(s, k)).split(',')[1])
+                                image_path = temporary_dir + signature_id + '.png'
+                                with open(image_path, 'wb') as f:
+                                    f.write(signature_img)
+                                fix_image_rotate(image_path)
+                                content_str = InlineImage(document_template_handler, image_path, height=Mm(9))
+                                image_path_list.append(image_path)
+                        elif show_signature_id:
+                            content_str = "{{ " + signature_id + " }}"
+                        else:
+                            if signature_name != '':
+                                content_str = signature_name + ' 已签名'
+                    context.update({name: content_str})
+            except:
+                pass
+            i += 1
     document_template_handler.render(context)
     document_template_handler.save(save_path)
     for image_path in image_path_list:

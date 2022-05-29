@@ -74,17 +74,18 @@ if __name__ == '__main__':
         signature_path = os.path.join(signature_dir, signature)
         signature_id, ext = os.path.splitext(signature)
         if ext == '.txt':
-            # try:
-            with open(os.path.join(signature_dir, signature), 'r') as f:
-                key, version, img = f.read().split(';')
-            if current_version != version or 'cipher' not in locals():
-                cipher = set_crypto_pri_key(mode='PKCS1_v1_5', version=version)
-            key = crypto_rsa_decrypt(cipher, key, "PKCS1_v1_5")
-            text = parse.unquote(aes_decrypt(img, key))
-            encoded_image = text.split(",")[1]
-            decoded_image = base64.b64decode(encoded_image)
-            with open(os.path.join(signature_dir, '%s.png' % signature_id), 'wb') as f:
-                f.write(decoded_image)
-            os.remove(os.path.join(signature_dir, signature))
-            # except:
-            #     continue
+            try:
+                print("开始处理%s..." % signature)
+                with open(os.path.join(signature_dir, signature), 'r') as f:
+                    key, version, img = f.read().split(';')
+                if current_version != version or 'cipher' not in locals():
+                    cipher = set_crypto_pri_key(mode='PKCS1_v1_5', version=version)
+                key = crypto_rsa_decrypt(cipher, key, "PKCS1_v1_5")
+                text = parse.unquote(aes_decrypt(img, key))
+                encoded_image = text.split(",")[1]
+                decoded_image = base64.b64decode(encoded_image)
+                with open(os.path.join(signature_dir, '%s.png' % signature_id), 'wb') as f:
+                    f.write(decoded_image)
+                os.remove(os.path.join(signature_dir, signature))
+            except Exception as e:
+                print("处理%s出错：%s" % (signature, e))
