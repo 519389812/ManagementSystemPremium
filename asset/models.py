@@ -7,8 +7,8 @@ class RoomPurpose(models.Model):
     name = models.CharField(max_length=300, unique=True, verbose_name='用途名称')
 
     class Meta:
-        verbose_name = '房间用途设置'
-        verbose_name_plural = '房间用途设置'
+        verbose_name = '设置-房间用途'
+        verbose_name_plural = '设置-房间用途'
 
     def __str__(self):
         return self.name
@@ -19,8 +19,8 @@ class FixedStatus(models.Model):
     name = models.CharField(max_length=300, unique=True, verbose_name='状态名称')
 
     class Meta:
-        verbose_name = '状态设置'
-        verbose_name_plural = '状态设置'
+        verbose_name = '设置-固定资产状态'
+        verbose_name_plural = '设置-固定资产状态'
 
     def __str__(self):
         return self.name
@@ -33,8 +33,8 @@ class Room(models.Model):
     purpose = models.ForeignKey(RoomPurpose, related_name='room_purpose', on_delete=models.CASCADE, verbose_name='用途')
 
     class Meta:
-        verbose_name = '房间设置'
-        verbose_name_plural = '房间设置'
+        verbose_name = '设置-房间'
+        verbose_name_plural = '设置-房间'
 
     def __str__(self):
         return self.name
@@ -45,8 +45,8 @@ class CurrentType(models.Model):
     name = models.CharField(max_length=300, unique=True, verbose_name='流动资产类型')
 
     class Meta:
-        verbose_name = '流动资产类型设置'
-        verbose_name_plural = '流动资产类型设置'
+        verbose_name = '设置-流动资产类型'
+        verbose_name_plural = '设置-流动资产类型'
 
     def __str__(self):
         return self.name
@@ -57,10 +57,11 @@ class Current(models.Model):
     sn = models.CharField(max_length=300, verbose_name='流动资产编号')
     type = models.ForeignKey(CurrentType, related_name='current_type', on_delete=models.CASCADE, verbose_name='类型')
     name = models.CharField(max_length=300, unique=True, verbose_name='流动资产名称')
+    unit = models.CharField(max_length=30, verbose_name='单位')
 
     class Meta:
-        verbose_name = '流动资产设置'
-        verbose_name_plural = '流动资产设置'
+        verbose_name = '设置-流动资产'
+        verbose_name_plural = '设置-流动资产'
 
     def __str__(self):
         return self.name
@@ -71,8 +72,8 @@ class FixedType(models.Model):
     name = models.CharField(max_length=300, unique=True, verbose_name='固定资产类型')
 
     class Meta:
-        verbose_name = '固定资产类型设置'
-        verbose_name_plural = '固定资产类型设置'
+        verbose_name = '设置-固定资产类型'
+        verbose_name_plural = '设置-固定资产类型'
 
     def __str__(self):
         return self.name
@@ -88,8 +89,8 @@ class Fixed(models.Model):
     expiry_date = models.DateField(blank=True, null=True, verbose_name='过期日期')
 
     class Meta:
-        verbose_name = '固定资产管理'
-        verbose_name_plural = '固定资产管理'
+        verbose_name = '设置-固定资产'
+        verbose_name_plural = '设置-固定资产'
 
     def __str__(self):
         return self.name
@@ -101,8 +102,8 @@ class Rack(models.Model):
     fixed = models.OneToOneField(Fixed, blank=True, null=True, related_name='rack_fixed', on_delete=models.CASCADE, verbose_name='堆放货架')
 
     class Meta:
-        verbose_name = '管理货架'
-        verbose_name_plural = '管理货架'
+        verbose_name = '管理-存放位置'
+        verbose_name_plural = '管理-存放位置'
         ordering = ['room__name', 'fixed__name']
 
     def __str__(self):
@@ -112,7 +113,7 @@ class Rack(models.Model):
 class CurrentRecord(models.Model):
     id = models.AutoField(primary_key=True)
     current = models.ForeignKey(Current, related_name='currentRecord_current', on_delete=models.CASCADE, verbose_name='流动资产名称')
-    quantity = models.FloatField(verbose_name='出入库数量')
+    quantity = models.PositiveSmallIntegerField(verbose_name='出入库数量')
     rack = models.ForeignKey(Rack, related_name='currentRecord_rack', on_delete=models.CASCADE, verbose_name='位置')
     in_out = models.CharField(max_length=300, choices=(('入库', '入库'), ('出库', '出库')), verbose_name='出入库')
     operating_datetime = models.DateTimeField(auto_now=True, verbose_name='最新操作时间')
@@ -125,6 +126,14 @@ class CurrentRecord(models.Model):
 
     def __str__(self):
         return self.current.name
+
+
+class CurrentSummary(CurrentRecord):
+
+    class Meta:
+        proxy = True
+        verbose_name = '流动资产入出库统计'
+        verbose_name_plural = '流动资产入出库统计'
 
 
 class CurrentStorage(models.Model):

@@ -3,25 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="e629d207-6632-4336-a507-24113a457853" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ManagementSystemPremium/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/ManagementSystemPremium/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/asset/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/asset/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/asset/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/asset/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/document/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/document/apps.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/docx_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/document/docx_handler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/document/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/static/document/docs/source/防疫物品发放签收表.docx" beforeDir="false" afterPath="$PROJECT_DIR$/document/static/document/docs/source/防疫物品发放签收表.docx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/static/document/docs/templates/防疫物品发放签收表.docx" beforeDir="false" afterPath="$PROJECT_DIR$/document/static/document/docs/templates/防疫物品发放签收表.docx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/static/document/docs/translate/translate.json" beforeDir="false" afterPath="$PROJECT_DIR$/document/static/document/docs/translate/translate.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/storage/20220526213216_1.docx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/templates/document.html" beforeDir="false" afterPath="$PROJECT_DIR$/document/templates/document.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/templates/introduce_docx.html" beforeDir="false" afterPath="$PROJECT_DIR$/document/templates/introduce_docx.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/templates/view_docx.html" beforeDir="false" afterPath="$PROJECT_DIR$/document/templates/view_docx.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/templates/view_docx_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/document/templates/view_docx_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/document/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/document/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/document/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/signature_storage/decrypt_signature.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/signature_storage/pri_v1.pem" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/signature_storage/signature/MJD98GKNZSGP6G2A.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/downgrade/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/downgrade/admin.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,14 +47,17 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/templates" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/asset" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\PyProject\ManagementSystemPremium\ManagementSystemPremium\asset" />
       <recent name="D:\PyProject\ManagementSystemPremium\ManagementSystemPremium\templates" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\PyProject\ManagementSystemPremium\ManagementSystemPremium\asset\templates" />
+      <recent name="D:\PyProject\ManagementSystemPremium\ManagementSystemPremium\asset\migrations" />
       <recent name="D:\PyProject\ManagementSystemPremium\ManagementSystemPremium\document_storage" />
       <recent name="D:\PyProject\ManagementSystemPremium\ManagementSystemPremium\signature_storage" />
     </key>
@@ -235,6 +224,7 @@
       <workItem from="1653653635969" duration="12000000" />
       <workItem from="1653707594486" duration="31223000" />
       <workItem from="1653786912981" duration="18415000" />
+      <workItem from="1653883697205" duration="15536000" />
     </task>
     <servers />
   </component>
@@ -242,13 +232,13 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/ManagementSystemPremium$views.coverage" NAME="views Coverage Results" MODIFIED="1653484058427" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/document" />
-    <SUITE FILE_PATH="coverage/ManagementSystemPremium$safe.coverage" NAME="safe Coverage Results" MODIFIED="1653448976995" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ManagementSystemPremium" />
     <SUITE FILE_PATH="coverage/ManagementSystemPremium$test.coverage" NAME="test Coverage Results" MODIFIED="1653399702598" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/document" />
-    <SUITE FILE_PATH="coverage/ManagementSystemPremium$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1653445082915" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ManagementSystemPremium" />
+    <SUITE FILE_PATH="coverage/ManagementSystemPremium$views.coverage" NAME="views Coverage Results" MODIFIED="1653484058427" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/document" />
     <SUITE FILE_PATH="coverage/ManagementSystemPremium$decrypt_signature.coverage" NAME="decrypt_signature Coverage Results" MODIFIED="1653487167027" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/signature_storage" />
-    <SUITE FILE_PATH="coverage/ManagementSystemPremium$download_signature.coverage" NAME="download_signature Coverage Results" MODIFIED="1653464099174" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/ManagementSystemPremium$stick_signature.coverage" NAME="stick_signature Coverage Results" MODIFIED="1653827939703" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/document_storage" />
     <SUITE FILE_PATH="coverage/ManagementSystemPremium$decrypt_signature__1_.coverage" NAME="decrypt_signature (1) Coverage Results" MODIFIED="1653827296353" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/document_storage/signature_storage" />
+    <SUITE FILE_PATH="coverage/ManagementSystemPremium$safe.coverage" NAME="safe Coverage Results" MODIFIED="1653448976995" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ManagementSystemPremium" />
+    <SUITE FILE_PATH="coverage/ManagementSystemPremium$stick_signature.coverage" NAME="stick_signature Coverage Results" MODIFIED="1653827939703" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/document_storage" />
+    <SUITE FILE_PATH="coverage/ManagementSystemPremium$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1653445082915" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ManagementSystemPremium" />
+    <SUITE FILE_PATH="coverage/ManagementSystemPremium$download_signature.coverage" NAME="download_signature Coverage Results" MODIFIED="1653464099174" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

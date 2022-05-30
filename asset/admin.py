@@ -1,7 +1,8 @@
 from django.contrib import admin
-from asset.models import RoomPurpose, FixedStatus, CurrentType, Current, FixedType, Fixed, Room, Rack, CurrentStorage, CurrentRecord
+from asset.models import RoomPurpose, FixedStatus, CurrentType, Current, FixedType, Fixed, Room, Rack, CurrentStorage, CurrentSummary, CurrentRecord
 from django.contrib import messages
 from io import BytesIO
+import numpy as np
 import pandas as pd
 import datetime
 from django.http import HttpResponse
@@ -36,7 +37,7 @@ class CurrentTypeAdmin(admin.ModelAdmin):
 
 
 class CurrentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'sn', 'type', 'name')
+    list_display = ('id', 'sn', 'type', 'name', 'unit')
     list_display_links = ('id',)
     search_fields = ('name', 'type__name')
     list_filter = ('type__name',)
@@ -115,8 +116,8 @@ class RackAdmin(admin.ModelAdmin):
 class CurrentRecordAdmin(admin.ModelAdmin):
     list_display = ('id', 'current', 'quantity', 'rack', 'in_out', 'operating_datetime', 'operating_user', 'comment')
     list_display_links = ('id',)
-    search_fields = ('current__name',)
-    list_filter = ('rack__room__name', 'rack__fixed__name', 'in_out')
+    search_fields = ('current__name', 'operating_user__full_name')
+    list_filter = ('rack__room__name', 'rack__fixed__name', 'operating_datetime', 'in_out')
     autocomplete_fields = ('current', 'rack')
     fieldsets = (
         ('基本信息', {'fields': ['id', 'current', 'quantity', 'rack', 'in_out', 'comment']}),
@@ -215,6 +216,35 @@ class CurrentRecordAdmin(admin.ModelAdmin):
     # export_directly.short_description = '导出记录'
 
 
+class CurrentSummaryAdmin(admin.ModelAdmin):
+    change_list_template = "admin/current_summary_change_list.html"
+
+    search_fields = ('current__name', 'operating_user__full_name')
+    list_filter = ('rack__room__name', 'rack__fixed__name', 'operating_datetime')
+
+    def changelist_view(self, request, extra_context=None):
+        response = super().changelist_view(request, extra_context=extra_context)
+        try:
+            qs = response.context_data['cl'].queryset
+        except (AttributeError, KeyError):
+            return response
+        qs = pd.DataFrame(qs.values('current__name', 'in_out', 'quantity'))
+        qs.rename(columns={'current__name': '流动资产名称', 'in_out': '出入库', 'quantity': '数量'}, inplace=True)
+        if qs.shape[0] > 0:
+            qs = pd.pivot_table(qs, index=['流动资产名称'], columns=['出入库'], values=['数量'], dropna=False, aggfunc=np.sum)
+            qs.dropna(inplace=True)
+            qs.columns = qs.columns.droplevel(0)
+            if '入库' not in qs.columns:
+                qs['入库'] = 0
+            if '出库' not in qs.columns:
+                qs['出库'] = 0
+            qs.loc['总计'] = qs.sum()
+            qs['差额'] = qs['入库'] - qs['出库']
+            qs = qs[['入库', '出库', '差额']]
+            response.context_data['summary'] = qs
+        return response
+
+
 class CurrentStorageAdmin(admin.ModelAdmin):
     list_display = ('id', 'current', 'rack', 'quantity')
     search_fields = ('current', 'rack', 'quantity',)
@@ -255,6 +285,7 @@ admin.site.register(FixedType, FixedTypeAdmin)
 admin.site.register(Fixed, FixedAdmin)
 admin.site.register(Rack, RackAdmin)
 admin.site.register(CurrentRecord, CurrentRecordAdmin)
+admin.site.register(CurrentSummary, CurrentSummaryAdmin)
 admin.site.register(CurrentStorage, CurrentStorageAdmin)
 
 
