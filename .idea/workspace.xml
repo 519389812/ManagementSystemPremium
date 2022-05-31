@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e629d207-6632-4336-a507-24113a457853" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/asset/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/asset/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -222,6 +221,7 @@
       <workItem from="1653707594486" duration="31223000" />
       <workItem from="1653786912981" duration="18415000" />
       <workItem from="1653883697205" duration="15536000" />
+      <workItem from="1654001459028" duration="1214000" />
     </task>
     <servers />
   </component>
@@ -229,14 +229,14 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/ManagementSystemPremium$test.coverage" NAME="test Coverage Results" MODIFIED="1653399702598" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/document" />
     <SUITE FILE_PATH="coverage/ManagementSystemPremium$views.coverage" NAME="views Coverage Results" MODIFIED="1653484058427" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/document" />
-    <SUITE FILE_PATH="coverage/ManagementSystemPremium$decrypt_signature.coverage" NAME="decrypt_signature Coverage Results" MODIFIED="1653487167027" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/signature_storage" />
     <SUITE FILE_PATH="coverage/ManagementSystemPremium$delete_migrations.coverage" NAME="delete_migrations Coverage Results" MODIFIED="1653960193282" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/ManagementSystemPremium$decrypt_signature__1_.coverage" NAME="decrypt_signature (1) Coverage Results" MODIFIED="1653827296353" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/document_storage/signature_storage" />
     <SUITE FILE_PATH="coverage/ManagementSystemPremium$safe.coverage" NAME="safe Coverage Results" MODIFIED="1653448976995" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ManagementSystemPremium" />
-    <SUITE FILE_PATH="coverage/ManagementSystemPremium$stick_signature.coverage" NAME="stick_signature Coverage Results" MODIFIED="1653827939703" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/document_storage" />
+    <SUITE FILE_PATH="coverage/ManagementSystemPremium$test.coverage" NAME="test Coverage Results" MODIFIED="1653399702598" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/document" />
     <SUITE FILE_PATH="coverage/ManagementSystemPremium$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1653445082915" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ManagementSystemPremium" />
+    <SUITE FILE_PATH="coverage/ManagementSystemPremium$decrypt_signature.coverage" NAME="decrypt_signature Coverage Results" MODIFIED="1653487167027" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/signature_storage" />
+    <SUITE FILE_PATH="coverage/ManagementSystemPremium$stick_signature.coverage" NAME="stick_signature Coverage Results" MODIFIED="1653827939703" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/document_storage" />
     <SUITE FILE_PATH="coverage/ManagementSystemPremium$download_signature.coverage" NAME="download_signature Coverage Results" MODIFIED="1653464099174" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ManagementSystemPremium$decrypt_signature__1_.coverage" NAME="decrypt_signature (1) Coverage Results" MODIFIED="1653827296353" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/document_storage/signature_storage" />
   </component>
 </project>
