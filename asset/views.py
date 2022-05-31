@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from .models import Current, Rack, CurrentRecord, CurrentStorage
+from user.views import check_is_superuser, check_authority
 
 
 def asset(request):
     return render(request, 'asset.html')
 
 
+@check_authority
 def warehousing(request):
     in_out = request.GET.get('in_out', '')
     rack_id = request.GET.get('rack_id', -1)
