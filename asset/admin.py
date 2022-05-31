@@ -192,6 +192,7 @@ class CurrentRecordAdmin(admin.ModelAdmin):
                 messages.error(request, '错误！该物资无库存记录。')
             elif obj.in_out == '出库':
                 CurrentStorage.objects.create(current=obj.current, rack=obj.rack, quantity=obj.quantity)
+                obj.delete()
 
     def delete_queryset(self, request, queryset):
         for obj in queryset:
