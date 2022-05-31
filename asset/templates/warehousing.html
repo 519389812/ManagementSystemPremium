@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>新增出入库</title>
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">新增
+        <small>出入库</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        {% include "route_asset.html" %}
+        <li class="breadcrumb-item active">新增</li>
+    </ol>
+
+    <!-- Contact Form -->
+    <!-- In order to set the email address and subject line for the contact form go to the bin/contact_me.php file. -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <h3>新增出入库</h3>
+            {% include "message.html" %}
+            <form name="warehousingForm" id="warehousingForm" action="{% url 'asset:warehousing' %}" method="post">
+                {% csrf_token %}
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>名称:</label>
+                        <select class="form-control" id="current_id" name="current_id" required>
+                            <option value=""></option>
+                            {% for current in current_list %}
+                                <option value="{{ current.id }}">{{ current.name }}<span> (单位:{{ current.unit }})</span></option>
+                            {% endfor %}
+                        </select>
+                        <p class="help-block" id="current_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>数量:</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" placeholder="请输入数量"
+                               required data-validation-required-message="Please enter a number." min="1"/>
+                        <p class="help-block" id="quantity_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>位置:</label>
+                        <select class="form-control" id="rack_id" name="rack_id" required>
+                            <option value=""></option>
+                            {% for rack in rack_list %}
+                                {% if rack.id == rack_id %}
+                                    <option value="{{ rack.id }}" selected>{{ rack }}</option>
+                                {% else %}
+                                    <option value="{{ rack.id }}">{{ rack }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        <p class="help-block" id="rack_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>出入库:</label>
+                        <select class="form-control" id="in_out" name="in_out" required>
+                            <option value=""></option>
+                            {% if in_out == "入库" %}
+                                <option value="入库" selected>入库</option>
+                                <option value="出库">出库</option>
+                            {% elif in_out == "出库" %}
+                                <option value="入库">入库</option>
+                                <option value="出库" selected>出库</option>
+                            {% else %}
+                                <option value="入库">入库</option>
+                                <option value="出库">出库</option>
+                            {% endif %}
+                        </select>
+                        <p class="help-block" id="in_out_validate"></p>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <div class="controls">
+                        <label>备注(可选):</label>
+                        <textarea class="form-control" id="remark" name="remark" placeholder="请填写备注"
+                                  data-validation-required-message="Please enter remark."></textarea>
+                        <p class="help-block" id="remark_validate"></p>
+                    </div>
+                </div>
+                <!-- For success/fail messages -->
+                <button type="submit" class="btn btn-primary" id="submit">提交</button>
+            </form>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <h3>Tips</h3>
+            <p>
+                <abbr title="查询审核状态">资产管理</abbr>
+                <br>
+                请点击<a href="/admin/">此处</a>
+            </p>
+        </div>
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+<!--$.ajax({-->
+<!--    // 1. 数据提交url，与form表单的action属性一致-->
+<!--    url:'',-->
+<!--    // 2. 指定当前请求方式-->
+<!--    type: 'post',-->
+<!--    // 3. 提交的数据，{1标签id:$('#1标签id').val(),2标签id:$('#2标签id').val()}-->
+<!--    data: {},-->
+<!--    // 4. 异步提交回调函数，data就是异步提交的返回结果，将异步回调函数的结果通过DOM操作渲染到第三个input框中：(3标签id).val(data)-->
+<!--    success:function(data){-->
+<!--            $(3标签id).val(data)-->
+<!--        }-->
+<!--    })-->
+
+<script>
+$('#position_id').change(function(){
+    var position_id = $('#position_id').val();
+    var manHourDiv = $('#man_hour_id'); //找到一个DOM节点
+    if (position_id == '') {
+        manHourDiv.empty();
+        return;
+    }
+    $('#man-hour-loading').html('工时项目加载中...');
+    $.ajax({
+        type: "POST",
+        url: "/performance/get_man_hour_item/",
+        async : false,
+        timeout: 5000,
+        data: {
+            'position_id': position_id,
+            'csrfmiddlewaretoken':$("[name='csrfmiddlewaretoken']").val()
+        },
+        dataType: "json",
+        success: function(data){
+            $('#man-hour-loading').html('');
+            manHourDiv.empty();
+            var content = "";
+            for (var i = 0; i <= data.length - 1; i++) {
+                content += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
+            }
+            manHourDiv.append(content);
+        },
+        complete : function(XMLHttpRequest,status) { //请求完成后最终执行参数
+            if(status == 'timeout') { //超时,status还有success,error等值的情况
+                return;
+            } else if(status == 'error') {
+                return;
+            } else if(status == 'success') {
+                return;
+            }
+        },
+    });
+});
+
+$.fn.setNow = function (onlyBlank) {
+  var now = new Date($.now())
+    , year
+    , month
+    , date
+    , hours
+    , minutes
+    , seconds
+    , formattedDateTime
+    ;
+
+  year = now.getFullYear();
+  month = (now.getMonth()+1).toString().length === 1 ? '0' + (now.getMonth() + 1).toString() : now.getMonth() + 1;
+  date = now.getDate().toString().length === 1 ? '0' + now.getDate().toString() : now.getDate();
+  hours = now.getHours().toString().length === 1 ? '0' + now.getHours().toString() : now.getHours();
+  minutes = now.getMinutes().toString().length === 1 ? '0' + now.getMinutes().toString() : now.getMinutes();
+  seconds = now.getSeconds().toString().length === 1 ? '0' + now.getSeconds().toString() : now.getSeconds();
+
+  formattedDateTime = year + '-' + month + '-' + date + 'T' + hours + ':' + minutes;
+
+  if ( onlyBlank === true && $(this).val() ) {
+    return this;
+  }
+
+  $(this).val(formattedDateTime);
+
+  return this;
+}
+
+$(function () {
+    // Handler for .ready() called.
+    $('input[type="datetime-local"]').setNow();
+
+});
+
+$(document).ready(function () {
+    console.log('{{ rack_id }}');
+    console.log('{{ rack_list.1.id }}');
+    console.log('{{ rack_id }} == {{ rack_list.1.id }}');
+});
+
+</script>
+
+</body>
+
+</html>

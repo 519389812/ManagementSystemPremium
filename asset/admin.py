@@ -127,6 +127,9 @@ class CurrentRecordAdmin(admin.ModelAdmin):
     readonly_fields = ['id', 'operating_datetime', 'operating_user']
 
     def save_model(self, request, obj, form, change):
+        if obj.quantity <= 0:
+            messages.set_level(request, level=messages.ERROR)
+            messages.error(request, '错误！数量为0。')
         if change:
             messages.set_level(request, level=messages.ERROR)
             messages.error(request, '错误！出入库不允许变更，若填写错误请删除记录，以回滚库存数量')

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    {% include "head.html" %}
+    <title>资产管理</title>
+</head>
+
+<body>
+
+<!-- Navigation -->
+{% include "navigation.html" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <h1 class="mt-4 mb-3">资产
+        <small>管理模块</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        {% include "route.html" %}
+        <li class="breadcrumb-item active">资产管理</li>
+    </ol>
+
+
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Sidebar Column -->
+        <div class="col-lg-3 mb-4">
+            <div class="list-group">
+                <a href="{% url 'asset:asset' %}" class="list-group-item active" disabled="true">资产管理</a>
+                <a href="{% url 'asset:warehousing' %}?in_out=入库" class="list-group-item">流动资产入库</a>
+                <a href="{% url 'asset:warehousing' %}?in_out=出库" class="list-group-item">流动资产出库</a>
+            </div>
+        </div>
+        <!-- Content Column -->
+        <div class="col-lg-9 mb-4">
+            <h2>资产管理模块</h2>
+            <hr>
+            <b>更新日志：</b>
+            <br>
+            <!-- sector -->
+            <br>
+            <i>版本：v0.1 日期：2022.5.31</i>
+            <ul>
+                <li>测试</li>
+            </ul>
+            <br>
+        </div>
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+{% include "footer.html" %}
+
+<!-- Bootstrap core JavaScript -->
+{% include "script.html" %}
+
+</body>
+
+</html>

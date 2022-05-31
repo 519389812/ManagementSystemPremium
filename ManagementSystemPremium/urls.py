@@ -45,6 +45,9 @@ urlpatterns = [
     # user
     path('user/', include('user.urls', namespace='user')),
 
+    # asset
+    path('asset/', include('asset.urls', namespace='asset')),
+
     # announcement
     path('announcement/', include('announcement.urls', namespace='announcement')),
 

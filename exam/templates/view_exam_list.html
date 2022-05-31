@@ -39,7 +39,7 @@
                         <li class="list-group-item">更新时间：{{ exam.update_datetime }}</li>
                         <li class="list-group-item">是否通过：{{ exam.is_passed }}</li>
                         <li class="list-group-item">
-                            <a href="{% exam:view_exam %}?id={{ exam.id }}" class="btn btn-primary">进入</a>
+                            <a href="{% url 'exam:view_exam' %}?id={{ exam.id }}" class="btn btn-primary">进入</a>
                         </li>
                     </ul>
                 </div>
