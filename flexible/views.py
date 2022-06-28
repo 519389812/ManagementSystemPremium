@@ -79,7 +79,15 @@ def add_loadsheet(request):
         for key, value in data.items():
             df = pd.DataFrame(value).T
             if key == '旅客':
-                load_sheet_passenger = load_sheet_content.filter(project='旅客')
+                load_sheet_passenger = load_sheet_content.filter(project='旅客').values('destination', '_class', 'type', 'number', 'weight')
+                load_sheet_passenger = pd.DataFrame(load_sheet_passenger)
+                if load_sheet_passenger.shape[0] > 0:
+                    load_sheet_passenger.fillna('', inplace=True)
+                    load_sheet_passenger = load_sheet_passenger.pivot_table(values=['number', 'weight'],
+                                                                            index=['destination', '_class', 'type'],
+                                                                            dropna=False, margins=True, margins_name='合计',
+                                                                            aggfunc=np.sum)
+                    load_sheet_passenger.dropna(inplace=True)
                 if df.shape[0] > 0:
                     df['paxNumber'] = df['paxNumber'].apply(int)
                     df['paxWeight'] = df['paxWeight'].apply(int)
@@ -88,26 +96,26 @@ def add_loadsheet(request):
                     lcm_total += df.loc['合计', '', '']['paxNumber']
                     weight_fixed += df.loc['合计', '', '']['paxWeight']
                     passenger = df
-                    correct = False
-                    if load_sheet_passenger.count() == df.shape[0]-1:
-                        correct = True
-                        for obj in load_sheet_passenger:
-                            try:
-                                if df.loc[obj.destination, obj._class, obj.type]['paxNumber'] == obj.number and df.loc[obj.destination, obj._class, obj.type]['paxWeight'] == obj.weight:
-                                    continue
-                                else:
-                                    correct = False
-                                    break
-                            except:
-                                correct = False
-                                break
+                    if load_sheet_passenger.shape[0] == df.shape[0]:
+                        if df.loc['合计', '', '']['paxNumber'] == load_sheet_passenger.loc['合计', '', '']['number'] and df.loc['合计', '', '']['paxWeight'] == load_sheet_passenger.loc['合计', '', '']['weight']:
+                            correct = True
+                        else:
+                            correct = False
+                    else:
+                        correct = False
+
                 else:
-                    correct = True if load_sheet_passenger.count() == 0 else False
+                    correct = True if load_sheet_passenger.shape[0] == 0 else False
                 if correct:
                     total_score += 33.33
                     passenger_correct = True
             elif key == '行李':
-                load_sheet_baggage = load_sheet_content.filter(project='行李')
+                load_sheet_baggage = load_sheet_content.filter(project='行李').values('destination', 'location', 'number', 'weight')
+                load_sheet_baggage = pd.DataFrame(load_sheet_baggage)
+                if load_sheet_baggage.shape[0] > 0:
+                    load_sheet_baggage.fillna('', inplace=True)
+                    load_sheet_baggage = load_sheet_baggage.pivot_table(values=['number', 'weight'], index=['destination', 'location'], dropna=False, margins=True, margins_name='合计', aggfunc=np.sum)
+                    load_sheet_baggage.dropna(inplace=True)
                 if df.shape[0] > 0:
                     df['baggageNumber'] = df['baggageNumber'].apply(int)
                     df['baggageWeight'] = df['baggageWeight'].apply(int)
@@ -115,49 +123,42 @@ def add_loadsheet(request):
                     df.dropna(inplace=True)
                     weight_fixed += df.loc['合计', '']['baggageWeight']
                     baggage = df
-                    correct = False
-                    if load_sheet_baggage.count() == df.shape[0]-1:
-                        correct = True
-                        for obj in load_sheet_baggage:
-                            location = obj.location if obj.location else ''
-                            try:
-                                if df.loc[obj.destination, location]['baggageNumber'] == obj.number and df.loc[obj.destination, location]['baggageWeight'] == obj.weight:
-                                    continue
-                                else:
-                                    correct = False
-                                    break
-                            except:
-                                correct = False
-                                break
+                    if load_sheet_baggage.shape[0] == df.shape[0]:
+                        if df.loc['合计', '']['baggageNumber'] == load_sheet_baggage.loc['合计', '']['number'] and df.loc['合计', '']['baggageWeight'] == load_sheet_baggage.loc['合计', '']['weight']:
+                            correct = True
+                        else:
+                            correct = False
+                    else:
+                        correct = False
                 else:
-                    correct = True if load_sheet_baggage.count() == 0 else False
+                    correct = True if load_sheet_baggage.shape[0] == 0 else False
                 if correct:
                     total_score += 33.33
                     baggage_correct = True
             elif key == '其他':
-                load_sheet_other = load_sheet_content.filter(project='其他')
+                load_sheet_other = load_sheet_content.filter(project='其他').values('destination', 'location', 'type', 'weight')
+                load_sheet_other = pd.DataFrame(load_sheet_other)
+                if load_sheet_other.shape[0] > 0:
+                    load_sheet_other.fillna('', inplace=True)
+                    load_sheet_other = load_sheet_other.pivot_table(values=['weight'],
+                                                                    index=['destination', 'location', 'type'], dropna=False,
+                                                                    margins=True, margins_name='合计', aggfunc=np.sum)
+                    load_sheet_other.dropna(inplace=True)
                 if df.shape[0] > 0:
                     df['weight'] = df['weight'].apply(int)
                     df = df.pivot_table(values=['weight'], index=['destination', 'location', 'type'], dropna=False, margins=True, margins_name='合计', aggfunc=np.sum)
                     df.dropna(inplace=True)
                     weight_fixed += df.loc['合计', '', '']['weight']
                     other = df
-                    correct = False
-                    if load_sheet_other.count() == df.shape[0] - 1:
-                        correct = True
-                        for obj in load_sheet_other:
-                            location = obj.location if obj.location else ''
-                            try:
-                                if df.loc[obj.destination, location, obj.type]['weight'] == obj.weight:
-                                    continue
-                                else:
-                                    correct = False
-                                    break
-                            except:
-                                correct = False
-                                break
+                    if load_sheet_other.shape[0] == df.shape[0]:
+                        if df.loc['合计', '', '']['weight'] == load_sheet_other.loc['合计', '', '']['weight']:
+                            correct = True
+                        else:
+                            correct = False
+                    else:
+                        correct = False
                 else:
-                    correct = True if load_sheet_other.count() == 0 else False
+                    correct = True if load_sheet_other.shape[0] == 0 else False
                 if correct:
                     total_score += 33.33
                     other_correct = True
