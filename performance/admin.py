@@ -142,14 +142,13 @@ class WorkloadSummaryAdmin(admin.ModelAdmin):
             qs = response.context_data['cl'].queryset
         except (AttributeError, KeyError):
             return response
-        static_columns = ['组别', '姓名', '岗位']
         qs = pd.DataFrame(qs.filter(verify=True).values('user__team__name', 'user__full_name', 'position__name', 'workload'))
         if qs.shape[0] > 0:
             qs.rename(columns={'user__team__name': '组别', 'user__full_name': '姓名', 'position__name': '岗位'}, inplace=True)
             qs = flatten_json(qs, 'workload')
             qs.fillna('0', inplace=True)
             # margins 必须加dropna=False参数才能生效
-            qs = pd.pivot_table(qs, index=['组别', '姓名'], values=[c for c in qs.columns if c not in static_columns], dropna=False, aggfunc=np.sum, margins=True, margins_name='总计')
+            qs = pd.pivot_table(qs, index=['组别', '姓名'], values=[c for c in qs.columns if c not in ['组别', '姓名', '岗位']], dropna=False, aggfunc=np.sum, margins=True, margins_name='总计')
             qs.dropna(inplace=True)
             cols = qs.columns.tolist()
             cols.sort()
