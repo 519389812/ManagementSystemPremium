@@ -117,12 +117,14 @@ def flatten_json(df, column_name):
         basic.append(json.loads(i))
     flatten_columns = pd.DataFrame(basic)
     flatten_columns.fillna(0, inplace=True)
-    workload_item = list(WorkloadItem.objects.all().values('name', 'weight'))
-    workload_item = {i['name']: i['weight'] for i in workload_item}
+    workload_item = list(WorkloadItem.objects.all().values('id', 'name', 'weight'))
+    workload_item_weight = {str(i['id']): i['weight'] for i in workload_item}
+    workload_item_name = {str(i['id']): i['name'] for i in workload_item}
     for c in flatten_columns.columns:
-        flatten_columns[c] = flatten_columns[c] * workload_item[c]
+        flatten_columns[c] = flatten_columns[c] * workload_item_weight[c]
     df = pd.concat([df, flatten_columns], axis=1)
     df = df.drop([column_name], axis=1)
+    df.rename(columns=workload_item_name, inplace=True)
     return df
 
 
@@ -140,18 +142,20 @@ class WorkloadSummaryAdmin(admin.ModelAdmin):
             qs = response.context_data['cl'].queryset
         except (AttributeError, KeyError):
             return response
+        static_columns = ['组别', '姓名', '岗位']
         qs = pd.DataFrame(qs.filter(verify=True).values('user__team__name', 'user__full_name', 'position__name', 'workload'))
         if qs.shape[0] > 0:
             qs.rename(columns={'user__team__name': '组别', 'user__full_name': '姓名', 'position__name': '岗位'}, inplace=True)
             qs = flatten_json(qs, 'workload')
             qs.fillna('0', inplace=True)
             # margins 必须加dropna=False参数才能生效
-            qs = pd.pivot_table(qs, index=['组别', '姓名'], values=[c for c in qs.columns if c not in ['组别', '姓名', '岗位']], dropna=False, aggfunc=np.sum, margins=True, margins_name='总计')
+            qs = pd.pivot_table(qs, index=['组别', '姓名'], values=[c for c in qs.columns if c not in static_columns], dropna=False, aggfunc=np.sum, margins=True, margins_name='总计')
             qs.dropna(inplace=True)
             cols = qs.columns.tolist()
             cols.sort()
             qs = qs[cols]
             qs['总计'] = qs.sum(axis=1)
+            qs = qs.round(2)
             response.context_data['summary'] = qs
         return response
 
@@ -242,6 +246,7 @@ class ManHourSummaryAdmin(admin.ModelAdmin):
             qs.rename(columns={'user__team__name': '组别', 'user__full_name': '姓名', 'man_hour__name': '工时项目', 'working_hours': '工作时长', 'output': '产出'}, inplace=True)
             qs = pd.pivot_table(qs, index=['组别', '姓名'], values=['工作时长', '产出'], dropna=False, aggfunc=np.sum, margins=True, margins_name='总计')
             qs.dropna(inplace=True)
+            qs = qs.round(2)
             response.context_data['summary'] = qs
         return response
 
