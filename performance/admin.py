@@ -148,7 +148,7 @@ class WorkloadSummaryAdmin(admin.ModelAdmin):
             qs = flatten_json(qs, 'workload')
             qs.fillna('0', inplace=True)
             # margins 必须加dropna=False参数才能生效
-            qs = pd.pivot_table(qs, index=['组别', '姓名'], values=[c for c in qs.columns if c not in ['组别', '姓名', '岗位']], dropna=False, aggfunc=np.sum, margins=True, margins_name='总计')
+            qs = pd.pivot_table(qs, index=['组别', '姓名'], values=[c for c in qs.columns.tolist() if c not in ['组别', '姓名', '岗位']], dropna=False, aggfunc=np.sum, margins=True, margins_name='总计')
             qs.dropna(inplace=True)
             cols = qs.columns.tolist()
             cols.sort()
