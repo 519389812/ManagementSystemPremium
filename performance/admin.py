@@ -117,9 +117,9 @@ def flatten_json(df, column_name):
         basic.append(json.loads(i))
     flatten_columns = pd.DataFrame(basic)
     flatten_columns.fillna(0, inplace=True)
-    workload_item = list(WorkloadItem.objects.all().values('id', 'name', 'weight'))
+    workload_item = list(WorkloadItem.objects.all().values('id', 'name', 'position__name', 'weight'))
     workload_item_weight = {str(i['id']): i['weight'] for i in workload_item}
-    workload_item_name = {str(i['id']): i['name'] for i in workload_item}
+    workload_item_name = {str(i['id']): i['position__name'] + '-' + i['name'] for i in workload_item}
     for c in flatten_columns.columns:
         flatten_columns[c] = flatten_columns[c] * workload_item_weight[c]
     df = pd.concat([df, flatten_columns], axis=1)
@@ -131,9 +131,9 @@ def flatten_json(df, column_name):
 class WorkloadSummaryAdmin(admin.ModelAdmin):
     change_list_template = "admin/workload_summary_change_list.html"
 
-    search_fields = ('user__full_name', 'position__name', 'verifier__name', 'remark')
+    search_fields = ('user__full_name', 'position__name', 'position__type__name', 'verifier__name', 'remark')
     list_filter = (
-        'date', 'user__team__name', 'create_datetime', 'position__name', 'verifier'
+        'date', 'user__team__name', 'create_datetime', 'position__type__name', 'position__name', 'verifier'
     )
 
     def changelist_view(self, request, extra_context=None):
