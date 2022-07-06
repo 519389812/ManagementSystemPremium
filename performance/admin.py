@@ -74,8 +74,8 @@ class WorkloadRecordAdmin(admin.ModelAdmin):
     workload_project.short_description = '工作量'
 
     def output(self, obj):
-        workload_item = list(WorkloadItem.objects.filter(position=obj.position).values('name', 'weight'))
-        workload_item = {i['name']: i['weight'] for i in workload_item}
+        workload_item = list(WorkloadItem.objects.filter(position=obj.position).values('id', 'weight'))
+        workload_item = {str(i['id']): i['weight'] for i in workload_item}
         out = sum([v * workload_item.get(k, 0) for k, v in json.loads(obj.workload).items()])
         return out
     output.short_description = '折算产出'
