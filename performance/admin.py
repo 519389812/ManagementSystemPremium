@@ -77,7 +77,7 @@ class WorkloadRecordAdmin(admin.ModelAdmin):
         workload_item = list(WorkloadItem.objects.filter(position=obj.position).values('id', 'weight'))
         workload_item = {str(i['id']): i['weight'] for i in workload_item}
         out = sum([v * workload_item.get(k, 0) for k, v in json.loads(obj.workload).items()])
-        return out
+        return round(out, 2)
     output.short_description = '折算产出'
 
     def get_form(self, request, obj=None, **kwargs):
