@@ -17,8 +17,8 @@ class SkillType(models.Model):
 
 class Skill(models.Model):
     id = models.AutoField(primary_key=True)
-    type = models.ForeignKey(SkillType, related_name='skill_type', on_delete=models.CASCADE, verbose_name='技能')
-    name = models.CharField(max_length=50, verbose_name='类型名称')
+    type = models.ForeignKey(SkillType, related_name='skill_type', on_delete=models.CASCADE, verbose_name='技能类型')
+    name = models.CharField(max_length=50, verbose_name='技能名称')
 
     class Meta:
         verbose_name = '技能设置'
@@ -26,13 +26,13 @@ class Skill(models.Model):
         ordering = ['type__name', 'name']
 
     def __str__(self):
-        return self.name
+        return self.type.name + ' - ' + self.name
 
 
 class Employee(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.OneToOneField(CustomUser, related_name='employee_user', on_delete=models.CASCADE, verbose_name='员工')
-    skill = models.ManyToManyField(Skill, related_name='employee_skill', verbose_name='掌握技能')
+    skill = models.ManyToManyField(Skill, blank=True, related_name='employee_skill', verbose_name='掌握技能')
 
     class Meta:
         verbose_name = '个人技能掌握'
@@ -42,7 +42,7 @@ class Employee(models.Model):
         return self.user.full_name
 
 
-class EmployeeSummary(WorkloadRecord):
+class EmployeeSummary(Employee):
 
     class Meta:
         proxy = True

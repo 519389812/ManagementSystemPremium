@@ -21,7 +21,7 @@ class SkillAdmin(admin.ModelAdmin):
 
 
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user')
+    list_display = ('id', 'user', 'skills')
     fields = ('id', 'user', 'skill')
     list_display_links = ('id',)
     filter_horizontal = ('skill',)
@@ -30,10 +30,15 @@ class EmployeeAdmin(admin.ModelAdmin):
     readonly_fields = ('id',)
     list_filter = ('user__team',)
 
+    def skills(self, obj):
+        return list(obj.skill.all())
+    skills.short_description = '技能'
+
 
 class EmployeeSummaryAdmin(admin.ModelAdmin):
     change_list_template = "admin/employee_summary_change_list.html"
 
+    search_fields = ('user__full_name',)
     list_filter = ('user__team',)
 
     def changelist_view(self, request, extra_context=None):
@@ -42,18 +47,27 @@ class EmployeeSummaryAdmin(admin.ModelAdmin):
             qs = response.context_data['cl'].queryset
         except (AttributeError, KeyError):
             return response
-        qs = pd.DataFrame(qs.values('user__team__name', 'user__full_name', 'skill__name'))
-        skill = qs['skill__name'].str.get_dummies(sep=',')
-        qs = pd.concat([qs, skill], axis=1)
-        qs['技能数'] = qs.iloc[:, 2:].sum(axis=1)
-        qs.drop(columns=['skill__name'], inplace=True)
-        qs.rename(columns={'user__team__name': '组别', 'user__full_name': '姓名'})
-        qs.sort_values(by=['组别', '姓名'])
-        response.context_data['columns'] = qs.columns
-        response.context_data['summary'] = qs.values.tolist()
+        qs = pd.DataFrame(qs.values('user__team__name', 'user__full_name', 'skill__type__name', 'skill__name'))
+        if qs.shape[0] > 0:
+            qs['skill'] = qs['skill__type__name'] + qs['skill__name']
+            qs.drop(columns=['skill__type__name', 'skill__name'], inplace=True)
+            qs.rename(columns={'user__team__name': '组别', 'user__full_name': '姓名'}, inplace=True)
+            qs['组别'].fillna('-', inplace=True)
+            qs = qs.groupby(by=['组别', '姓名']).skill.apply(lambda x: ', '.join(x))
+            qs = qs.reset_index(drop=False)
+            skill = qs['skill'].str.get_dummies(sep=',')
+            qs = pd.concat([qs, skill], axis=1)
+            qs['技能数'] = qs.iloc[:, 2:].sum(axis=1)
+            qs.drop(columns=['skill'], inplace=True)
+            qs.sort_values(by=['组别', '姓名'], inplace=True)
+            qs.reset_index(drop=True, inplace=True)
+            qs.index = qs.index + 1
+            response.context_data['columns'] = qs.columns
+            response.context_data['summary'] = qs.values.tolist()
         return response
 
 
 admin.site.register(SkillType, SkillTypeAdmin)
 admin.site.register(Skill, SkillAdmin)
 admin.site.register(Employee, EmployeeAdmin)
+admin.site.register(EmployeeSummary, EmployeeSummaryAdmin)

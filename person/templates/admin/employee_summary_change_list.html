@@ -23,21 +23,9 @@
             <tbody>
                 {% for row in summary %}
                     <tr class="{% cycle 'row1' 'row2' %}">
-                        {% if row.组别 != None %}
-                            <td>{{ row.组别 }}</td>
-                        {% else %}
-                            <td>/</td>
-                        {% endif %}
-                        <td>{{ row.姓名 }}</td>
-                        {% if foorloop.counter0 > 1 %}
-                            {% with c=foorloop.counter0 %}
-                                {% with ks=row.keys %}
-                                    {% with k=ks.c %}
-                                        <td>{{ row.k }}</td>
-                                    {% endwith %}
-                                {% endwith %}
-                            {% endwith %}
-                        {% endif %}
+                        {% for r in row %}
+                            <td>{{ r }}</td>
+                        {% endfor %}
                     </tr>
                 {% endfor %}
             </tbody>

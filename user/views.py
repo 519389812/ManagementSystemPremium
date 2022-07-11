@@ -28,8 +28,10 @@ def check_datetime_opened(close_timezone, now_timezone):
 def check_authority(func):
     def wrapper(*args, **kwargs):
         if not args[0].user.is_authenticated:
-            if "X-Requested_With" in args[0].headers:
-                return JsonResponse('请先登录', safe=False)
+            # if "X-Requested_With" in args[0].headers:
+            #     return JsonResponse('请先登录', safe=False, json_dumps_params={'ensure_ascii': False})
+            if args[0].META['QUERY_STRING']:
+                return redirect('/user/login/?next=%s?%s' % (args[0].path, args[0].META['QUERY_STRING']))
             return redirect('/user/login/?next=%s' % args[0].path)
         return func(*args, **kwargs)
     return wrapper
@@ -39,7 +41,7 @@ def check_is_superuser(func):
     def wrapper(*args, **kwargs):
         if not args[0].user.is_superuser:
             if "X-Requested_With" in args[0].headers:
-                return JsonResponse('无权限访问', safe=False)
+                return JsonResponse('无权限访问', safe=False, json_dumps_params={'ensure_ascii': False})
             return redirect(reverse('error_not_accessible'))
         return func(*args, **kwargs)
     return wrapper
