@@ -3,6 +3,7 @@ import pandas as pd
 from django.shortcuts import render
 from flexible.models import LoadSheet, LoadSheetContent, LoadSheetRecord
 from django.core.paginator import Paginator
+import difflib
 
 
 def view_loadsheet_list(request):
@@ -35,10 +36,12 @@ def add_loadsheet(request):
         params = request.POST.dict()
         load_sheet_id = params['load_sheet_id']
         answer_time = int(params['answer_time'])
+        si = params['si'].strip()
         try:
             load_sheet = LoadSheet.objects.get(id=load_sheet_id)
         except:
             return render(request, 'error_500.html', status=500)
+        load_sheet_si = load_sheet.SI.strip() if load_sheet.SI else ''
         if request.user.is_authenticated:
             user = request.user
             anonymous = ''
@@ -51,6 +54,7 @@ def add_loadsheet(request):
         del(params['csrfmiddlewaretoken'])
         del(params['load_sheet_id'])
         del(params['answer_time'])
+        del(params['si'])
         data = {}
         data.setdefault('旅客', {})
         data.setdefault('行李', {})
@@ -107,7 +111,7 @@ def add_loadsheet(request):
                 else:
                     correct = True if load_sheet_passenger.shape[0] == 0 else False
                 if correct:
-                    total_score += 33.33
+                    total_score += 30
                     passenger_correct = True
             elif key == '行李':
                 load_sheet_baggage = load_sheet_content.filter(project='行李').values('destination', 'location', 'number', 'weight')
@@ -133,7 +137,7 @@ def add_loadsheet(request):
                 else:
                     correct = True if load_sheet_baggage.shape[0] == 0 else False
                 if correct:
-                    total_score += 33.33
+                    total_score += 30
                     baggage_correct = True
             elif key == '其他':
                 load_sheet_other = load_sheet_content.filter(project='其他').values('destination', 'location', 'type', 'weight')
@@ -160,9 +164,11 @@ def add_loadsheet(request):
                 else:
                     correct = True if load_sheet_other.shape[0] == 0 else False
                 if correct:
-                    total_score += 33.33
+                    total_score += 30
                     other_correct = True
-        total_score = round(total_score, 0)
+        si_score = difflib.SequenceMatcher(None, load_sheet_si, si).quick_ratio() * 10
+        total_score += si_score
+        total_score = round(total_score, 2)
         LoadSheetRecord.objects.create(user=user, anonymous=anonymous, load_sheet=load_sheet, answer_time=answer_time,
                                        times=times, score=total_score)
         return render(request, 'view_loadsheet.html', {'total_score': total_score, 'lcm_total': lcm_total,
@@ -170,6 +176,7 @@ def add_loadsheet(request):
                                                        'baggage': baggage, 'other': other,
                                                        'passenger_correct': passenger_correct,
                                                        'baggage_correct': baggage_correct,
-                                                       'other_correct': other_correct})
+                                                       'other_correct': other_correct, 'si': si,
+                                                       'si_score': si_score, 'load_sheet_si': load_sheet_si})
     else:
         return render(request, 'error_403.html', status=403)

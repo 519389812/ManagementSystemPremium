@@ -1,10 +1,14 @@
 from django.contrib import admin
 from flexible.models import LoadSheet, LoadSheetContent, LoadSheetRecord
+from io import BytesIO
+import pandas as pd
+import datetime
+from django.http import HttpResponse
 
 
 class LoadSheetAdmin(admin.ModelAdmin):
-    fields = ('flight', 'date', 'destination', 'aircraft', 'passenger', 'baggage', 'ACARS', 'EFB', 'description')
-    list_display = ('id', 'flight', 'date', 'destination', 'aircraft', 'passenger', 'baggage', 'ACARS', 'EFB')
+    fields = ('flight', 'date', 'stopover', 'destination', 'aircraft', 'passenger', 'baggage', 'SI', 'ACARS', 'EFB', 'description')
+    list_display = ('id', 'flight', 'date', 'stopover', 'destination', 'aircraft', 'passenger', 'baggage', 'SI', 'ACARS', 'EFB')
     search_fields = ('flight', 'date', 'destination')
 
 
@@ -30,6 +34,25 @@ class LoadSheetRecordAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'anonymous', 'load_sheet', 'times', 'answer_time', 'score', 'submit_datetime')
     search_fields = ('user__full_name', 'anonymous', 'load_sheet__flight')
     list_filter = ('load_sheet__date',)
+    actions = ['export_directly', ]  # 导出
+
+    def export_directly(self, request, queryset):
+        outfile = BytesIO()
+        data = pd.DataFrame(queryset.values('id', 'user__full_name', 'anonymous', 'load_sheet__flight', 'times',
+                                            'answer_time', 'score', 'submit_datetime'))
+        data = data.rename(columns={'id': '序号', 'user__full_name': '用户', 'anonymous': '未登录用户',
+                                    'load_sheet__flight': '舱单', 'times': '参与次数', 'answer_time': '答题时长',
+                                    'score': '成绩', 'submit_datetime': '提交时间'})
+        data = data.fillna('')
+        data['提交时间'] = data['提交时间'].dt.tz_convert('Asia/Shanghai')
+        data['提交时间'] = data['提交时间'].dt.tz_localize(None)
+        filename = datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')
+        response = HttpResponse(content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = "attachment;filename={}".format('LMC Score ' + filename + '.xlsx')
+        data.to_excel(outfile, index=False)
+        response.write(outfile.getvalue())
+        return response
+    export_directly.short_description = '导出'
 
 
 admin.site.register(LoadSheet, LoadSheetAdmin)

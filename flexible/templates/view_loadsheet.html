@@ -159,6 +159,21 @@
                     </table>
                     <br/><br/>
                 {% endif %}
+                <div class="card-header">
+                    <div style="float:left">SI备注</div>
+                    {% if si_score == 10 %}
+                        <div align="right" style="color: green">完全正确</div>
+                    {% elif si_score >= 6 %}
+                        <div align="right" style="color: orange">偏差</div>
+                    {% else %}
+                        <div align="right" style="color: red">错误</div>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div style="float:left">标准SI备注</div><div align="right">{{ load_sheet_si }}</div>
+                    <hr>
+                    <div style="float:left">您输入的SI</div><div align="right">{{ si }}</div>
+                </div>
             </div>
         </div>
     </div>

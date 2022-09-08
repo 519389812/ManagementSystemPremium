@@ -16,3 +16,4 @@ backports.zoneinfo==0.2.1
 rsa==4.8
 js2py==0.71
 nanoid==2.0.0
+openpyxl==3.0.10
