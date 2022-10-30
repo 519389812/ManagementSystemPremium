@@ -11,6 +11,15 @@ class LoadSheetAdmin(admin.ModelAdmin):
     list_display = ('id', 'flight', 'date', 'stopover', 'destination', 'aircraft', 'passenger', 'baggage', 'SI', 'ACARS', 'EFB')
     search_fields = ('flight', 'date', 'destination')
 
+    def save_model(self, request, obj, form, change):
+        if form.is_valid():
+            obj.flight = obj.flight.upper()
+            obj.stopover = obj.stopover.upper() if obj.stopover is not None else obj.stopover
+            obj.destination = obj.destination.upper()
+            obj.aircraft = obj.aircraft.upper()
+            obj.SI = obj.SI.upper() if obj.SI is not None else obj.SI
+            super().save_model(request, obj, form, change)
+
 
 class LoadSheetContentAdmin(admin.ModelAdmin):
     fields = ('load_sheet', 'destination', 'project', 'number', 'type', '_class', 'location', 'weight')
@@ -27,6 +36,12 @@ class LoadSheetContentAdmin(admin.ModelAdmin):
         }
         kwargs.update({'help_texts': help_texts})
         return super(LoadSheetContentAdmin, self).get_form(request, obj, **kwargs)
+
+    def save_model(self, request, obj, form, change):
+        if form.is_valid():
+            obj.destination = obj.destination.upper() if obj.destination is not None else obj.destination
+            obj.location = obj.location.upper() if obj.location is not None else obj.location
+            super().save_model(request, obj, form, change)
 
 
 class LoadSheetRecordAdmin(admin.ModelAdmin):

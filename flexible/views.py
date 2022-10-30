@@ -100,6 +100,8 @@ def add_loadsheet(request):
                     lcm_total += df.loc['合计', '', '']['paxNumber']
                     weight_fixed += df.loc['合计', '', '']['paxWeight']
                     passenger = df
+                    passenger['paxNumber'].astype(int)
+                    passenger['paxWeight'].astype(int)
                     if load_sheet_passenger.shape[0] == df.shape[0]:
                         if df.loc['合计', '', '']['paxNumber'] == load_sheet_passenger.loc['合计', '', '']['number'] and df.loc['合计', '', '']['paxWeight'] == load_sheet_passenger.loc['合计', '', '']['weight']:
                             correct = True
@@ -127,6 +129,8 @@ def add_loadsheet(request):
                     df.dropna(inplace=True)
                     weight_fixed += df.loc['合计', '']['baggageWeight']
                     baggage = df
+                    baggage['baggageNumber'].astype(int)
+                    baggage['baggageWeight'].astype(int)
                     if load_sheet_baggage.shape[0] == df.shape[0]:
                         if df.loc['合计', '']['baggageNumber'] == load_sheet_baggage.loc['合计', '']['number'] and df.loc['合计', '']['baggageWeight'] == load_sheet_baggage.loc['合计', '']['weight']:
                             correct = True
@@ -154,6 +158,7 @@ def add_loadsheet(request):
                     df.dropna(inplace=True)
                     weight_fixed += df.loc['合计', '', '']['weight']
                     other = df
+                    other['weight'].astype(int)
                     if load_sheet_other.shape[0] == df.shape[0]:
                         if df.loc['合计', '', '']['weight'] == load_sheet_other.loc['合计', '', '']['weight']:
                             correct = True
@@ -171,8 +176,8 @@ def add_loadsheet(request):
         total_score = round(total_score, 2)
         LoadSheetRecord.objects.create(user=user, anonymous=anonymous, load_sheet=load_sheet, answer_time=answer_time,
                                        times=times, score=total_score)
-        return render(request, 'view_loadsheet.html', {'total_score': total_score, 'lcm_total': lcm_total,
-                                                       'weight_fixed': weight_fixed, 'passenger': passenger,
+        return render(request, 'view_loadsheet.html', {'total_score': total_score, 'lcm_total': int(lcm_total),
+                                                       'weight_fixed': int(weight_fixed), 'passenger': passenger,
                                                        'baggage': baggage, 'other': other,
                                                        'passenger_correct': passenger_correct,
                                                        'baggage_correct': baggage_correct,
