@@ -36,7 +36,7 @@ def add_loadsheet(request):
         params = request.POST.dict()
         load_sheet_id = params['load_sheet_id']
         answer_time = int(params['answer_time'])
-        si = params['si'].strip()
+        si = params['si'].strip().upper()
         try:
             load_sheet = LoadSheet.objects.get(id=load_sheet_id)
         except:
@@ -45,12 +45,15 @@ def add_loadsheet(request):
         if request.user.is_authenticated:
             user = request.user
             anonymous = ''
+            anonymous_team = ''
             times = LoadSheetRecord.objects.filter(load_sheet=load_sheet, user=request.user).count() + 1
         else:
             user = None
             anonymous = params['username']
+            anonymous_team = params['team']
             del (params['username'])
-            times = LoadSheetRecord.objects.filter(load_sheet=load_sheet, anonymous=anonymous).count() + 1
+            del (params['team'])
+            times = LoadSheetRecord.objects.filter(load_sheet=load_sheet, anonymous=anonymous, anonymous_team=anonymous_team).count() + 1
         del(params['csrfmiddlewaretoken'])
         del(params['load_sheet_id'])
         del(params['answer_time'])
@@ -104,12 +107,19 @@ def add_loadsheet(request):
                     passenger['paxWeight'].astype(int)
                     if load_sheet_passenger.shape[0] == df.shape[0]:
                         if df.loc['合计', '', '']['paxNumber'] == load_sheet_passenger.loc['合计', '', '']['number'] and df.loc['合计', '', '']['paxWeight'] == load_sheet_passenger.loc['合计', '', '']['weight']:
-                            correct = True
+                            try:
+                                for (d, c, t), r in load_sheet_passenger.iterrows():
+                                    if df.loc[d, c, t]['paxNumber'] == load_sheet_passenger.loc[d, c, t]['number'] and df.loc[d, c, t]['paxWeight'] == load_sheet_passenger.loc[d, c, t]['weight']:
+                                        correct = True
+                                    else:
+                                        correct = False
+                                        break
+                            except KeyError:
+                                correct = False
                         else:
                             correct = False
                     else:
                         correct = False
-
                 else:
                     correct = True if load_sheet_passenger.shape[0] == 0 else False
                 if correct:
@@ -174,14 +184,15 @@ def add_loadsheet(request):
         si_score = difflib.SequenceMatcher(None, load_sheet_si, si).quick_ratio() * 10
         total_score += si_score
         total_score = round(total_score, 2)
-        LoadSheetRecord.objects.create(user=user, anonymous=anonymous, load_sheet=load_sheet, answer_time=answer_time,
-                                       times=times, score=total_score)
+        LoadSheetRecord.objects.create(user=user, anonymous=anonymous, anonymous_team=anonymous_team,
+                                       load_sheet=load_sheet, answer_time=answer_time, times=times, score=total_score)
         return render(request, 'view_loadsheet.html', {'total_score': total_score, 'lcm_total': int(lcm_total),
                                                        'weight_fixed': int(weight_fixed), 'passenger': passenger,
                                                        'baggage': baggage, 'other': other,
                                                        'passenger_correct': passenger_correct,
                                                        'baggage_correct': baggage_correct,
                                                        'other_correct': other_correct, 'si': si,
-                                                       'si_score': si_score, 'load_sheet_si': load_sheet_si})
+                                                       'si_score': si_score, 'load_sheet_si': load_sheet_si,
+                                                       'load_sheet_description': load_sheet.description})
     else:
         return render(request, 'error_403.html', status=403)

@@ -63,6 +63,18 @@
                             {% endif %}
                         </div>
                     </div>
+                    <div id="teamForm">
+                        <div class="card-header">
+                            <div style="float:left">部门</div><div align="right"><br></div>
+                        </div>
+                        <div class="card-body">
+                            {% if request.user.is_authenticated %}
+                                <div style="float:left">部门名称</div><div align="right"><input name="team" type="text" style="width: 180px;height:30px; border-style: none; text-align: right" value="{{ request.user.team.name }}" required disabled/></div>
+                            {% else %}
+                                <div style="float:left">部门名称</div><div align="right"><input name="team" type="text" style="width: 180px;height:30px; border-style: none; text-align: right" placeholder="请输入部门名称" required/></div>
+                            {% endif %}
+                        </div>
+                    </div>
                     <input name="load_sheet_id" value="{{ load_sheet.id }}" hidden/>
                     <input type="number" id="answer_time" name="answer_time" value="0" hidden>
                     <div id="fixPaxForm">

@@ -3,6 +3,7 @@
 
 <head>
     {% load static %}
+    {% load flexible_extras %}
     {% include "head.html" %}
     <title>舱单</title>
 
@@ -28,9 +29,11 @@
         <div class="col-lg-12 mb-12">
             <div class="card h-100 text-center">
                 <div class="card-body">
-                    <div style="float:left">修正后人数</div><div align="right">{{ lcm_total }}</div>
+                    <div style="float:left"></div><div align="center">{{ load_sheet_description }}</div>
                     <hr>
-                    <div style="float:left">LMC TOTAL</div><div align="right">{{ weight_fixed }}</div>
+                    <div style="float:left">修正后人数</div><div align="right">{{ lcm_total|template_float_to_int }}</div>
+                    <hr>
+                    <div style="float:left">LMC TOTAL</div><div align="right">{{ weight_fixed|template_float_to_int }}</div>
                     <hr>
                     <div style="float:left">分数</div><div align="right">{{ total_score }}</div>
                 </div>
@@ -73,8 +76,8 @@
                                     <td>{{ index.0 }}</td>
                                     <td>{{ index.1 }}</td>
                                     <td>{{ index.2 }}</td>
-                                    <td>{{ row.paxNumber }}</td>
-                                    <td>{{ row.paxWeight }}</td>
+                                    <td>{{ row.paxNumber|template_float_to_int }}</td>
+                                    <td>{{ row.paxWeight|template_float_to_int }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -112,8 +115,8 @@
                                 <tr class="{% cycle 'row1' 'row2' %}">
                                     <td>{{ index.0 }}</td>
                                     <td>{{ index.1 }}</td>
-                                    <td>{{ row.baggageNumber }}</td>
-                                    <td>{{ row.baggageWeight }}</td>
+                                    <td>{{ row.baggageNumber|template_float_to_int }}</td>
+                                    <td>{{ row.baggageWeight|template_float_to_int }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -152,7 +155,7 @@
                                     <td>{{ index.0 }}</td>
                                     <td>{{ index.1 }}</td>
                                     <td>{{ index.2 }}</td>
-                                    <td>{{ row.weight }}</td>
+                                    <td>{{ row.weight|template_float_to_int }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>

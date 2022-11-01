@@ -1,9 +1,10 @@
 from django.contrib import admin
-from flexible.models import LoadSheet, LoadSheetContent, LoadSheetRecord
+from flexible.models import LoadSheet, LoadSheetContent, LoadSheetRecord, LoadSheetRecordSummary
 from io import BytesIO
 import pandas as pd
 import datetime
 from django.http import HttpResponse
+import numpy as np
 
 
 class LoadSheetAdmin(admin.ModelAdmin):
@@ -45,19 +46,20 @@ class LoadSheetContentAdmin(admin.ModelAdmin):
 
 
 class LoadSheetRecordAdmin(admin.ModelAdmin):
-    fields = ('user', 'anonymous', 'load_sheet', 'times', 'answer_time', 'score', 'submit_datetime')
-    list_display = ('id', 'user', 'anonymous', 'load_sheet', 'times', 'answer_time', 'score', 'submit_datetime')
+    fields = ('user', 'anonymous', 'anonymous_team', 'load_sheet', 'times', 'answer_time', 'score', 'submit_datetime')
+    list_display = ('id', 'user', 'anonymous', 'anonymous_team', 'load_sheet', 'times', 'answer_time', 'score', 'submit_datetime')
     search_fields = ('user__full_name', 'anonymous', 'load_sheet__flight')
-    list_filter = ('load_sheet__date',)
+    list_filter = ('load_sheet__date', 'anonymous_team')
+    readonly_fields = ('submit_datetime',)
     actions = ['export_directly', ]  # 导出
 
     def export_directly(self, request, queryset):
         outfile = BytesIO()
-        data = pd.DataFrame(queryset.values('id', 'user__full_name', 'anonymous', 'load_sheet__flight', 'times',
+        data = pd.DataFrame(queryset.values('id', 'user__full_name', 'anonymous', 'anonymous_team', 'load_sheet__flight', 'times',
                                             'answer_time', 'score', 'submit_datetime'))
         data = data.rename(columns={'id': '序号', 'user__full_name': '用户', 'anonymous': '未登录用户',
-                                    'load_sheet__flight': '舱单', 'times': '参与次数', 'answer_time': '答题时长',
-                                    'score': '成绩', 'submit_datetime': '提交时间'})
+                                    'anonymous_team': '未登录用户部门', 'load_sheet__flight': '舱单', 'times': '参与次数',
+                                    'answer_time': '答题时长', 'score': '成绩', 'submit_datetime': '提交时间'})
         data = data.fillna('')
         data['提交时间'] = data['提交时间'].dt.tz_convert('Asia/Shanghai')
         data['提交时间'] = data['提交时间'].dt.tz_localize(None)
@@ -70,6 +72,33 @@ class LoadSheetRecordAdmin(admin.ModelAdmin):
     export_directly.short_description = '导出'
 
 
+class LoadSheetRecordSummaryAdmin(admin.ModelAdmin):
+    change_list_template = "admin/loadsheet_record_summary_change_list.html"
+
+    search_fields = ('user__full_name', 'anonymous', 'user__team__name', 'anonymous_team')
+    list_filter = (
+        'user__team__name', 'anonymous', 'user__team__name', 'anonymous_team'
+    )
+
+    def changelist_view(self, request, extra_context=None):
+        response = super().changelist_view(request, extra_context=extra_context)
+        try:
+            qs = response.context_data['cl'].queryset
+        except (AttributeError, KeyError):
+            return response
+        qs = pd.DataFrame(qs.values('load_sheet', 'user__full_name', 'anonymous', 'user__team__name', 'anonymous_team', 'times', 'answer_time', 'score'))
+        if qs.shape[0] > 0:
+            qs.drop_duplicates(['load_sheet', 'user__full_name', 'anonymous', 'user__team__name', 'anonymous_team'], keep='first', inplace=True)
+            qs.rename(columns={'user__full_name': '用户', 'anonymous': '未登录用户', 'user__team__name': '部门', 'anonymous_team': '未登录用户部门', 'score': '得分'}, inplace=True)
+            qs.fillna('', inplace=True)
+            qs = pd.pivot_table(qs, index=['部门', '未登录用户部门', '用户', '未登录用户'], values=['得分'], dropna=False, aggfunc=np.sum)
+            qs.dropna(inplace=True)
+            qs = qs.round(2)
+            response.context_data['summary'] = qs
+        return response
+
+
 admin.site.register(LoadSheet, LoadSheetAdmin)
 admin.site.register(LoadSheetContent, LoadSheetContentAdmin)
 admin.site.register(LoadSheetRecord, LoadSheetRecordAdmin)
+admin.site.register(LoadSheetRecordSummary, LoadSheetRecordSummaryAdmin)
